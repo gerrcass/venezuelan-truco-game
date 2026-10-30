@@ -9,6 +9,7 @@ Truco e' Piedra is a single-player, 2v2 Venezuelan Truco game at 24 piedras. It 
 - `docs/adr/` — decisions already made. Do not reopen one without a superseding ADR.
 - `docs/agents/issue-tracker.md` — GitHub issues, labels and blocking edges.
 - `docs/agents/domain.md` — domain-doc layout and consumer rules.
+- `docs/agents/workflow.md` — the ticket graph and the evidence expected for each ticket.
 - `docs/grilling/2026-10-30-truco.md` — the objective and the design tree behind it.
 
 ## Shape of the codebase
