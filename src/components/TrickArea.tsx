@@ -7,12 +7,12 @@ interface TrickAreaProps {
   readonly table: SampleTable;
 }
 
-const BAZA_ORDER_FROM_MANO = SEATS.length;
+const BAZA_LENGTH = 4;
 
 export function TrickArea({ table }: TrickAreaProps) {
   const { content } = useLocale();
   const order = Array.from(
-    { length: BAZA_ORDER_FROM_MANO },
+    { length: BAZA_LENGTH },
     (_, index) => ((table.manoSeat + index) % SEATS.length) as Seat,
   );
 

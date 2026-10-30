@@ -143,5 +143,5 @@ export function describeCard(card: Card, copy: CardCopy): string {
 
 /** The short caption used under the vira: "11 de basto" / "11 of clubs". */
 export function shortCardName(card: Card, copy: CardCopy): string {
-  return `${card.rank} ${copy.of} ${copy.suits[card.suit]}`;
+  return `${copy.ranks[card.rank]} ${copy.of} ${copy.suits[card.suit]}`;
 }
