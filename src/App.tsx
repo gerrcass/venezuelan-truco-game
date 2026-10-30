@@ -1,7 +1,10 @@
+import { LocaleProvider } from './content/LocaleProvider';
+import { Mesa } from './components/Mesa';
+
 export function App() {
   return (
-    <main>
-      <h1>Truco e&apos; Piedra</h1>
-    </main>
+    <LocaleProvider>
+      <Mesa />
+    </LocaleProvider>
   );
 }

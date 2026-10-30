@@ -1,0 +1,235 @@
+.modal {
+  position: fixed;
+  z-index: 100;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(3, 17, 16, 0.74);
+  backdrop-filter: blur(7px);
+  animation: modal-fade 180ms var(--ease-soft) both;
+}
+
+.modal__panel {
+  position: relative;
+  z-index: 1;
+  width: min(500px, 100%);
+  max-height: calc(100dvh - 48px);
+  overflow: hidden auto;
+  padding: 32px 34px 28px;
+  border-radius: 18px;
+  background:
+    radial-gradient(ellipse at 12% 6%, rgba(240, 180, 41, 0.1), transparent 34%), var(--grain),
+    linear-gradient(165deg, #fffdf7 0%, var(--paper) 58%, #f3e7d2 100%);
+  background-blend-mode: normal, soft-light, normal;
+  background-size:
+    auto,
+    180px 180px,
+    auto;
+  color: var(--ink);
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.5),
+    inset 0 1px rgba(255, 255, 255, 0.8);
+  animation: panel-in 240ms var(--ease-out) both;
+}
+
+.modal__close {
+  position: absolute;
+  z-index: 3;
+  top: 14px;
+  right: 14px;
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border: 1px solid rgba(33, 27, 20, 0.1);
+  border-radius: 50%;
+  background: rgba(33, 27, 20, 0.05);
+  color: var(--ink);
+  transition:
+    background var(--dur-1) var(--ease-soft),
+    border-color var(--dur-1) var(--ease-soft);
+}
+
+.modal__close:hover {
+  border-color: rgba(33, 27, 20, 0.2);
+  background: rgba(33, 27, 20, 0.11);
+}
+
+.modal__close-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.modal :focus-visible {
+  outline-color: var(--terracotta);
+  box-shadow: 0 0 0 6px rgba(196, 85, 59, 0.17);
+}
+
+.rules-dialog__head {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding-right: 20px;
+}
+
+.rules-dialog__kicker {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.soon-chip {
+  display: inline-flex;
+  padding: 3px 7px;
+  border: 1px solid rgba(196, 85, 59, 0.25);
+  border-radius: 999px;
+  background: rgba(196, 85, 59, 0.08);
+  color: var(--terracotta);
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.rules-dialog__title {
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 34px;
+  font-variation-settings:
+    'SOFT' 60,
+    'WONK' 1,
+    'opsz' 80;
+  font-weight: 600;
+  letter-spacing: -0.045em;
+  line-height: 1;
+}
+
+.rules-dialog__body {
+  max-width: 390px;
+  color: var(--ink-soft);
+  font-size: 13.5px;
+  font-weight: 450;
+  line-height: 1.55;
+}
+
+.rules-dialog__topics {
+  display: grid;
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(33, 27, 20, 0.12);
+  gap: 11px 14px;
+  grid-template-columns: 1fr 1fr;
+}
+
+.rules-dialog__topic {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink);
+  font-size: 11.5px;
+  font-weight: 550;
+  line-height: 1.3;
+}
+
+.rules-dialog__suit {
+  display: grid;
+  width: 22px;
+  height: 22px;
+  flex: 0 0 22px;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(33, 27, 20, 0.045);
+}
+
+.rules-dialog__suit svg {
+  width: 13px;
+  height: 13px;
+}
+
+.rules-dialog__suit--oro {
+  color: var(--suit-oro);
+}
+
+.rules-dialog__suit--copa {
+  color: var(--suit-copa);
+}
+
+.rules-dialog__suit--espada {
+  color: var(--suit-espada);
+}
+
+.rules-dialog__suit--basto {
+  color: var(--suit-basto);
+}
+
+.rules-dialog .button--primary {
+  min-width: 180px;
+}
+
+/* --------------------------------------------------------------- drawer */
+
+.modal--drawer {
+  align-items: stretch;
+  justify-content: flex-end;
+  padding: 0;
+  background: rgba(3, 17, 16, 0.58);
+  backdrop-filter: blur(4px);
+}
+
+.modal--drawer .modal__panel {
+  width: min(370px, 92vw);
+  height: 100%;
+  max-height: none;
+  padding: 0;
+  border-radius: 18px 0 0 18px;
+  background: var(--paper);
+  box-shadow: -28px 0 70px rgba(0, 0, 0, 0.46);
+  animation: drawer-in 280ms var(--ease-out) both;
+}
+
+.log-drawer {
+  background: var(--paper);
+}
+
+.log-drawer .log {
+  height: 100%;
+  padding-top: 54px;
+  border-radius: 18px 0 0 18px;
+  box-shadow: none;
+}
+
+@keyframes modal-fade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes drawer-in {
+  from {
+    transform: translateX(30px);
+  }
+
+  to {
+    transform: none;
+  }
+}

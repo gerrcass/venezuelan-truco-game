@@ -1,0 +1,845 @@
+@media (max-width: 1279px) {
+  .bubble {
+    display: none;
+  }
+}
+
+@media (max-width: 1200px) {
+  .actions__note {
+    display: none;
+  }
+
+  .action--play {
+    margin-left: auto;
+  }
+
+  .seat {
+    width: 176px;
+  }
+
+  .seat__avatar {
+    width: 44px;
+    height: 44px;
+    flex-basis: 44px;
+  }
+
+  .hand {
+    grid-template-columns: minmax(78px, 1fr) auto minmax(78px, 1fr);
+  }
+
+  .hand__hint {
+    max-width: 132px;
+  }
+}
+
+@media (max-width: 1100px) {
+  .shell {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 11px 14px 9px;
+  }
+
+  .rail {
+    display: none;
+  }
+
+  .hintbar__log {
+    display: inline-flex;
+  }
+
+  .topbar {
+    padding: 0 16px;
+  }
+}
+
+@media (max-width: 980px) {
+  .seat {
+    width: 164px;
+  }
+
+  .seat__name {
+    font-size: 14px;
+  }
+
+  .seat__persona {
+    font-size: 8px;
+  }
+
+  .trick {
+    width: 300px;
+    height: 228px;
+  }
+
+  .trick__slot,
+  .trick__empty {
+    width: 52px;
+  }
+
+  .trick__slot .card--trick {
+    --card-w: 52px;
+  }
+
+  .hand {
+    grid-template-columns: minmax(64px, 1fr) auto minmax(64px, 1fr);
+  }
+
+  .card--hand {
+    --card-w: 100px;
+  }
+
+  .hand__hint {
+    display: none;
+  }
+
+  .team__status {
+    font-size: 7px;
+  }
+
+  .team__members {
+    font-size: 8px;
+  }
+}
+
+@media (max-width: 760px) {
+  html,
+  body,
+  #root {
+    height: auto;
+    min-height: 100%;
+  }
+
+  body {
+    overflow: auto hidden;
+  }
+
+  .app {
+    height: auto;
+    min-height: 100dvh;
+    padding: 6px;
+  }
+
+  .mesa {
+    height: auto;
+    min-height: calc(100dvh - 12px);
+    border-radius: 14px;
+  }
+
+  .topbar {
+    flex: 0 0 52px;
+    gap: 8px;
+    padding: 0 10px;
+  }
+
+  .topbar::after {
+    right: 10px;
+    left: 10px;
+  }
+
+  .brand {
+    gap: 7px;
+  }
+
+  .brand__mark {
+    width: 30px;
+    height: 30px;
+    flex-basis: 30px;
+  }
+
+  .brand__name {
+    font-size: 19px;
+  }
+
+  .brand__tagline {
+    display: none;
+  }
+
+  .topbar__controls {
+    gap: 5px;
+  }
+
+  .control {
+    height: 30px;
+    padding: 0 8px;
+  }
+
+  .control--rules,
+  .control--icon {
+    width: 30px;
+    padding: 0;
+  }
+
+  .control__icon {
+    width: 15px;
+    height: 15px;
+  }
+
+  .control--rules .control__label {
+    display: none;
+  }
+
+  .lang {
+    padding: 2px;
+  }
+
+  .lang__option {
+    padding: 4px 6px;
+    font-size: 8.5px;
+  }
+
+  .shell {
+    display: block;
+    padding: 8px 8px 10px;
+  }
+
+  .stage {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .scorebar {
+    display: grid;
+    gap: 6px;
+    grid-template-areas:
+      'nosotros ellos'
+      'meta meta';
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .team--nosotros {
+    grid-area: nosotros;
+  }
+
+  .team--ellos {
+    grid-area: ellos;
+  }
+
+  .table-meta {
+    grid-area: meta;
+  }
+
+  .team {
+    gap: 0;
+    padding: 6px 8px 7px;
+    border-radius: 10px;
+  }
+
+  .team::before {
+    top: 7px;
+    bottom: 7px;
+  }
+
+  .team__name {
+    font-size: 13.5px;
+  }
+
+  .team__status {
+    gap: 3px;
+    padding: 2px 5px;
+    font-size: 6.5px;
+  }
+
+  .team__members {
+    display: none;
+  }
+
+  .team__body {
+    gap: 7px;
+    margin-top: 2px;
+  }
+
+  .team__score-value {
+    font-size: 29px;
+  }
+
+  .team__score-total {
+    font-size: 7px;
+  }
+
+  .pips {
+    grid-template-columns: repeat(8, 6px);
+    grid-auto-rows: 5px;
+    gap: 2.5px;
+  }
+
+  .pip {
+    width: 6px;
+    height: 5px;
+  }
+
+  .table-meta {
+    justify-content: space-between;
+    gap: 8px;
+    padding: 5px 8px;
+    border-radius: 10px;
+  }
+
+  .table-meta__stats {
+    gap: 18px;
+  }
+
+  .table-meta__label {
+    font-size: 6.5px;
+  }
+
+  .table-meta__value {
+    font-size: 20px;
+  }
+
+  .table-meta__stone {
+    width: 11px;
+    height: 11px;
+  }
+
+  .vira {
+    padding-left: 8px;
+    column-gap: 4px;
+  }
+
+  .vira .card--vira {
+    --card-w: 38px;
+  }
+
+  .vira__tag {
+    font-size: 6px;
+    letter-spacing: 0.16em;
+  }
+
+  .vira__name {
+    display: none;
+  }
+
+  .table {
+    height: 330px;
+    min-height: 330px;
+  }
+
+  .table__surface {
+    min-height: 0;
+  }
+
+  .seat {
+    width: auto;
+    min-width: 62px;
+    max-width: 76px;
+    flex-direction: column;
+    gap: 2px;
+    padding: 4px 5px;
+    border-radius: 9px;
+    text-align: center;
+  }
+
+  .seat--north {
+    top: 3px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .seat--south {
+    bottom: 3px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .seat--west {
+    top: 50%;
+    right: auto;
+    left: 3px;
+    flex-direction: column;
+    text-align: center;
+    transform: translateY(-50%);
+  }
+
+  .seat--east {
+    top: 50%;
+    right: 3px;
+    transform: translateY(-50%);
+  }
+
+  .seat__avatar {
+    width: 32px;
+    height: 32px;
+    flex-basis: 32px;
+    border-width: 1.5px;
+    box-shadow:
+      0 0 0 2px rgba(4, 25, 23, 0.7),
+      0 3px 7px rgba(0, 0, 0, 0.28);
+  }
+
+  .seat__headline {
+    justify-content: center;
+    gap: 2px;
+  }
+
+  .seat__name {
+    max-width: 100%;
+    font-size: 10.5px;
+  }
+
+  .seat__badge {
+    padding: 1px 3px;
+    font-size: 5.5px;
+    letter-spacing: 0.06em;
+  }
+
+  .seat__persona {
+    display: none;
+  }
+
+  .seat__footer,
+  .seat--west .seat__footer {
+    justify-content: center;
+    gap: 3px;
+    margin-top: 1px;
+  }
+
+  .seat__cards {
+    gap: 3px;
+    font-size: 7px;
+  }
+
+  .seat__fan .card--mini {
+    --card-w: 7px;
+  }
+
+  .seat__fan .card {
+    margin-left: -3px;
+  }
+
+  .seat__turn {
+    gap: 2px;
+    font-size: 5.5px;
+  }
+
+  .seat__turn-dot {
+    width: 3px;
+    height: 3px;
+  }
+
+  .trick {
+    width: 190px;
+    height: 190px;
+  }
+
+  .trick__slot {
+    width: 44px;
+    gap: 2px;
+  }
+
+  .trick__slot--north {
+    top: 0;
+  }
+
+  .trick__slot--south {
+    bottom: 0;
+  }
+
+  .trick__slot--west {
+    left: 0;
+  }
+
+  .trick__slot--east {
+    right: 0;
+  }
+
+  .trick__slot .card--trick {
+    --card-w: 44px;
+  }
+
+  .trick__empty {
+    width: 44px;
+    gap: 3px;
+    border-radius: 5px;
+    font-size: 5.5px;
+  }
+
+  .trick__empty-diamond {
+    width: 6px;
+    height: 6px;
+  }
+
+  .trick__owner {
+    padding: 0 2px;
+    font-size: 6.5px;
+    letter-spacing: 0.09em;
+  }
+
+  .trick__center {
+    width: 38px;
+    height: 38px;
+  }
+
+  .trick__center-label {
+    max-width: 30px;
+    font-size: 5.8px;
+  }
+
+  .trick__center-ring {
+    inset: 3px;
+  }
+
+  .actions {
+    min-height: 0;
+    flex-wrap: wrap;
+    gap: 5px;
+    padding: 5px 6px;
+    border-radius: 10px;
+  }
+
+  .actions__group {
+    flex: 1 1 auto;
+    gap: 4px;
+    padding: 0;
+  }
+
+  .actions__label {
+    font-size: 6.5px;
+    letter-spacing: 0.1em;
+  }
+
+  .action {
+    height: 32px;
+    padding: 0 9px;
+    border-radius: 7px;
+    font-size: 10.5px;
+  }
+
+  .actions__divider {
+    display: none;
+  }
+
+  .action--fold {
+    margin-left: auto;
+    padding: 0 6px;
+    font-size: 9.5px;
+  }
+
+  .actions__note {
+    display: none;
+  }
+
+  .action--play {
+    width: 100%;
+    min-width: 0;
+    height: 38px;
+    flex: 1 1 100%;
+    align-items: center;
+    margin: 0;
+    border-radius: 8px;
+  }
+
+  .action__play-title {
+    font-size: 11.5px;
+  }
+
+  .action__play-hint {
+    font-size: 7.5px;
+  }
+
+  .action__soon {
+    top: -5px;
+    right: 6px;
+    font-size: 5.5px;
+  }
+
+  .hand {
+    display: flex;
+    min-height: 0;
+    flex-direction: column;
+    gap: 5px;
+    padding: 0;
+  }
+
+  .hand__heading {
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .hand__title {
+    font-size: 16px;
+  }
+
+  .hand__count {
+    font-size: 8px;
+  }
+
+  .hand__cards {
+    gap: 6px;
+  }
+
+  .card--hand {
+    --card-w: clamp(86px, 25vw, 102px);
+  }
+
+  .hand__key {
+    top: -7px;
+    width: 15px;
+    height: 15px;
+    font-size: 8px;
+  }
+
+  .hand__hint {
+    display: none;
+  }
+
+  .hand__slot:nth-child(1),
+  .hand__slot:nth-child(3) {
+    transform: rotate(-1.6deg) translateY(1px);
+  }
+
+  .hand__slot:nth-child(3) {
+    transform: rotate(1.6deg) translateY(1px);
+  }
+
+  .hintbar {
+    flex: 0 0 auto;
+    min-height: 32px;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 5px 10px;
+  }
+
+  .hintbar__shortcuts {
+    gap: 8px;
+  }
+
+  .hintbar__label,
+  .shortcut--rules {
+    display: none;
+  }
+
+  .shortcut {
+    font-size: 9px;
+  }
+
+  .shortcut kbd {
+    min-width: 14px;
+    height: 14px;
+    padding: 0 3px;
+    font-size: 7.5px;
+  }
+
+  .hintbar__actions {
+    gap: 8px;
+    margin-left: auto;
+  }
+
+  .hintbar__log {
+    padding: 3px 7px;
+    font-size: 9px;
+  }
+
+  .hintbar__log-icon {
+    width: 12px;
+    height: 12px;
+  }
+
+  .hintbar__link {
+    font-size: 9px;
+  }
+
+  .modal {
+    padding: 12px;
+  }
+
+  .modal__panel {
+    max-height: calc(100dvh - 24px);
+    padding: 30px 22px 22px;
+  }
+
+  .rules-dialog__title {
+    font-size: 29px;
+  }
+
+  .rules-dialog__topics {
+    grid-template-columns: 1fr;
+    gap: 9px;
+  }
+
+  .rules-dialog .button--primary {
+    width: 100%;
+  }
+}
+
+@media (max-width: 400px) {
+  .brand__name {
+    font-size: 17.5px;
+  }
+
+  .brand__mark {
+    width: 27px;
+    height: 27px;
+    flex-basis: 27px;
+  }
+
+  .topbar__controls {
+    gap: 4px;
+  }
+
+  .control--rules,
+  .control--icon {
+    width: 28px;
+    height: 28px;
+  }
+
+  .team__name {
+    font-size: 13px;
+  }
+
+  .table-meta__stats {
+    gap: 12px;
+  }
+
+  .seat {
+    min-width: 58px;
+    max-width: 70px;
+  }
+
+  .seat__name {
+    font-size: 10px;
+  }
+
+  .action--fold {
+    margin-left: 0;
+  }
+}
+
+@media (min-width: 761px) and (max-height: 860px) {
+  .topbar {
+    flex-basis: 56px;
+  }
+
+  .brand__mark {
+    width: 34px;
+    height: 34px;
+    flex-basis: 34px;
+  }
+
+  .brand__name {
+    font-size: 23px;
+  }
+
+  .brand__tagline {
+    font-size: 8px;
+  }
+
+  .shell {
+    padding: 8px 16px 6px;
+  }
+
+  .stage {
+    gap: 8px;
+  }
+
+  .team {
+    padding: 7px 11px 8px;
+  }
+
+  .team__score-value {
+    font-size: 34px;
+  }
+
+  .team__body {
+    margin-top: 1px;
+  }
+
+  .pips {
+    grid-template-columns: repeat(8, 7px);
+    grid-auto-rows: 6px;
+    gap: 2.5px 3px;
+  }
+
+  .pip {
+    width: 7px;
+    height: 6px;
+  }
+
+  .table-meta {
+    padding: 4px 9px;
+  }
+
+  .table-meta__value {
+    font-size: 21px;
+  }
+
+  .vira .card--vira {
+    --card-w: 44px;
+  }
+
+  .seat {
+    width: 172px;
+    gap: 7px;
+    padding: 5px 8px;
+  }
+
+  .seat__avatar {
+    width: 40px;
+    height: 40px;
+    flex-basis: 40px;
+  }
+
+  .seat__name {
+    font-size: 14px;
+  }
+
+  .seat__persona {
+    display: none;
+  }
+
+  .seat__footer {
+    margin-top: 2px;
+  }
+
+  .trick {
+    width: 312px;
+    height: 236px;
+  }
+
+  .trick__slot,
+  .trick__empty {
+    width: 54px;
+  }
+
+  .trick__slot .card--trick {
+    --card-w: 54px;
+  }
+
+  .trick__owner {
+    font-size: 8px;
+  }
+
+  .actions {
+    min-height: 50px;
+    padding: 5px 9px;
+  }
+
+  .action {
+    height: 34px;
+  }
+
+  .action--play {
+    height: 40px;
+  }
+
+  .hand {
+    min-height: 148px;
+    grid-template-columns: minmax(80px, 1fr) auto minmax(80px, 1fr);
+  }
+
+  .card--hand {
+    --card-w: 100px;
+  }
+
+  .hand__title {
+    font-size: 19px;
+  }
+
+  .hand__hint {
+    display: none;
+  }
+
+  .hintbar {
+    flex-basis: 32px;
+  }
+}

@@ -1,0 +1,67 @@
+:root {
+  color-scheme: dark;
+
+  /* The mesa's palette */
+  --felt: #0d3b36;
+  --felt-light: #14504a;
+  --felt-deep: #082a27;
+  --cream: #f6ecd8;
+  --paper: #fffaf0;
+  --ink: #211b14;
+  --marigold: #f0b429;
+  --marigold-deep: #a56f0e;
+  --terracotta: #c4553b;
+  --turquoise: #2a9d8f;
+  --wood: #5a3624;
+  --wood-light: #8a5a3c;
+  --wood-deep: #2f1b12;
+
+  /* Suit inks */
+  --suit-oro: #b47b0d;
+  --suit-copa: #b5432f;
+  --suit-espada: #2f5651;
+  --suit-basto: #6b4528;
+
+  /* Court inks */
+  --court-skin: #c0835b;
+  --court-skin-shade: #9e6847;
+  --court-horse: #6d4a33;
+  --court-horse-light: #8b644a;
+  --court-ink: #3a2a20;
+
+  /* Surfaces and lines */
+  --surface: rgba(4, 25, 23, 0.56);
+  --surface-deep: rgba(3, 20, 19, 0.76);
+  --surface-light: rgba(246, 236, 216, 0.055);
+  --line: rgba(246, 236, 216, 0.14);
+  --line-strong: rgba(246, 236, 216, 0.26);
+  --cream-soft: rgba(246, 236, 216, 0.68);
+  --cream-faint: rgba(246, 236, 216, 0.42);
+  --ink-soft: rgba(33, 27, 20, 0.64);
+  --ink-faint: rgba(33, 27, 20, 0.14);
+
+  /* Type */
+  --font-display: 'Fraunces Variable', 'Iowan Old Style', Georgia, serif;
+  --font-body: 'DM Sans Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* Depth */
+  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.24);
+  --shadow-md: 0 10px 26px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 24px 60px rgba(0, 0, 0, 0.42);
+  --shadow-card: 0 12px 22px -10px rgba(0, 0, 0, 0.55), 0 2px 4px rgba(0, 0, 0, 0.2);
+
+  /* Shape and motion */
+  --radius-xs: 6px;
+  --radius-sm: 9px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-soft: cubic-bezier(0.4, 0, 0.2, 1);
+  --dur-1: 160ms;
+  --dur-2: 240ms;
+  --dur-3: 360ms;
+
+  --rim: clamp(7px, 0.85vw, 13px);
+
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+}

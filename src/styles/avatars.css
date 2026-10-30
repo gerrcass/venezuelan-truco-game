@@ -1,0 +1,220 @@
+.avatar {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 50%;
+}
+
+.avatar--pana {
+  --av-bg: #d99a2b;
+  --av-bg-accent: #f4cd74;
+  --av-shirt: #f6ecd8;
+  --av-shirt-line: rgba(90, 54, 36, 0.3);
+  --av-button: #8a5a3c;
+  --av-skin: #b97850;
+  --av-skin-shade: #9b603d;
+  --av-hair: #211b14;
+  --av-line: #4b2b1a;
+  --av-eye: #211b14;
+  --av-glint: #fffaf0;
+}
+
+.avatar--comadre {
+  --av-bg: #1f7f75;
+  --av-bg-accent: #67c7ba;
+  --av-shirt: #f6ecd8;
+  --av-shirt-line: rgba(90, 54, 36, 0.28);
+  --av-skin: #c6885f;
+  --av-skin-shade: #a96b46;
+  --av-hair: #2a1a14;
+  --av-line: #4b2b1a;
+  --av-eye: #211b14;
+  --av-glint: #fffaf0;
+  --av-lip: #b5432f;
+  --av-scarf: #c4553b;
+  --av-scarf-line: rgba(255, 250, 240, 0.35);
+  --av-scarf-dot: #f0b429;
+  --av-rollers: #f3e6cf;
+  --av-roller-line: rgba(90, 54, 36, 0.32);
+}
+
+.avatar--catire {
+  --av-bg: #e3bd76;
+  --av-bg-accent: #f8e2ad;
+  --av-shirt: #f6ecd8;
+  --av-shirt-line: rgba(90, 54, 36, 0.28);
+  --av-skin: #e0ae87;
+  --av-skin-shade: #c08a63;
+  --av-hair: #d9a441;
+  --av-line: #6b4326;
+  --av-eye: #211b14;
+  --av-glint: #fffaf0;
+  --av-lip: #b5432f;
+  --av-cap: #1d5d56;
+  --av-cap-brim: #123f3a;
+}
+
+.avatar--you {
+  --av-you-bg: #0b3733;
+}
+
+.av-bg {
+  fill: var(--av-bg);
+}
+
+.avatar__pattern {
+  fill: var(--av-bg-accent);
+  opacity: 0.26;
+}
+
+.av-shirt {
+  fill: var(--av-shirt);
+}
+
+.av-shirt-line {
+  fill: none;
+  stroke: var(--av-shirt-line);
+  stroke-linecap: round;
+  stroke-width: 1;
+}
+
+.av-button {
+  fill: var(--av-button, var(--wood));
+}
+
+.av-skin {
+  fill: var(--av-skin);
+}
+
+.av-skin-shade {
+  fill: var(--av-skin-shade);
+  opacity: 0.9;
+}
+
+.av-hair {
+  fill: var(--av-hair);
+}
+
+.av-line {
+  fill: none;
+  stroke: var(--av-line);
+  stroke-linecap: round;
+}
+
+.av-eye {
+  fill: var(--av-eye);
+}
+
+.av-glint {
+  fill: var(--av-glint);
+}
+
+.av-scarf {
+  fill: var(--av-scarf);
+}
+
+.av-scarf-line {
+  fill: none;
+  stroke: var(--av-scarf-line);
+  stroke-linecap: round;
+  stroke-width: 1;
+}
+
+.av-scarf-dot {
+  fill: var(--av-scarf-dot);
+}
+
+.av-rollers {
+  fill: var(--av-rollers);
+  stroke: var(--av-roller-line);
+  stroke-width: 0.6;
+}
+
+.av-gold {
+  fill: var(--marigold);
+}
+
+.av-gold-hole {
+  fill: var(--av-bg);
+}
+
+.av-gold-stroke {
+  fill: none;
+  stroke: var(--marigold);
+  stroke-width: 1.4;
+}
+
+.av-glasses circle {
+  fill: rgba(255, 250, 240, 0.18);
+  stroke: var(--marigold);
+  stroke-width: 1.3;
+}
+
+.av-glasses path {
+  fill: none;
+  stroke: var(--marigold);
+  stroke-linecap: round;
+  stroke-width: 1.3;
+}
+
+.av-lip {
+  fill: var(--av-lip, #a53c2b);
+}
+
+.av-teeth {
+  fill: #fffaf0;
+}
+
+.av-lip-line {
+  fill: none;
+  stroke: #8f3a2b;
+  stroke-linecap: round;
+  stroke-width: 0.7;
+}
+
+.av-cap {
+  fill: var(--av-cap, #1d5d56);
+}
+
+.av-cap-line {
+  fill: none;
+  stroke: rgba(246, 236, 216, 0.22);
+  stroke-linecap: round;
+  stroke-width: 0.8;
+}
+
+.av-cap-brim {
+  fill: var(--av-cap-brim, #123f3a);
+}
+
+.avatar__you-pattern {
+  fill: var(--marigold);
+  opacity: 0.09;
+}
+
+.avatar__you-ring {
+  fill: none;
+  stroke: rgba(246, 236, 216, 0.45);
+  stroke-dasharray: 1.5 2.6;
+  stroke-width: 0.9;
+}
+
+.avatar__you-diamond {
+  fill: rgba(240, 180, 41, 0.14);
+  stroke: rgba(240, 180, 41, 0.5);
+  stroke-width: 0.7;
+}
+
+.avatar__you-text {
+  fill: var(--cream);
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.avatar__you-stone {
+  fill: var(--marigold);
+  stroke: var(--wood);
+  stroke-width: 0.5;
+}
