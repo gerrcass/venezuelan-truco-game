@@ -36,9 +36,14 @@
   --line: rgba(246, 236, 216, 0.14);
   --line-strong: rgba(246, 236, 216, 0.26);
   --cream-soft: rgba(246, 236, 216, 0.68);
-  --cream-faint: rgba(246, 236, 216, 0.42);
+  --cream-faint: rgba(246, 236, 216, 0.58);
   --ink-soft: rgba(33, 27, 20, 0.64);
   --ink-faint: rgba(33, 27, 20, 0.14);
+
+  /* Text-safe accents for the cream paper surfaces. */
+  --terracotta-ink: #a8442f;
+  --marigold-ink: #8a5b07;
+  --turquoise-ink: #176f65;
 
   /* Type */
   --font-display: 'Fraunces Variable', 'Iowan Old Style', Georgia, serif;

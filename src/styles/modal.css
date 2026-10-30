@@ -86,7 +86,7 @@
   border: 1px solid rgba(196, 85, 59, 0.25);
   border-radius: 999px;
   background: rgba(196, 85, 59, 0.08);
-  color: var(--terracotta);
+  color: var(--terracotta-ink);
   font-size: 7px;
   font-weight: 800;
   letter-spacing: 0.14em;

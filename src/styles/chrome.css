@@ -704,7 +704,7 @@
 }
 
 .log__eyebrow {
-  color: var(--terracotta);
+  color: var(--terracotta-ink);
   font-size: 8px;
   font-weight: 800;
   letter-spacing: 0.17em;
@@ -756,15 +756,15 @@
 
 .log__entry--deal .log__kind,
 .log__entry--turn .log__kind {
-  color: var(--marigold-deep);
+  color: var(--marigold-ink);
 }
 
 .log__entry--signal .log__kind {
-  color: #1d7c71;
+  color: var(--turquoise-ink);
 }
 
 .log__entry--talk .log__kind {
-  color: var(--terracotta);
+  color: var(--terracotta-ink);
 }
 
 .log__text {
