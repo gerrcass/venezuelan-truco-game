@@ -44,11 +44,13 @@ export function Seat({ seat, cardCount, role, isTurn }: SeatProps) {
         <p className="seat__persona">{person.persona}</p>
         <div className="seat__footer">
           <span className="seat__cards">
-            <span className="seat__fan" aria-hidden="true">
-              <CardBack size="mini" />
-              <CardBack size="mini" />
-              <CardBack size="mini" />
-            </span>
+            {cardCount > 0 && (
+              <span className="seat__fan" aria-hidden="true">
+                {Array.from({ length: cardCount }, (_, index) => (
+                  <CardBack key={index} size="mini" />
+                ))}
+              </span>
+            )}
             {content.seats.cardCount(cardCount)}
           </span>
           {isTurn && (
