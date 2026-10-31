@@ -84,7 +84,7 @@ Only the three cards in a hand count.
 Examples (vira = espada, so perico = 11 de espada, perica = 10 de espada):
 
 - 11 de espada + 5 de oro + 4 de copa → **35** (30 + 5)
-- 10 de espada + 7 de basto + 6 de basto → **42** (29 + 7 + 6)
+- 10 de espada + 7 de basto + 6 de basto → **36** (29 + 7; a piece counts with the highest of the other two, not with both)
 - 7 de oro + 6 de oro + 4 de copa → **33** (20 + 7 + 6)
 - 12 de copa + 3 de basto + 1 de oro → **3** (figures are 0)
 
