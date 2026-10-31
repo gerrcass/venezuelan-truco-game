@@ -176,7 +176,9 @@ export function Mesa() {
   const manoName = content.personas[PERSONA_BY_SEAT[view.mano]].name;
   const pendingTruco = view.pending?.kind === 'truco' ? view.pending : null;
   const mustRespond =
-    pendingTruco !== null && pendingTruco.respondingTeam === TEAM_BY_SEAT[view.seat];
+    view.phase === 'playing' &&
+    pendingTruco !== null &&
+    pendingTruco.respondingTeam === TEAM_BY_SEAT[view.seat];
   const talk = latestTalk(view.log, content);
 
   return (
