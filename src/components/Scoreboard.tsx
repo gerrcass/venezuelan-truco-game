@@ -1,25 +1,25 @@
 import { useLocale } from '../content/locale-context';
 import { describeCard, shortCardName } from '../content/types';
-import type { SampleTable } from '../data/sampleTable';
+import type { GameView } from '../engine/types';
 import { TEAM_BY_SEAT, type Team } from '../domain/seats';
 import { CardBack, PlayingCard } from './PlayingCard';
 import { TeamPanel, type TeamStatus } from './TeamPanel';
 import { StoneIcon } from './icons';
 
 interface ScoreboardProps {
-  readonly table: SampleTable;
+  readonly view: GameView;
 }
 
-export function Scoreboard({ table }: ScoreboardProps) {
+export function Scoreboard({ view }: ScoreboardProps) {
   const { content } = useLocale();
   const scoreboard = content.scoreboard;
 
   const statusFor = (team: Team): TeamStatus | null => {
-    if (TEAM_BY_SEAT[table.manoSeat] === team) {
+    if (TEAM_BY_SEAT[view.mano] === team) {
       return { kind: 'mano', label: scoreboard.statusMano };
     }
 
-    if (TEAM_BY_SEAT[table.pieSeat] === team) {
+    if (TEAM_BY_SEAT[view.dealer] === team) {
       return { kind: 'pie', label: scoreboard.statusPie };
     }
 
@@ -35,8 +35,8 @@ export function Scoreboard({ table }: ScoreboardProps) {
         team="nosotros"
         name={scoreboard.teams.nosotros.name}
         members={scoreboard.teams.nosotros.members}
-        score={table.scores.nosotros}
-        piedrasLabel={scoreboard.piedras(table.scores.nosotros)}
+        score={view.scores.nosotros}
+        piedrasLabel={scoreboard.piedras(view.scores.nosotros)}
         status={statusFor('nosotros')}
       />
 
@@ -46,28 +46,28 @@ export function Scoreboard({ table }: ScoreboardProps) {
             <span className="table-meta__label">{scoreboard.stakeLabel}</span>
             <span className="table-meta__value">
               <StoneIcon className="table-meta__stone" />
-              {table.stake}
+              {view.stake}
             </span>
           </div>
           <div className="table-meta__stat">
             <span className="table-meta__label">{scoreboard.dealWord}</span>
-            <span className="table-meta__value table-meta__value--plain">{table.handNumber}</span>
+            <span className="table-meta__value table-meta__value--plain">{view.handNumber}</span>
           </div>
         </div>
 
         <div
           className="vira"
           role="group"
-          aria-label={`${scoreboard.viraLabel}: ${describeCard(table.vira, content.cards)}`}
+          aria-label={`${scoreboard.viraLabel}: ${describeCard(view.vira, content.cards)}`}
         >
           <span className="vira__tag">{scoreboard.viraLabel}</span>
           <div className="vira__stack">
             <span className="vira__deck" aria-hidden="true">
               <CardBack size="vira" />
             </span>
-            <PlayingCard card={table.vira} size="vira" />
+            <PlayingCard card={view.vira} size="vira" />
           </div>
-          <span className="vira__name">{shortCardName(table.vira, content.cards)}</span>
+          <span className="vira__name">{shortCardName(view.vira, content.cards)}</span>
         </div>
       </div>
 
@@ -75,8 +75,8 @@ export function Scoreboard({ table }: ScoreboardProps) {
         team="ellos"
         name={scoreboard.teams.ellos.name}
         members={scoreboard.teams.ellos.members}
-        score={table.scores.ellos}
-        piedrasLabel={scoreboard.piedras(table.scores.ellos)}
+        score={view.scores.ellos}
+        piedrasLabel={scoreboard.piedras(view.scores.ellos)}
         status={statusFor('ellos')}
       />
     </section>

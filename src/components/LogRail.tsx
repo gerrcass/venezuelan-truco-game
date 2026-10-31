@@ -1,12 +1,65 @@
 import { useLocale } from '../content/locale-context';
+import { shortCardName, type ShellContent } from '../content/types';
 import { SUITS } from '../domain/cards';
+import { PERSONA_BY_SEAT, type Seat } from '../domain/seats';
+import type { GameLogEntry } from '../engine/types';
 import { SuitIcon } from './icons';
 
 interface LogRailProps {
   readonly idPrefix: string;
+  readonly entries: readonly GameLogEntry[];
 }
 
-export function LogRail({ idPrefix }: LogRailProps) {
+function personaName(content: ShellContent, seat: Seat): string {
+  return content.personas[PERSONA_BY_SEAT[seat]].name;
+}
+
+function entryText(entry: GameLogEntry, content: ShellContent): string {
+  switch (entry.kind) {
+    case 'deal':
+      return content.log.deal(
+        entry.handNumber,
+        personaName(content, entry.dealer),
+        personaName(content, entry.mano),
+        shortCardName(entry.vira, content.cards),
+      );
+    case 'play':
+      if (entry.burned || !entry.card) {
+        return entry.seat === 0
+          ? content.log.burnYou
+          : content.log.burn(personaName(content, entry.seat));
+      }
+
+      return entry.seat === 0
+        ? content.log.playYou(shortCardName(entry.card, content.cards))
+        : content.log.play(
+            personaName(content, entry.seat),
+            shortCardName(entry.card, content.cards),
+          );
+    case 'trick':
+      if (entry.parda || entry.winnerSeat === null) {
+        return content.log.trickParda(entry.baza);
+      }
+
+      return entry.winnerSeat === 0
+        ? content.log.trickWinYou(entry.baza)
+        : content.log.trickWin(entry.baza, personaName(content, entry.winnerSeat));
+    case 'points':
+      return content.log.points(content.scoreboard.teams[entry.team].name, entry.points);
+    case 'handOver':
+      return content.log.handOver(content.scoreboard.teams[entry.winnerTeam].name, entry.points);
+    case 'matchOver':
+      return content.log.matchOver(content.scoreboard.teams[entry.winnerTeam].name);
+    case 'turn':
+      return content.log.turn(personaName(content, entry.seat), entry.baza);
+    default: {
+      const exhaustive: never = entry;
+      return exhaustive;
+    }
+  }
+}
+
+export function LogRail({ idPrefix, entries }: LogRailProps) {
   const { content } = useLocale();
   const log = content.log;
   const titleId = `${idPrefix}-title`;
@@ -31,10 +84,10 @@ export function LogRail({ idPrefix }: LogRailProps) {
         aria-live="polite"
         aria-relevant="additions text"
       >
-        {log.entries.map((entry) => (
+        {entries.map((entry) => (
           <li className={`log__entry log__entry--${entry.kind}`} key={entry.id}>
             <span className="log__kind">{log.kinds[entry.kind]}</span>
-            <p className="log__text">{entry.text}</p>
+            <p className="log__text">{entryText(entry, content)}</p>
           </li>
         ))}
       </ol>

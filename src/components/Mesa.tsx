@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
 
 import { useLocale } from '../content/locale-context';
-import { SAMPLE_TABLE } from '../data/sampleTable';
-import { SEATS } from '../domain/seats';
+import { cardKey } from '../domain/cards';
+import { PERSONA_BY_SEAT, SEATS } from '../domain/seats';
+import { useGame } from '../game/game-context';
 import { ActionBar } from './ActionBar';
 import { HandDock } from './HandDock';
+import { HandSummary } from './HandSummary';
 import { HintStrip } from './HintStrip';
 import { LogRail } from './LogRail';
 import { Modal } from './Modal';
@@ -27,6 +29,7 @@ function readSoundPreference(): boolean {
 
 export function Mesa() {
   const { content } = useLocale();
+  const { view, dispatch } = useGame();
   const [rulesOpen, setRulesOpen] = useState(false);
   const [logOpen, setLogOpen] = useState(false);
   const [soundOn, setSoundOn] = useState(readSoundPreference);
@@ -36,6 +39,10 @@ export function Mesa() {
   const openLog = useCallback(() => setLogOpen(true), []);
   const closeLog = useCallback(() => setLogOpen(false), []);
   const toggleSound = useCallback(() => setSoundOn((current) => !current), []);
+  const playCard = useCallback(
+    (key: string) => dispatch({ type: 'playCard', seat: view.seat, cardKey: key }),
+    [dispatch, view.seat],
+  );
 
   useEffect(() => {
     try {
@@ -51,7 +58,7 @@ export function Mesa() {
         return;
       }
 
-      if (rulesOpen || logOpen) {
+      if (rulesOpen || logOpen || view.phase !== 'playing') {
         return;
       }
 
@@ -67,15 +74,48 @@ export function Mesa() {
       if (event.key === 'r' || event.key === 'R') {
         event.preventDefault();
         setRulesOpen(true);
+        return;
       }
+
+      if (view.turn !== view.seat) {
+        return;
+      }
+
+      const index = ['1', '2', '3'].indexOf(event.key);
+
+      if (index < 0) {
+        return;
+      }
+
+      const card = view.hand[index];
+
+      if (!card) {
+        return;
+      }
+
+      const key = cardKey(card);
+
+      if (!view.legal.playableCardKeys.includes(key)) {
+        return;
+      }
+
+      event.preventDefault();
+      dispatch({ type: 'playCard', seat: view.seat, cardKey: key });
     };
 
     window.addEventListener('keydown', handleKeyDown);
 
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [logOpen, rulesOpen]);
+  }, [dispatch, logOpen, rulesOpen, view]);
 
-  const table = SAMPLE_TABLE;
+  useEffect(() => {
+    if (view.phase !== 'playing') {
+      setRulesOpen(false);
+      setLogOpen(false);
+    }
+  }, [view.phase]);
+
+  const manoName = content.personas[PERSONA_BY_SEAT[view.mano]].name;
 
   return (
     <div className="app">
@@ -84,7 +124,19 @@ export function Mesa() {
 
         <main className="shell">
           <div className="stage">
-            <Scoreboard table={table} />
+            <Scoreboard view={view} />
+
+            <p className="statusline">
+              <span>{content.status.baza(view.trickIndex, 3)}</span>
+              <span className="statusline__dot" aria-hidden="true">
+                {content.status.separator}
+              </span>
+              <span>{content.status.reparto(view.handNumber)}</span>
+              <span className="statusline__dot" aria-hidden="true">
+                {content.status.separator}
+              </span>
+              <span>{content.status.mano(manoName)}</span>
+            </p>
 
             <section className="table" aria-labelledby="table-heading">
               <h2 className="sr-only" id="table-heading">
@@ -95,32 +147,32 @@ export function Mesa() {
                   <Seat
                     key={seat}
                     seat={seat}
-                    cardCount={seat === 0 ? table.hand.length : 3}
-                    role={seat === table.manoSeat ? 'mano' : seat === table.pieSeat ? 'pie' : null}
-                    isTurn={seat === table.turnSeat}
+                    cardCount={view.handCounts[seat]}
+                    role={seat === view.mano ? 'mano' : seat === view.dealer ? 'pie' : null}
+                    isTurn={view.phase === 'playing' && seat === view.turn}
                   />
                 ))}
 
-                <TrickArea table={table} />
-                <SpeechBubble seat={table.speechSeat} quote={content.trick.bubble} />
+                <TrickArea view={view} />
+                <SpeechBubble seat={1} quote={content.trick.bubble} />
               </div>
             </section>
 
-            <ActionBar />
-            <HandDock table={table} />
+            <ActionBar view={view} />
+            <HandDock view={view} onPlay={playCard} />
           </div>
 
           <aside className="rail">
-            <LogRail idPrefix="log" />
+            <LogRail idPrefix="log" entries={view.log} />
           </aside>
         </main>
 
         <HintStrip onOpenRules={openRules} onOpenLog={openLog} logOpen={logOpen} />
       </div>
 
-      <RulesDialog open={rulesOpen} onClose={closeRules} />
+      <RulesDialog open={rulesOpen && view.phase === 'playing'} onClose={closeRules} />
 
-      {logOpen && (
+      {logOpen && view.phase === 'playing' && (
         <Modal
           open
           onClose={closeLog}
@@ -129,9 +181,15 @@ export function Mesa() {
           variant="drawer"
           panelClassName="log-drawer"
         >
-          <LogRail idPrefix="log-drawer" />
+          <LogRail idPrefix="log-drawer" entries={view.log} />
         </Modal>
       )}
+
+      <HandSummary
+        view={view}
+        onNextHand={() => dispatch({ type: 'nextHand' })}
+        onRematch={() => dispatch({ type: 'rematch' })}
+      />
     </div>
   );
 }

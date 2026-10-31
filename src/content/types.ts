@@ -3,13 +3,7 @@ import type { PersonaKey, Team } from '../domain/seats';
 
 export type Locale = 'es' | 'en';
 
-export type LogKind = 'deal' | 'play' | 'signal' | 'talk' | 'turn';
-
-export interface LogEntryCopy {
-  readonly id: string;
-  readonly kind: LogKind;
-  readonly text: string;
-}
+export type LogKind = 'deal' | 'play' | 'trick' | 'points' | 'handOver' | 'matchOver' | 'turn';
 
 export interface PersonaCopy {
   readonly name: string;
@@ -79,14 +73,27 @@ export interface ShellContent {
     readonly label: (baza: number) => string;
     readonly aria: (baza: number) => string;
     readonly empty: string;
+    readonly won: (name: string) => string;
+    readonly parda: string;
+    readonly resultAria: (baza: number, result: string) => string;
     readonly bubbleAria: string;
     readonly bubble: string;
+  };
+  readonly status: {
+    readonly baza: (baza: number, total: number) => string;
+    readonly reparto: (handNumber: number) => string;
+    readonly mano: (name: string) => string;
+    readonly separator: string;
   };
   readonly hand: {
     readonly title: string;
     readonly count: (count: number) => string;
     readonly hint: string;
+    readonly waiting: string;
+    readonly closed: string;
+    readonly empty: string;
     readonly aria: string;
+    readonly playCard: (card: string) => string;
   };
   readonly actions: {
     readonly label: string;
@@ -95,8 +102,14 @@ export interface ShellContent {
     readonly flor: string;
     readonly truco: string;
     readonly fold: string;
-    readonly play: string;
-    readonly playHint: string;
+    readonly yourTurn: string;
+    readonly yourTurnHint: string;
+    readonly waiting: (name: string) => string;
+    readonly waitingHint: string;
+    readonly handOver: string;
+    readonly handOverHint: string;
+    readonly matchOver: string;
+    readonly matchOverHint: string;
     readonly note: string;
     readonly soon: string;
   };
@@ -107,7 +120,31 @@ export interface ShellContent {
     readonly footer: string;
     readonly stamp: string;
     readonly kinds: Record<LogKind, string>;
-    readonly entries: readonly LogEntryCopy[];
+    readonly deal: (handNumber: number, dealer: string, mano: string, vira: string) => string;
+    readonly play: (name: string, card: string) => string;
+    readonly playYou: (card: string) => string;
+    readonly burn: (name: string) => string;
+    readonly burnYou: string;
+    readonly trickWin: (baza: number, name: string) => string;
+    readonly trickWinYou: (baza: number) => string;
+    readonly trickParda: (baza: number) => string;
+    readonly points: (team: string, points: number) => string;
+    readonly handOver: (team: string, points: number) => string;
+    readonly matchOver: (team: string) => string;
+    readonly turn: (name: string, baza: number) => string;
+  };
+  readonly summary: {
+    readonly eyebrow: string;
+    readonly title: (team: string) => string;
+    readonly matchTitle: (team: string) => string;
+    readonly points: (points: number) => string;
+    readonly score: (nosotros: number, ellos: number) => string;
+    readonly bazasTitle: string;
+    readonly handsTitle: string;
+    readonly baza: (baza: number) => string;
+    readonly parda: string;
+    readonly nextHand: string;
+    readonly rematch: string;
   };
   readonly hints: {
     readonly label: string;

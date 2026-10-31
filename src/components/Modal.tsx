@@ -13,6 +13,7 @@ interface ModalProps {
   readonly closeLabel: string;
   readonly variant?: 'center' | 'drawer';
   readonly panelClassName?: string;
+  readonly dismissible?: boolean;
 }
 
 export function Modal({
@@ -22,6 +23,7 @@ export function Modal({
   closeLabel,
   variant = 'center',
   panelClassName,
+  dismissible = true,
   children,
 }: PropsWithChildren<ModalProps>) {
   const panelRef = useRef<HTMLDivElement>(null);
@@ -57,8 +59,11 @@ export function Modal({
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        event.preventDefault();
-        onCloseRef.current();
+        if (dismissible) {
+          event.preventDefault();
+          onCloseRef.current();
+        }
+
         return;
       }
 
@@ -100,7 +105,7 @@ export function Modal({
       document.body.style.overflow = previousOverflow;
       previousFocusRef.current?.focus();
     };
-  }, [open]);
+  }, [dismissible, open]);
 
   if (!open) {
     return null;
@@ -116,9 +121,11 @@ export function Modal({
         ref={panelRef}
         tabIndex={-1}
       >
-        <button type="button" className="modal__close" onClick={onClose} aria-label={closeLabel}>
-          <CloseIcon className="modal__close-icon" />
-        </button>
+        {dismissible && (
+          <button type="button" className="modal__close" onClick={onClose} aria-label={closeLabel}>
+            <CloseIcon className="modal__close-icon" />
+          </button>
+        )}
         {children}
       </div>
     </div>,

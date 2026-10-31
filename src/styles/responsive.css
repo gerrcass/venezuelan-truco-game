@@ -14,7 +14,11 @@
   }
 
   .seat {
-    width: 176px;
+    width: 188px;
+  }
+
+  .seat__name {
+    font-size: 14px;
   }
 
   .seat__avatar {
@@ -53,11 +57,11 @@
 
 @media (max-width: 980px) {
   .seat {
-    width: 164px;
+    width: 180px;
   }
 
   .seat__name {
-    font-size: 14px;
+    font-size: 13.5px;
   }
 
   .seat__persona {
@@ -194,6 +198,12 @@
     display: flex;
     flex-direction: column;
     gap: 7px;
+  }
+
+  .statusline {
+    gap: 5px;
+    font-size: 7px;
+    letter-spacing: 0.1em;
   }
 
   .scorebar {
@@ -376,9 +386,7 @@
   }
 
   .seat__badge {
-    padding: 1px 3px;
-    font-size: 5.5px;
-    letter-spacing: 0.06em;
+    display: none;
   }
 
   .seat__persona {
@@ -464,13 +472,13 @@
   }
 
   .trick__center {
-    width: 38px;
-    height: 38px;
+    width: 44px;
+    height: 44px;
   }
 
   .trick__center-label {
-    max-width: 30px;
-    font-size: 5.8px;
+    max-width: 36px;
+    font-size: 6.2px;
   }
 
   .trick__center-ring {
@@ -650,6 +658,18 @@
 
   .rules-dialog__title {
     font-size: 29px;
+  }
+
+  .summary__title {
+    font-size: 29px;
+  }
+
+  .summary__hands {
+    gap: 7px;
+  }
+
+  .summary__card-name {
+    font-size: 9px;
   }
 
   .rules-dialog__topics {
