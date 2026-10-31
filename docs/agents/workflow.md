@@ -35,7 +35,7 @@ The spec is issue #1. The tickets are issues #2–#8, connected by native blocki
 | #5 | formula tests; screenshot of envido/flor/prive in the summary |
 | #6 | AI legality/determinism tests; screenshot of a seña and a taunt |
 | #7 | language toggle and rules-modal tests; mobile and desktop screenshots |
-| #8 | Playwright output; live URL; README screenshot |
+| #8 | `npm run e2e` output and the CI E2E job; README screenshot (`assets/truco-mesa.png`, seed `seed-17`); 1440×900 and 360×800 final table evidence; live URL after Pages |
 
 ## Integration
 
