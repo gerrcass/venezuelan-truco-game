@@ -6,6 +6,13 @@ import { CloseIcon } from './icons';
 const FOCUSABLE =
   'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
+/**
+ * Open dialogs in mount order. Only the newest one traps Tab and Escape, so a
+ * rules or settings dialog opened over the hand summary does not fight the
+ * summary for focus.
+ */
+const openModals: HTMLElement[] = [];
+
 interface ModalProps {
   readonly open: boolean;
   readonly onClose: () => void;
@@ -52,6 +59,7 @@ export function Modal({
       document.activeElement instanceof HTMLElement ? document.activeElement : null;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
+    openModals.push(panel);
 
     const focusable = () =>
       Array.from(panel.querySelectorAll<HTMLElement>(FOCUSABLE)).filter(
@@ -63,6 +71,10 @@ export function Modal({
     (preferred ?? focusable()[0] ?? panel).focus();
 
     const handleKeyDown = (event: KeyboardEvent) => {
+      if (openModals[openModals.length - 1] !== panel) {
+        return;
+      }
+
       if (event.key === 'Escape') {
         if (dismissible) {
           event.preventDefault();
@@ -108,6 +120,12 @@ export function Modal({
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
       document.body.style.overflow = previousOverflow;
+      const index = openModals.lastIndexOf(panel);
+
+      if (index >= 0) {
+        openModals.splice(index, 1);
+      }
+
       previousFocusRef.current?.focus();
     };
   }, [dismissible, initialFocus, open]);

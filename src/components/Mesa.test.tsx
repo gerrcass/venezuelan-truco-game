@@ -628,6 +628,12 @@ describe('the hand summary', () => {
     const rules = await screen.findByRole('dialog', { name: 'La escuela de reglas' });
     expect(rules).toBeVisible();
 
+    const initialFocus = document.activeElement;
+    await user.tab();
+
+    expect(rules.contains(document.activeElement)).toBe(true);
+    expect(document.activeElement).not.toBe(initialFocus);
+
     await user.keyboard('{Escape}');
 
     await waitFor(() =>
