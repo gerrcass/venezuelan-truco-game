@@ -26,6 +26,11 @@ describe('the vira pieces', () => {
     readonly pericaRank: Rank;
   }> = [
     { viraRank: 1, pericoRank: 11, pericaRank: 10 },
+    { viraRank: 2, pericoRank: 11, pericaRank: 10 },
+    { viraRank: 3, pericoRank: 11, pericaRank: 10 },
+    { viraRank: 4, pericoRank: 11, pericaRank: 10 },
+    { viraRank: 5, pericoRank: 11, pericaRank: 10 },
+    { viraRank: 6, pericoRank: 11, pericaRank: 10 },
     { viraRank: 7, pericoRank: 11, pericaRank: 10 },
     { viraRank: 12, pericoRank: 11, pericaRank: 10 },
     { viraRank: 10, pericoRank: 11, pericaRank: 12 },
