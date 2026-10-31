@@ -24,6 +24,7 @@ The spec is issue #1. The tickets are issues #2–#8, connected by native blocki
 - Update the ticket with a comment containing the evidence (commands, test output, screenshot path) before closing it.
 - If a rule is ambiguous, the rules document wins. If the rules document is wrong, change it in the same commit and note why.
 - Leave the tree clean: no debug logs, no unused files, no commented-out code.
+- Evidence must come from a **real seeded deal** in the production build. Never rig a state with duplicate cards or impossible hands; a misleading screenshot is worse than no screenshot.
 
 ## Evidence expectations
 

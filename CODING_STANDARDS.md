@@ -13,7 +13,7 @@ These are review rules, not a style essay. The reviewer enforces them; the imple
 
 - Pure functions only. No `Date.now()`, `Math.random()`, DOM, storage or network inside the engine. Randomness comes from the seeded RNG carried in state.
 - Illegal actions are rejected without partially mutating state. `getLegalActions` is the single source of truth for UI and AI.
-- Hidden information crosses only through `viewFor(seat)`. A component must never receive another seat's hand.
+- Hidden information crosses only through `viewFor(seat)`. A component must never receive another seat's hand. `viewFor` is a security boundary, not a convenience: it must never carry the shuffle seed, opponent hands, or unrevealed flor/envido values. Every new view field gets a leak test.
 - Scoring lives in named, testable functions (`scoreEnvido`, `scoreFlor`, `cardPower`), not inline arithmetic in the reducer.
 - Every scoring edge case in `docs/rules/TRUCO-VENEZOLANO.md` has a test that names the rule.
 
