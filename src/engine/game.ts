@@ -32,7 +32,7 @@ export interface CreateGameOptions {
   readonly dealer?: Seat;
 }
 
-const BAZAS_PER_HAND = 3;
+export const BAZAS_PER_HAND = 3;
 const CARDS_PER_HAND = 3;
 
 type DistributiveOmit<T, K extends PropertyKey> = T extends unknown ? Omit<T, K> : never;
@@ -397,7 +397,7 @@ function rematch(state: GameState, seed?: string | number): GameState {
   }
 
   return beginHand({
-    seed: hashSeed(seed ?? state.rngState),
+    seed: hashSeed(seed ?? state.rngState + 1),
     target: state.target,
     dealer: nextSeat(state.dealer),
     handNumber: 1,

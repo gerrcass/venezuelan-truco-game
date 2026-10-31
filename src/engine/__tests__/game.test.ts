@@ -500,6 +500,12 @@ describe('the hand lifecycle', () => {
     expect(fresh.handNumber).toBe(1);
     expect(fresh.dealer).toBe(nextSeat(state.dealer));
     expect(fresh.result).toBeNull();
+    expect(fresh.dealtHands).not.toEqual(state.dealtHands);
+
+    const automatic = reduce(state, { type: 'rematch' });
+
+    expect(automatic.phase).toBe('playing');
+    expect(automatic.dealtHands).not.toEqual(state.dealtHands);
 
     for (const seat of SEATS) {
       expect(fresh.hands[seat]).toHaveLength(3);
