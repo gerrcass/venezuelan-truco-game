@@ -192,6 +192,8 @@
   .shell {
     display: block;
     padding: 8px 8px 10px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
   }
 
   .stage {
@@ -495,6 +497,7 @@
 
   .actions__group {
     flex: 1 1 auto;
+    flex-wrap: wrap;
     gap: 4px;
     padding: 0;
   }
@@ -697,6 +700,51 @@
 
   .rules-dialog .button--primary {
     width: 100%;
+  }
+
+  .lances {
+    gap: 4px;
+  }
+
+  .lance {
+    padding: 2px 6px;
+    font-size: 7px;
+  }
+
+  .lance__who {
+    font-size: 6px;
+  }
+
+  .hand__burn {
+    margin-top: 3px;
+    padding: 3px 6px;
+    font-size: 7px;
+  }
+
+  .trick__burned-label {
+    max-width: 48px;
+    font-size: 5.5px;
+  }
+
+  .summary__statement th,
+  .summary__statement td {
+    padding: 4px 5px;
+  }
+
+  .summary__statement-source {
+    font-size: 12px;
+  }
+
+  .summary__statement td {
+    font-size: 9px;
+  }
+
+  .summary__statement-note {
+    font-size: 7px;
+  }
+
+  .summary__statement-points {
+    font-size: 13px !important;
   }
 }
 

@@ -8,9 +8,11 @@ import { BAZAS_PER_HAND } from '../engine/game';
 import type { GameLogEntry, TrucoCallLevel } from '../engine/types';
 import { useGame } from '../game/game-context';
 import { ActionBar } from './ActionBar';
+import { EnvidoDialog } from './EnvidoDialog';
 import { HandDock } from './HandDock';
 import { HandSummary } from './HandSummary';
 import { HintStrip } from './HintStrip';
+import { Lances } from './Lances';
 import { LogRail } from './LogRail';
 import { Modal } from './Modal';
 import { RulesDialog } from './RulesDialog';
@@ -48,13 +50,43 @@ function latestTalk(
     const entry = entries[index];
 
     if (entry.kind === 'call') {
-      return {
-        seat: entry.seat,
-        quote: content.truco.speech.call(content.truco.names[entry.level]),
-      };
+      if (entry.call === 'truco') {
+        return {
+          seat: entry.seat,
+          quote: content.truco.speech.call(content.truco.names[entry.level]),
+        };
+      }
+
+      if (entry.call === 'envido') {
+        return {
+          seat: entry.seat,
+          quote: content.envido.speech.call(content.envido.names[entry.level]),
+        };
+      }
+
+      if (entry.call === 'flor') {
+        return { seat: entry.seat, quote: content.flor.speech.call(entry.flor) };
+      }
+
+      return { seat: entry.seat, quote: content.prive.speech.call };
     }
 
     if (entry.kind === 'respond') {
+      if (entry.call === 'envido') {
+        if (entry.response === 'accept') {
+          return { seat: entry.seat, quote: content.envido.speech.accept };
+        }
+
+        if (entry.response === 'decline') {
+          return { seat: entry.seat, quote: content.envido.speech.decline };
+        }
+
+        return {
+          seat: entry.seat,
+          quote: content.envido.speech.raise(content.envido.raises[(entry.level + 1) as 2 | 3 | 4]),
+        };
+      }
+
       if (entry.response === 'accept') {
         return { seat: entry.seat, quote: content.truco.speech.accept };
       }
@@ -78,18 +110,35 @@ export function Mesa() {
   const [rulesOpen, setRulesOpen] = useState(false);
   const [logOpen, setLogOpen] = useState(false);
   const [soundOn, setSoundOn] = useState(readSoundPreference);
+  const [burnArmed, setBurnArmed] = useState(false);
 
   const openRules = useCallback(() => setRulesOpen(true), []);
   const closeRules = useCallback(() => setRulesOpen(false), []);
   const openLog = useCallback(() => setLogOpen(true), []);
   const closeLog = useCallback(() => setLogOpen(false), []);
   const toggleSound = useCallback(() => setSoundOn((current) => !current), []);
+  const toggleBurn = useCallback(() => setBurnArmed((current) => !current), []);
   const playCard = useCallback(
-    (key: string) => dispatch({ type: 'playCard', seat: view.seat, cardKey: key }),
-    [dispatch, view.seat],
+    (key: string) => {
+      dispatch({ type: 'playCard', seat: view.seat, cardKey: key, burned: burnArmed });
+      setBurnArmed(false);
+    },
+    [burnArmed, dispatch, view.seat],
   );
   const callTruco = useCallback(
     () => dispatch({ type: 'callTruco', seat: view.seat }),
+    [dispatch, view.seat],
+  );
+  const callEnvido = useCallback(
+    () => dispatch({ type: 'callEnvido', seat: view.seat }),
+    [dispatch, view.seat],
+  );
+  const callFlor = useCallback(
+    () => dispatch({ type: 'callFlor', seat: view.seat }),
+    [dispatch, view.seat],
+  );
+  const callPrive = useCallback(
+    () => dispatch({ type: 'callPrive', seat: view.seat }),
     [dispatch, view.seat],
   );
   const fold = useCallback(
@@ -101,6 +150,15 @@ export function Mesa() {
       dispatch({ type: 'respondTruco', seat: view.seat, response }),
     [dispatch, view.seat],
   );
+  const respondEnvido = useCallback(
+    (response: 'accept' | 'decline' | 'raise') =>
+      dispatch({ type: 'respondEnvido', seat: view.seat, response }),
+    [dispatch, view.seat],
+  );
+
+  useEffect(() => {
+    setBurnArmed(false);
+  }, [view.phase, view.turn, view.trickIndex, view.pending]);
 
   useEffect(() => {
     try {
@@ -135,6 +193,16 @@ export function Mesa() {
         return;
       }
 
+      if (event.key === 'b' || event.key === 'B') {
+        if (view.legal.playableCardKeys.length === 0) {
+          return;
+        }
+
+        event.preventDefault();
+        setBurnArmed((current) => !current);
+        return;
+      }
+
       if (view.turn !== view.seat) {
         return;
       }
@@ -158,13 +226,14 @@ export function Mesa() {
       }
 
       event.preventDefault();
-      dispatch({ type: 'playCard', seat: view.seat, cardKey: key });
+      dispatch({ type: 'playCard', seat: view.seat, cardKey: key, burned: burnArmed });
+      setBurnArmed(false);
     };
 
     window.addEventListener('keydown', handleKeyDown);
 
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [dispatch, logOpen, rulesOpen, view]);
+  }, [burnArmed, dispatch, logOpen, rulesOpen, view]);
 
   useEffect(() => {
     if (view.phase !== 'playing') {
@@ -175,10 +244,15 @@ export function Mesa() {
 
   const manoName = content.personas[PERSONA_BY_SEAT[view.mano]].name;
   const pendingTruco = view.pending?.kind === 'truco' ? view.pending : null;
-  const mustRespond =
+  const pendingEnvido = view.pending?.kind === 'envido' ? view.pending : null;
+  const mustRespondTruco =
     view.phase === 'playing' &&
     pendingTruco !== null &&
     pendingTruco.respondingTeam === TEAM_BY_SEAT[view.seat];
+  const mustRespondEnvido =
+    view.phase === 'playing' &&
+    pendingEnvido !== null &&
+    pendingEnvido.respondingTeam === TEAM_BY_SEAT[view.seat];
   const talk = latestTalk(view.log, content);
 
   return (
@@ -202,6 +276,8 @@ export function Mesa() {
               <span>{content.status.mano(manoName)}</span>
             </p>
 
+            <Lances view={view} />
+
             <section className="table" aria-labelledby="table-heading">
               <h2 className="sr-only" id="table-heading">
                 {content.table.label}
@@ -222,8 +298,20 @@ export function Mesa() {
               </div>
             </section>
 
-            <ActionBar view={view} onCallTruco={callTruco} onFold={fold} />
-            <HandDock view={view} onPlay={playCard} />
+            <ActionBar
+              view={view}
+              onCallTruco={callTruco}
+              onCallEnvido={callEnvido}
+              onCallFlor={callFlor}
+              onCallPrive={callPrive}
+              onFold={fold}
+            />
+            <HandDock
+              view={view}
+              burnArmed={burnArmed}
+              onToggleBurn={toggleBurn}
+              onPlay={playCard}
+            />
           </div>
 
           <aside className="rail">
@@ -249,8 +337,12 @@ export function Mesa() {
         </Modal>
       )}
 
-      {mustRespond && pendingTruco && (
+      {mustRespondTruco && pendingTruco && (
         <TrucoDialog view={view} pending={pendingTruco} onRespond={respondTruco} />
+      )}
+
+      {mustRespondEnvido && pendingEnvido && (
+        <EnvidoDialog view={view} pending={pendingEnvido} onRespond={respondEnvido} />
       )}
 
       <HandSummary

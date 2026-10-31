@@ -99,15 +99,17 @@ A team's envido is the **better tanto of its two players**. Maximum is 37 (peric
 | **Quiero y 5 piedras más** | 7 | caller takes 4 |
 | **Envido la falta** | the leader's remaining distance to 24 | caller takes 7 |
 
-The team that accepts may raise; the original caller then answers. Once accepted, the envido is compared **at the end of the reparto**, after the last baza or after a fold/decline. The winner takes the accepted stake; ties go to the mano's team.
+The team that accepts may raise; the original caller then answers. Once accepted, the envido is compared **at the end of the reparto**, after the last baza or after a fold/decline. The winner takes the accepted stake; ties go to the mano's team. **La falta** is fixed when it is accepted: the leader's distance to 24 at that moment, never less than one piedra. Later points do not change it.
+
+A **declined** envido is recorded but not paid immediately. It settles at the end of the reparto, so a flor declared before then can still cancel it (see §5). Declining pays the caller team 1, 2, 4 or 7 piedras for levels 1–4.
 
 ### Flor cancels envido
 
-If any player declares **flor**, the envido is cancelled. No envido points are paid. If both teams have flor, see §5.
+If any player declares **flor** before the envido settles, the envido is cancelled. Because flor is declared on your own turn, a pending envido is answered first; the flor then cancels the accepted or declined settlement before it is paid. No envido points are paid. If both teams have flor, see §5.
 
 ### Prive
 
-When a team is **one piedra from winning** (23), either team may call **prive** before the first card, if no envido has been called. Both teams' tantos are compared: the higher takes **1 piedra**; ties go to the mano's team. Prive replaces envido for that reparto. It is awarded immediately and can end the partida.
+When a team is **one piedra from winning** (23), **that team** may call **prive** before the first card, if no envido or flor has been called. Both teams' tantos are compared: the higher takes **1 piedra**; ties go to the mano's team. The other team's tanto is the answer. Prive replaces envido for that reparto. It is awarded immediately and can end the partida; if it reaches 24, the reparto ends there and no truco payout is made.
 
 ## 5. Flor
 
@@ -123,7 +125,7 @@ A hand has **flor** when:
 
 This mesa plays **flor por derecho**. You must declare flor **before playing your first card** of the reparto. If you play a card first, the flor is lost. The declaration can be made on your turn, and it cancels envido immediately.
 
-If both teams declare flor, the higher flor wins; the winner's team takes 3 (or 5 for reservada), the loser takes nothing. A numeric tie goes to the mano's team. **This mesa does not play the optional flor-envido betting subgame**; the comparison is automatic. If only one team declares, it simply takes its flor points, and the other team's undeclared flor is forfeited.
+If both teams declare flor, the best flor of each team is compared; a team only scores its flor once. **Flor reservada** beats every numeric flor; otherwise the higher numeric wins; a numeric tie goes to the mano's team. The winner's team takes 3 (or 5 for reservada), the loser takes nothing. **This mesa does not play the optional flor-envido betting subgame**; the comparison is automatic. If only one team declares, it simply takes its flor points, and the other team's undeclared flor is forfeited.
 
 Flor values:
 
@@ -131,7 +133,7 @@ Flor values:
 - perico/perica + two of a palo: **30/29 + the two face values**
 - flor reservada: **5 piedras**, not a numeric tanto
 
-A flor is awarded as soon as it is declared. If it reaches 24, the partida ends immediately.
+**When the flor settles (house ruling).** A declaration is announced immediately and shows a pending **+3** (or **+5**) on the table, but the points settle **when the first baza closes**: after the first trick is recorded and before the second baza begins. If the reparto ends earlier — a fold, a declined truco, or a match — the flor settles in that final accounting. Settling at the first baza close gives both teams the whole first baza to declare, so the comparison is never decided by play order. A flor that reaches 24 ends the partida immediately, and the truco payout is not made.
 
 ## 6. Truco
 
@@ -151,16 +153,16 @@ The truco is the bet on the reparto itself. It can be called on your turn, befor
 
 ## 7. Scoring order
 
-At the end of a reparto:
+At the end of a reparto, every point is itemized in the hand summary:
 
-1. Flor points are already paid (immediate).
-2. Prive points are already paid (immediate).
-3. Compare any accepted envido and pay it.
-4. Check for 24. If reached, the partida ends.
+1. Flor settles when the first baza closes, or at hand end if the reparto ends earlier. If it reaches 24, the partida ends immediately; nothing later is paid.
+2. Prive is paid immediately when it is called. If it reaches 24, the partida ends immediately.
+3. Compare any accepted envido, or pay a declined one, and settle it. If it reaches 24, the partida ends immediately; the truco payout is not made.
+4. Check for 24.
 5. Pay the truco stake (or 1 if no truco) to the reparto winner, or the decline/fold value.
 6. Check for 24 again.
 
-A team wins the moment it reaches **24 piedras**. There is no win-by-two.
+A team wins the moment it reaches **24 piedras**. There is no win-by-two. The result explains which lance closed the reparto: bazas, a decline, a fold, envido, flor or prive.
 
 ## 8. Señas
 
@@ -195,11 +197,14 @@ These are flavor in this game, not mechanics:
 | --- | --- | --- |
 | Match target | 12 or 24 | **24** |
 | Flor reservada | 5 (Wikipedia) or 3 (some tables) | **5** |
-| Both teams have flor | optional flor-envido bets | **automatic comparison**, higher flor takes 3/5 |
+| Both teams have flor | optional flor-envido bets | **automatic comparison** of each team's best flor; higher takes 3/5; numeric tie to mano |
 | Flor declaration | optional or flor por derecho | **flor por derecho**, before your first card |
+| Flor settlement | immediate at the declaration | **when the first baza closes** (or at hand end if earlier), so both teams can declare |
 | Envido as a response to truco | allowed at some tables | **only on your own turn before the first card** |
-| Prive | some tables | **implemented**, one piedra at 23, replaces envido |
-| Quemar | common | **implemented** |
+| Declined envido | paid at once or at hand end | **settled at hand end**; a flor before then cancels it |
+| Envido la falta | varies | **fixed at acceptance**: the leader's distance to 24 then |
+| Prive | some tables, either team | **the team at 23 calls**, the other team's tanto answers; 1 piedra; replaces envido |
+| Quemar | common | **implemented**; a bot burns at most once per reparto |
 | A ley / barajo | table calls | **flavor only** |
 | Parda leader | varies | **the player who led the tied baza leads next** |
 | Envido revealed | loser may say "son buenas" | **both tantos shown at resolution** for teaching |

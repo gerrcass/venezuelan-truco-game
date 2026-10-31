@@ -112,6 +112,115 @@ function playBazaHand(state: GameState): GameState {
   }, state);
 }
 
+const ENVIDO_HANDS: Record<0 | 1 | 2 | 3, readonly Card[]> = {
+  0: [card(7, 'oro'), card(6, 'oro'), card(4, 'copa')],
+  1: [card(3, 'copa'), card(2, 'copa'), card(5, 'espada')],
+  2: [card(5, 'oro'), card(4, 'oro'), card(6, 'espada')],
+  3: [card(7, 'espada'), card(3, 'oro'), card(2, 'oro')],
+};
+
+const FLOR_HANDS: Record<0 | 1 | 2 | 3, readonly Card[]> = {
+  0: [card(7, 'copa'), card(6, 'copa'), card(5, 'copa')],
+  1: [card(3, 'oro'), card(4, 'oro'), card(5, 'espada')],
+  2: [card(2, 'basto'), card(3, 'basto'), card(4, 'basto')],
+  3: [card(12, 'oro'), card(11, 'oro'), card(10, 'oro')],
+};
+
+const RESERVADA_HANDS: Record<0 | 1 | 2 | 3, readonly Card[]> = {
+  0: [card(7, 'copa'), card(6, 'copa'), card(5, 'copa')],
+  1: [card(11, 'basto'), card(10, 'basto'), card(3, 'oro')],
+  2: [card(2, 'basto'), card(4, 'basto'), card(5, 'basto')],
+  3: [card(12, 'oro'), card(11, 'oro'), card(10, 'oro')],
+};
+
+const PRIVE_HANDS: Record<0 | 1 | 2 | 3, readonly Card[]> = {
+  0: [card(2, 'oro'), card(3, 'oro'), card(5, 'basto')],
+  1: [card(7, 'copa'), card(6, 'copa'), card(2, 'espada')],
+  2: [card(5, 'espada'), card(6, 'espada'), card(4, 'basto')],
+  3: [card(5, 'copa'), card(4, 'copa'), card(3, 'espada')],
+};
+
+const CLEAN_ENVIDO: GameState['envido'] = {
+  status: 'none',
+  level: null,
+  stake: null,
+  callerTeam: null,
+  acceptedByTeam: null,
+  tantos: null,
+};
+
+const CLEAN_FLOR: GameState['flor'] = {
+  declarations: [],
+  settled: false,
+  winnerTeam: null,
+  winnerSeat: null,
+  points: 0,
+};
+
+const CLEAN_PRIVE: GameState['prive'] = {
+  called: false,
+  callerTeam: null,
+  winnerTeam: null,
+  points: 0,
+  tantos: null,
+};
+
+function rigLanceGame(
+  hands: Record<0 | 1 | 2 | 3, readonly Card[]>,
+  overrides: Partial<GameState> = {},
+): GameState {
+  return rigGame({
+    vira: VIRA_REY_BASTO,
+    hands,
+    dealtHands: hands,
+    envido: CLEAN_ENVIDO,
+    flor: CLEAN_FLOR,
+    prive: CLEAN_PRIVE,
+    settlements: [],
+    ...overrides,
+  });
+}
+
+function playFirstBazaUi(state: GameState): GameState {
+  let current = state;
+  const baza = state.tricks.length;
+  let guard = 0;
+
+  while (current.phase === 'playing' && current.tricks.length === baza && guard < 4) {
+    guard += 1;
+    const seat = current.turn;
+    const played = current.hands[seat][0];
+    const next = reduce(current, { type: 'playCard', seat, cardKey: cardKey(played) });
+    expect(next).not.toBe(current);
+    current = next;
+  }
+
+  return current;
+}
+
+function playOutUi(state: GameState): GameState {
+  let current = state;
+  let guard = 0;
+
+  while (current.phase === 'playing' && guard < 40) {
+    guard += 1;
+    const seat = actingSeat(current);
+    const played = current.hands[seat][0];
+    const next = reduce(current, { type: 'playCard', seat, cardKey: cardKey(played) });
+    expect(next).not.toBe(current);
+    current = next;
+  }
+
+  return current;
+}
+
+function pendingEnvido(): GameState {
+  const base = rigLanceGame(ENVIDO_HANDS, { scores: { nosotros: 5, ellos: 18 } });
+  const ours = reduce(base, { type: 'callEnvido', seat: 0 });
+
+  return reduce(ours, { type: 'respondEnvido', seat: 1, response: 'raise' });
+}
+
 function pendingRetruco(): GameState {
   return rigGame({
     turn: 1,
@@ -260,7 +369,7 @@ describe('the truco action bar', () => {
   it('does not offer a call when the other team accepted the level', () => {
     renderTableState(rigGame({ truco: { level: 1, acceptedByTeam: 'ellos' } }));
 
-    expect(screen.queryByRole('button', { name: /^Cantar / })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Cantar Retruco' })).not.toBeInTheDocument();
 
     const hand = screen.getByRole('region', { name: 'Tu mano' });
     expect(within(hand).getAllByRole('button', { name: /^Jugar / })).toHaveLength(3);
@@ -377,9 +486,13 @@ describe('the hand summary', () => {
     const finished = playToHandOver('resumen-12');
     const winner = finished.result?.winnerTeam ?? 'nosotros';
     const winnerName = winner === 'nosotros' ? 'Nosotros' : 'Ellos';
-    const points = finished.result?.points ?? 1;
+    const total = finished.result?.totalPoints ?? 1;
     const pointsLabel =
-      points === 'match' ? 'La partida' : points === 1 ? '1 piedra' : `${points} piedras`;
+      finished.result?.points === 'match'
+        ? 'La partida'
+        : total === 1
+          ? '1 piedra'
+          : `${total} piedras`;
 
     renderTableState(finished);
 
@@ -451,5 +564,270 @@ describe('the hand summary', () => {
 
     const hand = screen.getByRole('region', { name: 'Tu mano' });
     expect(within(hand).getAllByRole('button', { name: /^Jugar / })).toHaveLength(3);
+  });
+});
+
+describe('the envido dialog', () => {
+  it('shows the caller, the call and the stake, and traps focus', async () => {
+    const user = userEvent.setup();
+    renderTableState(pendingEnvido());
+
+    const dialog = screen.getByRole('dialog', { name: 'El Catire cantó Envido' });
+    const accept = within(dialog).getByRole('button', { name: 'Querer el Envido' });
+    const decline = within(dialog).getByRole('button', { name: 'No querer el Envido' });
+    const raise = within(dialog).getByRole('button', { name: 'Quiero y 5 piedras más' });
+
+    expect(within(dialog).getByText('En juego: 4 piedras.')).toBeVisible();
+    expect(
+      within(dialog).getByText('Si no quieres, los cantores se llevan 2 piedras.'),
+    ).toBeVisible();
+    expect(accept).toHaveFocus();
+
+    await user.tab();
+    expect(decline).toHaveFocus();
+
+    await user.tab();
+    expect(raise).toHaveFocus();
+
+    await user.tab();
+    expect(accept).toHaveFocus();
+  });
+
+  it('accepts the envido, closes the dialog and leaves the turn on the table', async () => {
+    const user = userEvent.setup();
+    renderTableState(pendingEnvido());
+
+    const dialog = screen.getByRole('dialog', { name: 'El Catire cantó Envido' });
+    await user.click(within(dialog).getByRole('button', { name: 'Querer el Envido' }));
+
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    expect(screen.getByText('Envido querido · 4 piedras')).toBeVisible();
+    expect(screen.getByText('Quiero · Envido.')).toBeVisible();
+    expect(screen.getByText('Tu turno')).toBeVisible();
+  });
+
+  it('declines the envido and keeps the reparto alive', async () => {
+    const user = userEvent.setup();
+    renderTableState(pendingEnvido());
+
+    const dialog = screen.getByRole('dialog', { name: 'El Catire cantó Envido' });
+    await user.click(within(dialog).getByRole('button', { name: 'No querer el Envido' }));
+
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    expect(screen.getByText('Envido no querido · 2 para los cantores')).toBeVisible();
+    expect(screen.getByText('No quiero · Envido.')).toBeVisible();
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
+  it('raises the envido and leaves the rivals to answer', async () => {
+    const user = userEvent.setup();
+    renderTableState(pendingEnvido());
+
+    const dialog = screen.getByRole('dialog', { name: 'El Catire cantó Envido' });
+    await user.click(within(dialog).getByRole('button', { name: 'Quiero y 5 piedras más' }));
+
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    expect(screen.getByText('Los rivales están decidiendo…')).toBeVisible();
+    expect(screen.getByText('Quiero y 5 piedras más · Envido.')).toBeVisible();
+  });
+
+  it('speaks the envido dialog in English', () => {
+    renderTableStateInEnglish(pendingEnvido());
+
+    const dialog = screen.getByRole('dialog', { name: 'El Catire called Envido' });
+
+    expect(within(dialog).getByText('At stake: 4 stones.')).toBeVisible();
+    expect(within(dialog).getByText('Declining pays the callers 2 stones.')).toBeVisible();
+    expect(within(dialog).getByRole('button', { name: 'Accept the Envido' })).toBeVisible();
+    expect(within(dialog).getByRole('button', { name: 'Decline the Envido' })).toBeVisible();
+    expect(within(dialog).getByRole('button', { name: 'Quiero y 5 piedras más' })).toBeVisible();
+  });
+});
+
+describe('the flor and prive calls', () => {
+  it('declares a flor with a bubble, a log line and a pending chip', async () => {
+    const user = userEvent.setup();
+    renderTableState(rigLanceGame(FLOR_HANDS));
+
+    const call = screen.getByRole('button', { name: 'Cantar flor' });
+    await user.click(call);
+
+    expect(screen.queryByRole('button', { name: 'Cantar flor' })).not.toBeInTheDocument();
+    expect(screen.getByText('¡Flor!')).toBeVisible();
+    expect(screen.getByText('Cantaste flor.')).toBeVisible();
+    expect(screen.getByText('Flor +3 al cerrar la primera baza')).toBeVisible();
+    expect(screen.getAllByRole('img', { name: '0 de 24 piedras' })).toHaveLength(2);
+  });
+
+  it('calls prive at 23, pays immediately and closes envido', async () => {
+    const user = userEvent.setup();
+    renderTableState(rigLanceGame(PRIVE_HANDS, { scores: { nosotros: 23, ellos: 20 } }));
+
+    const call = screen.getByRole('button', { name: 'Cantar prive' });
+    expect(screen.getByRole('button', { name: 'Cantar envido' })).toBeVisible();
+
+    await user.click(call);
+
+    expect(screen.queryByRole('button', { name: 'Cantar prive' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Cantar envido' })).not.toBeInTheDocument();
+    expect(screen.getByText('Prive +1 · tantos 31–33')).toBeVisible();
+    expect(screen.getByText('Cantaste prive.')).toBeVisible();
+    expect(screen.getByRole('img', { name: '21 de 24 piedras' })).toBeVisible();
+    expect(screen.getByRole('region', { name: 'Tu mano' })).toBeVisible();
+  });
+});
+
+describe('quemar in the interface', () => {
+  it('arms the toggle, plays the next card face down and resets', async () => {
+    const user = userEvent.setup();
+    renderMesa('quemar-toggle');
+
+    const hand = screen.getByRole('region', { name: 'Tu mano' });
+    const toggle = screen.getByRole('button', {
+      name: 'Quemar la próxima carta (jugar boca abajo)',
+    });
+
+    expect(toggle).toHaveAttribute('aria-pressed', 'false');
+
+    await user.click(toggle);
+    expect(toggle).toHaveAttribute('aria-pressed', 'true');
+    expect(toggle).toHaveTextContent('Boca abajo');
+
+    await user.click(within(hand).getAllByRole('button', { name: /^Jugar / })[0]);
+
+    const trick = screen.getByRole('group', { name: 'Baza 1 en curso' });
+    expect(within(trick).getByRole('img', { name: 'Carta quemada' })).toBeVisible();
+    expect(within(trick).getByText('Carta boca abajo')).toBeVisible();
+    expect(screen.getByText('Quemas una carta boca abajo.')).toBeVisible();
+    expect(toggle).toHaveAttribute('aria-pressed', 'false');
+  });
+
+  it('arms the toggle with B and plays with 1', async () => {
+    const user = userEvent.setup();
+    renderMesa('quemar-teclado');
+
+    const toggle = screen.getByRole('button', {
+      name: 'Quemar la próxima carta (jugar boca abajo)',
+    });
+
+    await user.keyboard('b');
+    expect(toggle).toHaveAttribute('aria-pressed', 'true');
+
+    await user.keyboard('1');
+
+    const trick = screen.getByRole('group', { name: 'Baza 1 en curso' });
+    expect(within(trick).getByRole('img', { name: 'Carta quemada' })).toBeVisible();
+    expect(toggle).toHaveAttribute('aria-pressed', 'false');
+  });
+
+  it('reveals the burned card in the summary', () => {
+    const state = rigLanceGame(ENVIDO_HANDS);
+    const afterBurn = reduce(state, {
+      type: 'playCard',
+      seat: 0,
+      cardKey: cardKey(ENVIDO_HANDS[0][0]),
+      burned: true,
+    });
+    const finished = playOutUi(afterBurn);
+
+    expect(finished.phase).toBe('handOver');
+    renderTableState(finished);
+
+    const dialog = screen.getByRole('dialog');
+    expect(within(dialog).getByText('quemada')).toBeVisible();
+    expect(within(dialog).getAllByText('Las manos sobre la mesa').length).toBeGreaterThan(0);
+  });
+});
+
+describe('the itemized summary', () => {
+  function florAndTrucoHand(): GameState {
+    const state = rigLanceGame(FLOR_HANDS, {
+      truco: { level: 1, acceptedByTeam: 'nosotros' },
+    });
+    const declared = reduce(state, { type: 'callFlor', seat: 0 });
+    const afterFirst = playFirstBazaUi(declared);
+
+    return playOutUi(afterFirst);
+  }
+
+  function envidoAndTrucoHand(): GameState {
+    const state = rigLanceGame(ENVIDO_HANDS, {
+      truco: { level: 1, acceptedByTeam: 'nosotros' },
+    });
+    const opened = reduce(state, { type: 'callEnvido', seat: 0 });
+    const accepted = reduce(opened, { type: 'respondEnvido', seat: 1, response: 'accept' });
+
+    return playOutUi(accepted);
+  }
+
+  it('lists flor and truco with a total in Spanish', () => {
+    const finished = florAndTrucoHand();
+
+    expect(finished.phase).toBe('handOver');
+    renderTableState(finished);
+
+    const dialog = screen.getByRole('dialog');
+
+    expect(within(dialog).getByText('Cada piedra, con su cuenta')).toBeVisible();
+    expect(within(dialog).getByText('Fuente')).toBeVisible();
+    expect(within(dialog).getByText('Total del reparto')).toBeVisible();
+    expect(within(dialog).getAllByText('+3')).toHaveLength(2);
+    expect(within(dialog).getByText('+6')).toBeVisible();
+    expect(within(dialog).getByText('tantos 38–0')).toBeVisible();
+    expect(within(dialog).getByText('Las bazas')).toBeVisible();
+  });
+
+  it('lists envido and truco with the tantos in English', () => {
+    const finished = envidoAndTrucoHand();
+
+    expect(finished.phase).toBe('handOver');
+    renderTableStateInEnglish(finished);
+
+    const dialog = screen.getByRole('dialog');
+
+    expect(within(dialog).getByText('Every stone, itemized')).toBeVisible();
+    expect(within(dialog).getByText('Source')).toBeVisible();
+    expect(within(dialog).getByText('Total of the deal')).toBeVisible();
+    expect(within(dialog).getByText(/tantos 33–25/)).toBeVisible();
+    expect(within(dialog).getByText('+2')).toBeVisible();
+    expect(within(dialog).getAllByText('+3')).toHaveLength(1);
+    expect(within(dialog).getByText('+5')).toBeVisible();
+  });
+
+  it('shows a flor ended partida and offers a rematch', () => {
+    const state = rigLanceGame(FLOR_HANDS, { scores: { nosotros: 22, ellos: 10 } });
+    const declared = reduce(state, { type: 'callFlor', seat: 0 });
+    const finished = playFirstBazaUi(declared);
+
+    expect(finished.phase).toBe('matchOver');
+    renderTableState(finished);
+
+    const dialog = screen.getByRole('dialog', { name: 'Ganó la partida Nosotros' });
+
+    expect(within(dialog).getByText('Partida cerrada')).toBeVisible();
+    expect(within(dialog).getByText('La flor')).toBeVisible();
+    expect(within(dialog).getAllByText('+3').length).toBeGreaterThan(0);
+    expect(within(dialog).getByRole('button', { name: 'Otra partida' })).toBeVisible();
+  });
+
+  it('names the reservada in the flor comparison instead of a numeric weight', () => {
+    const state = rigLanceGame(RESERVADA_HANDS);
+    const ours = reduce(state, { type: 'callFlor', seat: 0 });
+    const afterOurCard = reduce(ours, {
+      type: 'playCard',
+      seat: 0,
+      cardKey: cardKey(RESERVADA_HANDS[0][0]),
+    });
+    const theirs = reduce(afterOurCard, { type: 'callFlor', seat: 1 });
+    const afterFirst = playFirstBazaUi(theirs);
+    const finished = playOutUi(afterFirst);
+
+    expect(finished.phase).toBe('handOver');
+    renderTableState(finished);
+
+    const dialog = screen.getByRole('dialog');
+
+    expect(within(dialog).getByText('Flor reservada')).toBeVisible();
+    expect(within(dialog).getByText('tantos 38–reservada')).toBeVisible();
   });
 });

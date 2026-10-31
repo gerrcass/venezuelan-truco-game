@@ -216,8 +216,7 @@ describe('answering the truco', () => {
       expect(declined.scores).toEqual({ nosotros: pays, ellos: 0 });
       expect(declined.log.at(-2)).toMatchObject({
         kind: 'points',
-        reason: 'decline',
-        points: pays,
+        settlement: { kind: 'truco', team: 'nosotros', points: pays, detail: 'declined' },
       });
     },
   );
@@ -557,6 +556,14 @@ describe('a partida to 24', () => {
         expect(view.legal.playableCardKeys).toContain(action.cardKey);
       } else if (action.type === 'callTruco') {
         expect(view.legal.canCallTruco).toBe(true);
+      } else if (action.type === 'callEnvido') {
+        expect(view.legal.canCallEnvido).toBe(true);
+      } else if (action.type === 'callFlor') {
+        expect(view.legal.canCallFlor).toBe(true);
+      } else if (action.type === 'callPrive') {
+        expect(view.legal.canCallPrive).toBe(true);
+      } else if (action.type === 'respondEnvido') {
+        expect(view.legal.canRespondEnvido).toBe(true);
       } else {
         expect(view.legal.canRespondTruco).toBe(true);
       }

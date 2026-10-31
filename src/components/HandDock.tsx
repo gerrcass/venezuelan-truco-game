@@ -7,15 +7,18 @@ import { PlayingCard } from './PlayingCard';
 
 interface HandDockProps {
   readonly view: GameView;
+  readonly burnArmed: boolean;
+  readonly onToggleBurn: () => void;
   readonly onPlay: (cardKey: string) => void;
 }
 
-export function HandDock({ view, onPlay }: HandDockProps) {
+export function HandDock({ view, burnArmed, onToggleBurn, onPlay }: HandDockProps) {
   const { content } = useLocale();
   const playable = new Set(view.legal.playableCardKeys);
   const canPlay = view.phase === 'playing' && view.turn === view.seat && view.pending === null;
-  const hint =
-    view.pending !== null
+  const hint = burnArmed
+    ? content.hand.burnHint
+    : view.pending !== null
       ? content.hand.pending
       : canPlay
         ? content.hand.hint
@@ -30,6 +33,17 @@ export function HandDock({ view, onPlay }: HandDockProps) {
           {content.hand.title}
         </h2>
         <span className="hand__count">{content.hand.count(view.hand.length)}</span>
+        <button
+          type="button"
+          className={`hand__burn${burnArmed ? ' hand__burn--armed' : ''}`}
+          aria-pressed={burnArmed}
+          aria-label={content.hand.burnAria}
+          disabled={!canPlay}
+          onClick={onToggleBurn}
+        >
+          <span className="hand__burn-mark" aria-hidden="true" />
+          {burnArmed ? content.hand.burnArmed : content.hand.burn}
+        </button>
       </div>
 
       {view.hand.length > 0 ? (

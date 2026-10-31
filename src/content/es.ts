@@ -84,12 +84,17 @@ export const es: ShellContent = {
     empty: 'Sin cartas en la mano.',
     aria: 'Tu mano',
     playCard: (card) => `Jugar ${card}`,
+    burn: 'Jugar boca abajo',
+    burnArmed: 'Boca abajo',
+    burnAria: 'Quemar la próxima carta (jugar boca abajo)',
+    burnHint: 'Armado: la próxima carta que elijas va boca abajo. Pulsa B para desarmar.',
   },
   actions: {
     label: 'Cantos',
     cantar: 'Cantar',
     envido: 'Envido',
     flor: 'Flor',
+    prive: 'Prive',
     fold: 'Irse al mazo',
     yourTurn: 'Tu turno',
     yourTurnHint: 'Toca una carta o pulsa 1, 2 o 3.',
@@ -103,8 +108,65 @@ export const es: ShellContent = {
     handOverHint: 'Mira el resumen y sigue con el próximo reparto.',
     matchOver: 'Partida cerrada',
     matchOverHint: 'Hay revancha cuando quieras.',
-    note: 'El envido y la flor llegan pronto.',
-    soon: 'Pronto',
+  },
+  envido: {
+    names: {
+      1: 'Envido',
+      2: 'Envido',
+      3: 'Envido',
+      4: 'Envido la falta',
+    },
+    raises: {
+      2: 'Quiero y envido',
+      3: 'Quiero y 5 piedras más',
+      4: 'Quiero y falta',
+    },
+    callAria: 'Cantar envido',
+    dialogLabel: 'Responder el envido',
+    calledBy: (name, call) => `${name} cantó ${call}`,
+    stakeNote: (stake) => `En juego: ${stake} ${stake === 1 ? 'piedra' : 'piedras'}.`,
+    faltaNote: (stake) =>
+      `La falta: ${stake} ${stake === 1 ? 'piedra' : 'piedras'} para llegar a 24.`,
+    declineNote: (points) =>
+      `Si no quieres, los cantores se llevan ${points} ${points === 1 ? 'piedra' : 'piedras'}.`,
+    answerNote: 'Responde tu equipo. Los tantos se comparan al cerrar el reparto.',
+    accept: 'Quiero',
+    decline: 'No quiero',
+    acceptAria: (call) => `Querer el ${call}`,
+    declineAria: (call) => `No querer el ${call}`,
+    speech: {
+      call: (call) => `¡${call}!`,
+      accept: '¡Quiero!',
+      decline: 'No quiero, chamo.',
+      raise: (call) => `¡${call}!`,
+    },
+  },
+  flor: {
+    name: 'Flor',
+    reservada: 'Flor reservada',
+    points: (points) => `Flor +${points}`,
+    callAria: 'Cantar flor',
+    speech: {
+      call: (kind) => (kind === 'reservada' ? '¡Flor reservada!' : '¡Flor!'),
+    },
+  },
+  prive: {
+    name: 'Prive',
+    callAria: 'Cantar prive',
+    note: (tantos) => `Prive: ${tantos.nosotros} contra ${tantos.ellos} tantos.`,
+    speech: {
+      call: '¡Prive!',
+    },
+  },
+  lances: {
+    label: 'Lances sobre la mesa',
+    envidoPending: (call) => `${call} esperando respuesta`,
+    envidoAccepted: (call, stake) =>
+      `${call} querido · ${stake} ${stake === 1 ? 'piedra' : 'piedras'}`,
+    envidoDeclined: (call, points) => `${call} no querido · ${points} para los cantores`,
+    flor: (kind, points) =>
+      `${kind === 'reservada' ? 'Flor reservada' : 'Flor'} +${points} al cerrar la primera baza`,
+    prive: (points, tantos) => `Prive +${points} · tantos ${tantos.nosotros}–${tantos.ellos}`,
   },
   truco: {
     names: {
@@ -163,18 +225,26 @@ export const es: ShellContent = {
     trickParda: (baza) => `Baza ${baza}: parda.`,
     call: (name, call) => `${name} cantó ${call}.`,
     callYou: (call) => `Cantaste ${call}.`,
+    envidoCall: (name, call) => `${name} cantó ${call}.`,
+    envidoCallYou: (call) => `Cantaste ${call}.`,
+    florCall: (name, kind) => `${name} cantó ${kind === 'reservada' ? 'flor reservada' : 'flor'}.`,
+    florCallYou: (kind) => `Cantaste ${kind === 'reservada' ? 'flor reservada' : 'flor'}.`,
+    priveCall: (name) => `${name} cantó prive.`,
+    priveCallYou: 'Cantaste prive.',
     respond: (name, response, call) => `${name}: ${response} · ${call}.`,
     respondYou: (response, call) => `${response} · ${call}.`,
     fold: (name) => `${name} se fue al mazo.`,
     foldYou: 'Te fuiste al mazo.',
-    points: (team, points, reason) =>
-      points === 'match'
-        ? `${team} se llevan la partida (${reason}).`
-        : `${team} suman ${points} ${points === 1 ? 'piedra' : 'piedras'} (${reason}).`,
-    handOver: (team, points) =>
-      points === 'match'
-        ? `${team} se llevan el reparto y la partida.`
-        : `${team} se llevan el reparto: ${points} ${points === 1 ? 'piedra' : 'piedras'}.`,
+    award: (team, points, source, note) =>
+      `${team} +${points} (${source}${note ? ` · ${note}` : ''}).`,
+    handOver: (team, points, matchOver) =>
+      matchOver
+        ? `${team} se llevan la partida.`
+        : points === 'match'
+          ? `${team} se llevan el reparto y la partida.`
+          : points === 0
+            ? `${team} se llevan el reparto.`
+            : `${team} se llevan el reparto: ${points} ${points === 1 ? 'piedra' : 'piedras'}.`,
     matchOver: (team) => `${team} ganan la partida.`,
     turn: (name, baza) => `Turno: ${name} · baza ${baza}.`,
   },
@@ -192,13 +262,40 @@ export const es: ShellContent = {
       bazas: 'Bazas ganadas',
       decline: 'No quisieron el canto',
       fold: 'Se fueron al mazo',
+      envido: 'El envido',
+      flor: 'La flor',
+      prive: 'El prive',
     },
     trucoLabel: 'Truco',
     noTruco: 'Sin truco',
     trucoAccepted: (call) => `${call} querido`,
     payoutLabel: 'Pagan',
+    ledgerTitle: 'Cada piedra, con su cuenta',
+    ledgerSource: 'Fuente',
+    ledgerTeam: 'Equipo',
+    ledgerPoints: 'Piedras',
+    sources: {
+      flor: 'Flor',
+      prive: 'Prive',
+      envido: 'Envido',
+      truco: 'Truco',
+    },
+    details: {
+      accepted: 'querido',
+      declined: 'no querido',
+      reservada: 'flor reservada',
+      match: 'la partida',
+      bazas: 'bazas',
+      fold: 'mazo',
+    },
+    tantos: (nosotros, ellos) => `tantos ${nosotros}–${ellos}`,
+    florTantos: (nosotros, ellos) =>
+      `tantos ${nosotros === 100 ? 'reservada' : nosotros}–${ellos === 100 ? 'reservada' : ellos}`,
+    totalLabel: 'Total del reparto',
+    settlementPoints: (points) => `+${points}`,
     bazasTitle: 'Las bazas',
     handsTitle: 'Las manos sobre la mesa',
+    burnedTag: 'quemada',
     baza: (baza) => `Baza ${baza}`,
     parda: 'Parda',
     nextHand: 'Siguiente reparto',
@@ -207,6 +304,7 @@ export const es: ShellContent = {
   hints: {
     label: 'Atajos',
     cards: 'cartas',
+    burn: 'quemar',
     rules: 'reglas',
     rulesLink: 'Reglas del juego',
     logOpen: 'La mesa dice',
@@ -215,16 +313,15 @@ export const es: ShellContent = {
   rulesDialog: {
     eyebrow: 'La escuela',
     title: 'La escuela de reglas',
-    body: 'La mesa ya está viva: juega tus tres cartas y sigue las bazas. La escuela completa de la vira, el envido, la flor, el truco y el prive llega con la próxima mano.',
+    body: 'La mesa juega a 24 piedras: gana quien llegue primero. Cada reparto tiene tres bazas. El envido y la flor se cantan antes de la primera carta, el prive cuando un equipo está a una piedra, y el truco sube la apuesta del reparto. El resumen itemiza cada piedra.',
     topics: [
       'La vira, el perico y la perica',
-      'El envido y sus piedras',
-      'La flor y la flor reservada',
+      'El envido y sus cuatro cantos',
+      'La flor, la reservada y el envido que cancela',
       'El truco, retruco y vale nueve',
-      'El prive y el quemar',
+      'El prive a 23 y el quemar',
       'Las señas de El Pana',
     ],
-    soon: 'Pronto',
     close: 'Cerrar',
     back: 'Volver a la mesa',
   },

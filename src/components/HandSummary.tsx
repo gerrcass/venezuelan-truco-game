@@ -1,6 +1,8 @@
 import { useLocale } from '../content/locale-context';
+import { settlementNote, settlementSource } from '../content/settlements';
 import { shortCardName } from '../content/types';
-import { PERSONA_BY_SEAT, SEATS, TEAM_BY_SEAT } from '../domain/seats';
+import { cardKey } from '../domain/cards';
+import { PERSONA_BY_SEAT, SEATS, TEAM_BY_SEAT, type Seat } from '../domain/seats';
 import { pieceOf } from '../engine/cards';
 import type { GameView } from '../engine/types';
 import { Modal } from './Modal';
@@ -10,6 +12,24 @@ interface HandSummaryProps {
   readonly view: GameView;
   readonly onNextHand: () => void;
   readonly onRematch: () => void;
+}
+
+function burnedCardsBySeat(view: GameView): Map<Seat, Set<string>> {
+  const burned = new Map<Seat, Set<string>>();
+
+  for (const baza of view.result?.bazas ?? []) {
+    for (const play of baza.plays) {
+      if (!play.burned) {
+        continue;
+      }
+
+      const keys = burned.get(play.seat) ?? new Set<string>();
+      keys.add(cardKey(play.card));
+      burned.set(play.seat, keys);
+    }
+  }
+
+  return burned;
 }
 
 export function HandSummary({ view, onNextHand, onRematch }: HandSummaryProps) {
@@ -25,6 +45,7 @@ export function HandSummary({ view, onNextHand, onRematch }: HandSummaryProps) {
   const matchOver = view.phase === 'matchOver';
   const winner = content.scoreboard.teams[result.winnerTeam].name;
   const hands = view.revealedHands ?? result.hands;
+  const burned = burnedCardsBySeat(view);
   const acceptedCall =
     result.trucoLevel === 0
       ? summary.noTruco
@@ -47,7 +68,7 @@ export function HandSummary({ view, onNextHand, onRematch }: HandSummaryProps) {
         </h2>
         <p className="summary__points">
           <StoneIcon className="summary__stone" />
-          {summary.points(result.points)}
+          {result.points === 'match' ? summary.points('match') : summary.points(result.totalPoints)}
         </p>
         <p className={`summary__score${matchOver ? ' summary__score--final' : ''}`}>
           {summary.score(view.scores.nosotros, view.scores.ellos)}
@@ -58,10 +79,6 @@ export function HandSummary({ view, onNextHand, onRematch }: HandSummaryProps) {
         <h3 className="summary__section-title">{summary.accountLabel}</h3>
         <dl className="summary__ledger">
           <div className="summary__row">
-            <dt>{scoreboard.stakeLabel}</dt>
-            <dd>{scoreboard.stakeSpoken(view.stake)}</dd>
-          </div>
-          <div className="summary__row">
             <dt>{summary.reasonLabel}</dt>
             <dd>{summary.reasons[result.reason]}</dd>
           </div>
@@ -69,11 +86,65 @@ export function HandSummary({ view, onNextHand, onRematch }: HandSummaryProps) {
             <dt>{summary.trucoLabel}</dt>
             <dd>{acceptedCall}</dd>
           </div>
-          <div className="summary__row summary__row--payout">
-            <dt>{summary.payoutLabel}</dt>
-            <dd>{summary.points(result.points)}</dd>
-          </div>
+          {result.points !== 0 && (
+            <div className="summary__row">
+              <dt>{scoreboard.stakeLabel}</dt>
+              <dd>{scoreboard.stakeSpoken(view.stake)}</dd>
+            </div>
+          )}
+          {result.points !== 0 && (
+            <div className="summary__row summary__row--payout">
+              <dt>{summary.payoutLabel}</dt>
+              <dd>{summary.points(result.points)}</dd>
+            </div>
+          )}
         </dl>
+      </div>
+
+      <div className="summary__section">
+        <h3 className="summary__section-title">{summary.ledgerTitle}</h3>
+        <table className="summary__statement">
+          <thead>
+            <tr>
+              <th scope="col">{summary.ledgerSource}</th>
+              <th scope="col">{summary.ledgerTeam}</th>
+              <th scope="col">{summary.ledgerPoints}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {result.settlements.map((settlement, index) => {
+              const note = settlementNote(settlement, content);
+
+              return (
+                <tr
+                  className={`summary__statement-row summary__statement-row--${settlement.kind}`}
+                  key={`${settlement.kind}-${settlement.team}-${index}`}
+                >
+                  <th scope="row">
+                    <span className="summary__statement-source">
+                      {settlementSource(settlement, content)}
+                    </span>
+                    {note && <span className="summary__statement-note">{note}</span>}
+                  </th>
+                  <td>{scoreboard.teams[settlement.team].name}</td>
+                  <td className="summary__statement-points">
+                    {summary.settlementPoints(settlement.points)}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+          <tfoot>
+            <tr>
+              <th scope="row" colSpan={2}>
+                {summary.totalLabel}
+              </th>
+              <td className="summary__statement-points">
+                {summary.settlementPoints(result.totalPoints)}
+              </td>
+            </tr>
+          </tfoot>
+        </table>
       </div>
 
       {result.bazas.length > 0 && (
@@ -107,12 +178,15 @@ export function HandSummary({ view, onNextHand, onRematch }: HandSummaryProps) {
               <ul className="summary__cards">
                 {hands[seat].map((card) => {
                   const piece = pieceOf(card, view.vira);
+                  const key = cardKey(card);
+                  const wasBurned = burned.get(seat)?.has(key) ?? false;
 
                   return (
-                    <li className="summary__card" key={`${card.rank}-${card.suit}`}>
+                    <li className="summary__card" key={key}>
                       <span className="summary__card-name">
                         {shortCardName(card, content.cards)}
                       </span>
+                      {wasBurned && <span className="summary__burned">{summary.burnedTag}</span>}
                       {piece && (
                         <span className={`summary__piece summary__piece--${piece}`}>
                           {content.cards.piece[piece]}

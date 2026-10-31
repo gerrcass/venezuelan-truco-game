@@ -179,7 +179,7 @@
 .summary__head {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
   padding-right: 20px;
 }
 
@@ -200,7 +200,7 @@
 .summary__title {
   color: var(--ink);
   font-family: var(--font-display);
-  font-size: 38px;
+  font-size: 36px;
   font-variation-settings:
     'SOFT' 60,
     'WONK' 1,
@@ -214,7 +214,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  margin-top: 5px;
+  margin-top: 3px;
   color: var(--marigold-ink);
   font-size: 12px;
   font-weight: 800;
@@ -253,7 +253,7 @@
   align-items: baseline;
   justify-content: space-between;
   gap: 12px;
-  padding: 5px 8px;
+  padding: 4px 8px;
   border-radius: 6px;
   background: rgba(33, 27, 20, 0.045);
 }
@@ -289,13 +289,13 @@
 }
 
 .summary__section {
-  margin-top: 20px;
-  padding-top: 15px;
+  margin-top: 12px;
+  padding-top: 10px;
   border-top: 1px solid rgba(33, 27, 20, 0.13);
 }
 
 .summary__section-title {
-  margin-bottom: 9px;
+  margin-bottom: 7px;
   color: var(--terracotta-ink);
   font-size: 8px;
   font-weight: 800;
@@ -315,7 +315,7 @@
   align-items: baseline;
   justify-content: space-between;
   gap: 10px;
-  padding: 5px 8px;
+  padding: 4px 8px;
   border-radius: 6px;
   background: rgba(33, 27, 20, 0.045);
 }
@@ -351,7 +351,7 @@
   --summary-team: var(--turquoise);
 
   min-width: 0;
-  padding: 7px 9px 8px;
+  padding: 5px 8px 6px;
   border-left: 2px solid var(--summary-team);
   border-radius: 0 6px 6px 0;
   background: rgba(33, 27, 20, 0.04);
@@ -390,7 +390,7 @@
   color: var(--ink-soft);
   font-size: 10px;
   font-weight: 500;
-  line-height: 1.35;
+  line-height: 1.25;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -417,7 +417,112 @@
 
 .summary__action {
   width: 100%;
-  margin-top: 20px;
+  margin-top: 10px;
+}
+
+.summary__statement {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.summary__statement th,
+.summary__statement td {
+  padding: 6px 8px;
+  border-bottom: 1px solid rgba(33, 27, 20, 0.1);
+  text-align: left;
+  vertical-align: baseline;
+}
+
+.summary__statement thead th {
+  padding-top: 0;
+  color: var(--ink-soft);
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.summary__statement thead th:first-child {
+  width: 52%;
+}
+
+.summary__statement tbody th {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.summary__statement td {
+  color: var(--ink-soft);
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.summary__statement-source {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+}
+
+.summary__statement-note {
+  display: block;
+  margin-top: 1px;
+  overflow-wrap: anywhere;
+  color: var(--ink-soft);
+  font-size: 8px;
+  font-weight: 500;
+  letter-spacing: 0.015em;
+  line-height: 1.3;
+  text-transform: none;
+}
+
+.summary__statement-points {
+  color: var(--ink) !important;
+  font-family: var(--font-display);
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  text-align: right !important;
+  white-space: nowrap;
+}
+
+.summary__statement-row--flor .summary__statement-source {
+  color: var(--marigold-ink);
+}
+
+.summary__statement-row--envido .summary__statement-source {
+  color: var(--turquoise-ink);
+}
+
+.summary__statement-row--prive .summary__statement-source {
+  color: var(--terracotta-ink);
+}
+
+.summary__statement tfoot th,
+.summary__statement tfoot td {
+  padding-top: 9px;
+  border-top: 2px solid rgba(33, 27, 20, 0.16);
+  border-bottom: none;
+  color: var(--ink);
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.summary__burned {
+  flex: 0 0 auto;
+  padding: 1px 4px;
+  border-radius: 999px;
+  background: rgba(196, 85, 59, 0.14);
+  color: var(--terracotta-ink);
+  font-size: 6px;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+  text-transform: uppercase;
 }
 
 /* ---------------------------------------------------------- truco dialog */
@@ -461,6 +566,16 @@
   font-size: 13px;
   font-weight: 450;
   line-height: 1.5;
+}
+
+.envido-dialog__decline {
+  margin-top: 7px;
+  color: var(--terracotta-ink);
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  line-height: 1.35;
+  text-transform: uppercase;
 }
 
 .truco-dialog__actions {

@@ -21,6 +21,10 @@ export function HintStrip({ onOpenRules, onOpenLog, logOpen }: HintStripProps) {
           <kbd>3</kbd>
           <span>{hints.cards}</span>
         </span>
+        <span className="shortcut">
+          <kbd>B</kbd>
+          <span>{hints.burn}</span>
+        </span>
         <span className="shortcut shortcut--rules">
           <kbd>R</kbd>
           <span>{hints.rules}</span>

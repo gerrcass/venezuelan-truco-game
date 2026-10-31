@@ -23,7 +23,6 @@ export function RulesDialog({ open, onClose }: RulesDialogProps) {
       <div className="rules-dialog__head">
         <div className="rules-dialog__kicker">
           <p className="eyebrow">{dialog.eyebrow}</p>
-          <span className="soon-chip">{dialog.soon}</span>
         </div>
         <h2 className="rules-dialog__title" id="rules-dialog-title">
           {dialog.title}

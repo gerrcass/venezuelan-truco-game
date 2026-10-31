@@ -126,6 +126,70 @@ const FACE_VALUE: Record<Rank, number> = {
   12: 0,
 };
 
+/** A flor score. A reservada is not a numeric tanto: it beats every flor. */
+export interface FlorScore {
+  readonly kind: 'flor' | 'reservada';
+  readonly value: number;
+}
+
+/** A reservada beats any numeric flor; 100 is above the maximum numeric 43. */
+export const FLOR_RESERVADA_VALUE = 100;
+
+/** The comparison weight of a flor. Numeric flors compare by value. */
+export function florValue(score: Pick<FlorScore, 'kind' | 'value'>): number {
+  return score.kind === 'reservada' ? FLOR_RESERVADA_VALUE : score.value;
+}
+
+/**
+ * The flor of one hand, or null. Perico + perica is the reservada (5 piedras).
+ * A piece plus two cards of one palo is 30/29 + both face values, whether or
+ * not the pair shares the piece's palo. Three of a palo with no piece is
+ * 20 + all three face values. Figures are worth zero.
+ */
+export function scoreFlor(hand: readonly Card[], vira: Card): FlorScore | null {
+  if (hand.length !== 3) {
+    return null;
+  }
+
+  const perico = hand.find((card) => pieceOf(card, vira) === 'perico');
+  const perica = hand.find((card) => pieceOf(card, vira) === 'perica');
+
+  if (perico && perica) {
+    return { kind: 'reservada', value: 5 };
+  }
+
+  if (perico) {
+    const pair = pairFaceValue(hand.filter((card) => card !== perico));
+
+    return pair === null ? null : { kind: 'flor', value: 30 + pair };
+  }
+
+  if (perica) {
+    const pair = pairFaceValue(hand.filter((card) => card !== perica));
+
+    return pair === null ? null : { kind: 'flor', value: 29 + pair };
+  }
+
+  const [first] = hand;
+
+  if (first && hand.every((card) => card.suit === first.suit)) {
+    return { kind: 'flor', value: 20 + faceTotal(hand) };
+  }
+
+  return null;
+}
+
+/** The sum of the two face values when a two-card hand shares a palo. */
+function pairFaceValue(hand: readonly Card[]): number | null {
+  const [first, second] = hand;
+
+  if (!first || !second || first.suit !== second.suit) {
+    return null;
+  }
+
+  return faceTotal(hand);
+}
+
 /**
  * The envido tanto of one hand. A piece counts 30/29 plus the highest of the
  * two remaining cards; otherwise the best two cards of one palo count 20 + both,
@@ -170,4 +234,8 @@ export function envidoTanto(hand: readonly Card[], vira: Card): number {
 
 function highestFaceValue(hand: readonly Card[]): number {
   return hand.reduce((highest, card) => Math.max(highest, FACE_VALUE[card.rank]), 0);
+}
+
+function faceTotal(hand: readonly Card[]): number {
+  return hand.reduce((total, card) => total + FACE_VALUE[card.rank], 0);
 }

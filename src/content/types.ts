@@ -1,6 +1,12 @@
 import type { Card, CourtRank, Piece, Rank, Suit } from '../domain/cards';
 import type { PersonaKey, Team } from '../domain/seats';
-import type { HandReason, TrucoCallLevel } from '../engine/types';
+import type {
+  EnvidoLevel,
+  HandReason,
+  SettlementDetail,
+  SettlementKind,
+  TrucoCallLevel,
+} from '../engine/types';
 
 export type Locale = 'es' | 'en';
 
@@ -108,12 +114,17 @@ export interface ShellContent {
     readonly empty: string;
     readonly aria: string;
     readonly playCard: (card: string) => string;
+    readonly burn: string;
+    readonly burnArmed: string;
+    readonly burnAria: string;
+    readonly burnHint: string;
   };
   readonly actions: {
     readonly label: string;
     readonly cantar: string;
     readonly envido: string;
     readonly flor: string;
+    readonly prive: string;
     readonly fold: string;
     readonly yourTurn: string;
     readonly yourTurnHint: string;
@@ -127,8 +138,54 @@ export interface ShellContent {
     readonly handOverHint: string;
     readonly matchOver: string;
     readonly matchOverHint: string;
-    readonly note: string;
-    readonly soon: string;
+  };
+  readonly envido: {
+    /** The canto named in a log or a dialog. Levels 1–3 are all "Envido". */
+    readonly names: Record<EnvidoLevel, string>;
+    /** The raise that turns a pending level into the next one. */
+    readonly raises: Record<2 | 3 | 4, string>;
+    readonly callAria: string;
+    readonly dialogLabel: string;
+    readonly calledBy: (name: string, call: string) => string;
+    readonly stakeNote: (stake: number) => string;
+    readonly faltaNote: (stake: number) => string;
+    readonly declineNote: (points: number) => string;
+    readonly answerNote: string;
+    readonly accept: string;
+    readonly decline: string;
+    readonly acceptAria: (call: string) => string;
+    readonly declineAria: (call: string) => string;
+    readonly speech: {
+      readonly call: (call: string) => string;
+      readonly accept: string;
+      readonly decline: string;
+      readonly raise: (call: string) => string;
+    };
+  };
+  readonly flor: {
+    readonly name: string;
+    readonly reservada: string;
+    readonly points: (points: number) => string;
+    readonly callAria: string;
+    readonly speech: {
+      readonly call: (kind: 'flor' | 'reservada') => string;
+    };
+  };
+  readonly prive: {
+    readonly name: string;
+    readonly callAria: string;
+    readonly note: (tantos: Record<Team, number>) => string;
+    readonly speech: {
+      readonly call: string;
+    };
+  };
+  readonly lances: {
+    readonly label: string;
+    readonly envidoPending: (call: string) => string;
+    readonly envidoAccepted: (call: string, stake: number) => string;
+    readonly envidoDeclined: (call: string, points: number) => string;
+    readonly flor: (kind: 'flor' | 'reservada', points: number) => string;
+    readonly prive: (points: number, tantos: Record<Team, number>) => string;
   };
   readonly truco: {
     readonly names: Record<TrucoCallLevel, string>;
@@ -167,12 +224,18 @@ export interface ShellContent {
     readonly trickParda: (baza: number) => string;
     readonly call: (name: string, call: string) => string;
     readonly callYou: (call: string) => string;
+    readonly envidoCall: (name: string, call: string) => string;
+    readonly envidoCallYou: (call: string) => string;
+    readonly florCall: (name: string, kind: 'flor' | 'reservada') => string;
+    readonly florCallYou: (kind: 'flor' | 'reservada') => string;
+    readonly priveCall: (name: string) => string;
+    readonly priveCallYou: string;
     readonly respond: (name: string, response: string, call: string) => string;
     readonly respondYou: (response: string, call: string) => string;
     readonly fold: (name: string) => string;
     readonly foldYou: string;
-    readonly points: (team: string, points: number | 'match', reason: string) => string;
-    readonly handOver: (team: string, points: number | 'match') => string;
+    readonly award: (team: string, points: number, source: string, note: string) => string;
+    readonly handOver: (team: string, points: number | 'match', matchOver: boolean) => string;
     readonly matchOver: (team: string) => string;
     readonly turn: (name: string, baza: number) => string;
   };
@@ -190,8 +253,19 @@ export interface ShellContent {
     readonly noTruco: string;
     readonly trucoAccepted: (call: string) => string;
     readonly payoutLabel: string;
+    readonly ledgerTitle: string;
+    readonly ledgerSource: string;
+    readonly ledgerTeam: string;
+    readonly ledgerPoints: string;
+    readonly sources: Record<SettlementKind, string>;
+    readonly details: Record<SettlementDetail, string>;
+    readonly tantos: (nosotros: number, ellos: number) => string;
+    readonly florTantos: (nosotros: number, ellos: number) => string;
+    readonly totalLabel: string;
+    readonly settlementPoints: (points: number) => string;
     readonly bazasTitle: string;
     readonly handsTitle: string;
+    readonly burnedTag: string;
     readonly baza: (baza: number) => string;
     readonly parda: string;
     readonly nextHand: string;
@@ -200,6 +274,7 @@ export interface ShellContent {
   readonly hints: {
     readonly label: string;
     readonly cards: string;
+    readonly burn: string;
     readonly rules: string;
     readonly rulesLink: string;
     readonly logOpen: string;
@@ -210,7 +285,6 @@ export interface ShellContent {
     readonly title: string;
     readonly body: string;
     readonly topics: readonly string[];
-    readonly soon: string;
     readonly close: string;
     readonly back: string;
   };

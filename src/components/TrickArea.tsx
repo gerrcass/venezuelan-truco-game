@@ -48,7 +48,10 @@ export function TrickArea({ view }: TrickAreaProps) {
             </span>
             {played ? (
               played.burned || !played.card ? (
-                <PlayingCard card={BURNED_PLACEHOLDER} size="trick" burned />
+                <div className="trick__burned">
+                  <PlayingCard card={BURNED_PLACEHOLDER} size="trick" burned />
+                  <span className="trick__burned-label">{content.cards.faceDown}</span>
+                </div>
               ) : (
                 <PlayingCard
                   card={played.card}

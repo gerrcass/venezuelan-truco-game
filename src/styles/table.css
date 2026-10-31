@@ -309,6 +309,24 @@
   box-shadow: 0 0 6px currentColor;
 }
 
+.trick__burned {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.trick__burned-label {
+  max-width: 68px;
+  color: var(--terracotta);
+  font-size: 6.5px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  line-height: 1.15;
+  text-align: center;
+  text-transform: uppercase;
+}
+
 .trick__slot .card {
   box-shadow:
     0 12px 20px -9px rgba(0, 0, 0, 0.7),
@@ -504,6 +522,54 @@
   text-transform: uppercase;
 }
 
+.hand__burn {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 5px;
+  margin-top: 5px;
+  padding: 5px 9px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(246, 236, 216, 0.04);
+  color: var(--cream-soft);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+
+.hand__burn:hover:not(:disabled) {
+  border-color: var(--line-strong);
+  color: var(--cream);
+}
+
+.hand__burn:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.hand__burn--armed {
+  border-color: rgba(196, 85, 59, 0.58);
+  background: rgba(196, 85, 59, 0.18);
+  color: var(--cream);
+}
+
+.hand__burn-mark {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.55;
+}
+
+.hand__burn--armed .hand__burn-mark {
+  background: var(--terracotta);
+  box-shadow: 0 0 8px rgba(196, 85, 59, 0.65);
+  opacity: 1;
+}
+
 .hand__cards {
   display: flex;
   align-items: flex-end;
@@ -683,6 +749,78 @@
   height: 24px;
   margin: 0 2px;
   background: var(--line);
+}
+
+.action--envido {
+  border-color: rgba(42, 157, 143, 0.45);
+  background: rgba(42, 157, 143, 0.13);
+}
+
+.action--flor {
+  border-color: rgba(240, 180, 41, 0.42);
+  background: rgba(240, 180, 41, 0.12);
+}
+
+.action--prive {
+  border-color: rgba(196, 85, 59, 0.5);
+  background: rgba(196, 85, 59, 0.14);
+}
+
+/* --------------------------------------------------------------- lances */
+
+.lances {
+  display: flex;
+  min-height: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.lances__group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.lance {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(246, 236, 216, 0.05);
+  color: var(--cream-soft);
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1.25;
+}
+
+.lance--envido {
+  border-color: rgba(42, 157, 143, 0.42);
+  color: var(--cream);
+}
+
+.lance--flor {
+  border-color: rgba(240, 180, 41, 0.42);
+  color: var(--cream);
+}
+
+.lance--prive {
+  border-color: rgba(196, 85, 59, 0.46);
+  color: var(--cream);
+}
+
+.lance__who {
+  color: var(--marigold);
+  font-size: 6.5px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
 .actions__note {

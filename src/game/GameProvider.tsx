@@ -84,8 +84,12 @@ export function GameProvider({
 
     if (
       !botView.legal.canRespondTruco &&
+      !botView.legal.canRespondEnvido &&
       botView.legal.playableCardKeys.length === 0 &&
-      !botView.legal.canCallTruco
+      !botView.legal.canCallTruco &&
+      !botView.legal.canCallEnvido &&
+      !botView.legal.canCallFlor &&
+      !botView.legal.canCallPrive
     ) {
       return;
     }

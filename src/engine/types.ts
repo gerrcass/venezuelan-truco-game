@@ -1,11 +1,13 @@
 import type { Card } from '../domain/cards';
 import type { Seat, Team } from '../domain/seats';
 
+import type { FlorScore } from './cards';
+
 /** The three phases of a partida. */
 export type Phase = 'playing' | 'handOver' | 'matchOver';
 
-/** Why a reparto was awarded. Envido, flor and prive arrive in ticket #5. */
-export type HandReason = 'bazas' | 'decline' | 'fold';
+/** Why a reparto was awarded. */
+export type HandReason = 'bazas' | 'decline' | 'fold' | 'envido' | 'flor' | 'prive';
 
 /**
  * The truco ladder. 0 means no call has been accepted, 1–3 are truco,
@@ -16,8 +18,27 @@ export type TrucoLevel = 0 | 1 | 2 | 3 | 4;
 /** A level that can actually be called or raised to. */
 export type TrucoCallLevel = Exclude<TrucoLevel, 0>;
 
-/** The state of the envido call. Inert in ticket #3. */
-export type EnvidoStatus = 'none' | 'called' | 'accepted' | 'declined';
+/** The envido ladder: Envido, Quiero y envido, 5 piedras más, la falta. */
+export type EnvidoLevel = 1 | 2 | 3 | 4;
+
+/** The state of the envido call. */
+export type EnvidoStatus = 'none' | 'pending' | 'accepted' | 'declined' | 'cancelled';
+
+/** Every point source in a reparto. */
+export type SettlementKind = 'flor' | 'prive' | 'envido' | 'truco';
+
+/** How a settlement was reached, for the itemized ledger. */
+export type SettlementDetail = 'accepted' | 'declined' | 'reservada' | 'match' | 'bazas' | 'fold';
+
+/** One row of the hand ledger. Every piedra paid is one of these. */
+export interface Settlement {
+  readonly kind: SettlementKind;
+  readonly team: Team;
+  readonly points: number;
+  readonly detail?: SettlementDetail;
+  readonly tantos?: Record<Team, number>;
+  readonly level?: EnvidoLevel | TrucoLevel;
+}
 
 /** A card as it was played in a baza. The reducer knows the card; the view hides burned ones. */
 export interface TrickPlay {
@@ -42,29 +63,43 @@ export interface TrucoState {
   readonly acceptedByTeam: Team | null;
 }
 
-/** Forward-looking envido state. Ticket #5 fills it in. */
+/** Forward-looking envido state. `stake` is what settles at hand end. */
 export interface EnvidoState {
   readonly status: EnvidoStatus;
+  readonly level: EnvidoLevel | null;
+  readonly stake: number | null;
+  readonly callerTeam: Team | null;
   readonly acceptedByTeam: Team | null;
+  readonly tantos: Record<Team, number> | null;
 }
 
-/** A flor declaration. Ticket #5 fills it in. */
+/** A flor declaration. The value is the numeric flor or the reservada's 5. */
 export interface FlorDeclaration {
   readonly seat: Seat;
-  readonly reservada: boolean;
+  readonly team: Team;
+  readonly kind: 'flor' | 'reservada';
+  readonly value: number;
 }
 
-/** Forward-looking flor state. Ticket #5 fills it in. */
+/** Forward-looking flor state. Flors settle when the first baza closes. */
 export interface FlorState {
   readonly declarations: readonly FlorDeclaration[];
+  readonly settled: boolean;
+  readonly winnerTeam: Team | null;
+  readonly winnerSeat: Seat | null;
+  readonly points: number;
 }
 
-/** Forward-looking prive state. Ticket #5 fills it in. */
+/** Forward-looking prive state. It pays immediately and replaces envido. */
 export interface PriveState {
   readonly called: boolean;
+  readonly callerTeam: Team | null;
+  readonly winnerTeam: Team | null;
+  readonly points: number;
+  readonly tantos: Record<Team, number> | null;
 }
 
-/** A call waiting for a team response. Envido is typed but inert until ticket #5. */
+/** A call waiting for a team response. */
 export interface PendingTrucoCall {
   readonly kind: 'truco';
   readonly level: TrucoCallLevel;
@@ -77,7 +112,7 @@ export interface PendingTrucoCall {
 
 export interface PendingEnvidoCall {
   readonly kind: 'envido';
-  readonly level: number;
+  readonly level: EnvidoLevel;
   readonly callerSeat: Seat;
   readonly callerTeam: Team;
   readonly respondingTeam: Team;
@@ -87,9 +122,36 @@ export interface PendingEnvidoCall {
 
 export type PendingCall = PendingTrucoCall | PendingEnvidoCall;
 
+/** The envido as it was resolved, ready for the summary. */
+export interface EnvidoResult {
+  readonly winnerTeam: Team;
+  readonly points: number;
+  readonly detail: 'accepted' | 'declined';
+  readonly level: EnvidoLevel;
+  readonly tantos: Record<Team, number> | null;
+}
+
+/** The flor as it was resolved, ready for the summary. */
+export interface FlorResult {
+  readonly winnerTeam: Team;
+  readonly winnerSeat: Seat | null;
+  readonly kind: 'flor' | 'reservada';
+  readonly points: number;
+  readonly tantos: Record<Team, number>;
+}
+
+/** The prive comparison, ready for the summary. */
+export interface PriveResult {
+  readonly callerTeam: Team;
+  readonly winnerTeam: Team;
+  readonly points: number;
+  readonly tantos: Record<Team, number>;
+}
+
 /** The hand summary: enough to render the overlay without reading hidden state. */
 export interface HandResult {
   readonly winnerTeam: Team;
+  /** The truco/hand payout; 0 when flor, envido or prive closed the partida first. */
   readonly points: number | 'match';
   readonly reason: HandReason;
   readonly trucoLevel: TrucoLevel;
@@ -97,6 +159,11 @@ export interface HandResult {
   readonly bazas: readonly TrickRecord[];
   readonly hands: Record<Seat, readonly Card[]>;
   readonly vira: Card;
+  readonly settlements: readonly Settlement[];
+  readonly totalPoints: number;
+  readonly envidoResult: EnvidoResult | null;
+  readonly florResult: FlorResult | null;
+  readonly priveResult: PriveResult | null;
 }
 
 /** A public, language-neutral log entry. The UI localizes it. */
@@ -130,10 +197,7 @@ export interface TrickLogEntry extends LogEntryBase {
 
 export interface PointsLogEntry extends LogEntryBase {
   readonly kind: 'points';
-  readonly team: Team;
-  readonly points: number | 'match';
-  readonly reason: HandReason;
-  readonly level: TrucoLevel;
+  readonly settlement: Settlement;
 }
 
 export interface HandOverLogEntry extends LogEntryBase {
@@ -141,6 +205,7 @@ export interface HandOverLogEntry extends LogEntryBase {
   readonly winnerTeam: Team;
   readonly points: number | 'match';
   readonly reason: HandReason;
+  readonly matchOver: boolean;
 }
 
 export interface MatchOverLogEntry extends LogEntryBase {
@@ -154,22 +219,53 @@ export interface TurnLogEntry extends LogEntryBase {
   readonly baza: number;
 }
 
-export interface CallLogEntry extends LogEntryBase {
+interface CallLogBase extends LogEntryBase {
   readonly kind: 'call';
   readonly seat: Seat;
   readonly team: Team;
+}
+
+export interface TrucoCallLogEntry extends CallLogBase {
   readonly call: 'truco';
   readonly level: TrucoCallLevel;
 }
 
-export interface RespondLogEntry extends LogEntryBase {
+export interface EnvidoCallLogEntry extends CallLogBase {
+  readonly call: 'envido';
+  readonly level: EnvidoLevel;
+}
+
+export interface FlorCallLogEntry extends CallLogBase {
+  readonly call: 'flor';
+  readonly flor: 'flor' | 'reservada';
+  readonly value: number;
+}
+
+export interface PriveCallLogEntry extends CallLogBase {
+  readonly call: 'prive';
+}
+
+export type CallLogEntry =
+  EnvidoCallLogEntry | FlorCallLogEntry | PriveCallLogEntry | TrucoCallLogEntry;
+
+interface RespondLogBase extends LogEntryBase {
   readonly kind: 'respond';
   readonly seat: Seat;
   readonly team: Team;
-  readonly call: 'truco';
-  readonly level: TrucoCallLevel;
   readonly response: 'accept' | 'decline' | 'raise';
 }
+
+export interface TrucoRespondLogEntry extends RespondLogBase {
+  readonly call: 'truco';
+  readonly level: TrucoCallLevel;
+}
+
+export interface EnvidoRespondLogEntry extends RespondLogBase {
+  readonly call: 'envido';
+  readonly level: EnvidoLevel;
+}
+
+export type RespondLogEntry = EnvidoRespondLogEntry | TrucoRespondLogEntry;
 
 export interface FoldLogEntry extends LogEntryBase {
   readonly kind: 'fold';
@@ -212,6 +308,28 @@ export type GameEvent =
       readonly level: TrucoCallLevel;
       readonly response: 'accept' | 'decline' | 'raise';
     }
+  | {
+      readonly type: 'envidoCalled';
+      readonly seat: Seat;
+      readonly team: Team;
+      readonly level: EnvidoLevel;
+    }
+  | {
+      readonly type: 'envidoResponded';
+      readonly seat: Seat;
+      readonly team: Team;
+      readonly level: EnvidoLevel;
+      readonly response: 'accept' | 'decline' | 'raise';
+    }
+  | {
+      readonly type: 'florCalled';
+      readonly seat: Seat;
+      readonly team: Team;
+      readonly kind: 'flor' | 'reservada';
+      readonly value: number;
+    }
+  | { readonly type: 'priveCalled'; readonly seat: Seat; readonly team: Team }
+  | { readonly type: 'pointsAwarded'; readonly settlement: Settlement }
   | { readonly type: 'folded'; readonly seat: Seat; readonly team: Team }
   | {
       readonly type: 'handEnded';
@@ -237,7 +355,7 @@ export interface LegalActions {
   readonly canCallFlor: boolean;
   readonly canCallPrive: boolean;
   readonly canFold: boolean;
-  readonly envidoLevel: number | null;
+  readonly envidoLevel: EnvidoLevel | null;
 }
 
 /** A face-up or face-down card as the table sees it. */
@@ -285,7 +403,11 @@ export interface GameView {
   readonly legal: LegalActions;
   readonly log: readonly GameLogEntry[];
   readonly ownEnvido: number;
-  readonly ownFlor: number | null;
+  readonly ownFlor: FlorScore | null;
+  readonly envido: EnvidoState;
+  readonly flor: FlorState;
+  readonly prive: PriveState;
+  readonly settlements: readonly Settlement[];
   readonly event: GameEvent | null;
 }
 
@@ -318,13 +440,15 @@ export interface GameState {
   readonly envido: EnvidoState;
   readonly flor: FlorState;
   readonly prive: PriveState;
+  /** Every settlement already applied this reparto, in the order it was paid. */
+  readonly settlements: readonly Settlement[];
   readonly pending: PendingCall | null;
   readonly log: readonly GameLogEntry[];
   readonly nextLogId: number;
   readonly event: GameEvent | null;
 }
 
-/** Actions the table can send. The call/fold kinds are typed now and inert until #4–#6. */
+/** Actions the table can send. */
 export type GameAction =
   | {
       readonly type: 'playCard';

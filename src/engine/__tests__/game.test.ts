@@ -425,7 +425,8 @@ describe('the hand lifecycle', () => {
     expect(state.tricks.length).toBeGreaterThanOrEqual(2);
     expect(state.tricks.length).toBeLessThanOrEqual(3);
     expect(state.result).toMatchObject({ points: 1, reason: 'bazas' });
-    expect(state.scores.nosotros + state.scores.ellos).toBe(1);
+    expect(state.scores.nosotros + state.scores.ellos).toBe(state.result?.totalPoints);
+    expect(state.result?.settlements.at(-1)?.kind).toBe('truco');
 
     const view = viewFor(state, 0);
     expect(view.revealedHands).not.toBeNull();
@@ -520,11 +521,13 @@ describe('the hand lifecycle', () => {
     }
   });
 
-  it('leaves the future cantos inert but typed', () => {
+  it('declares the envido, flor and prive state clean at the deal', () => {
     const state = createGame({ seed: 'futuro' });
 
-    expect(reduce(state, { type: 'callEnvido', seat: 0 })).toBe(state);
-    expect(reduce(state, { type: 'callFlor', seat: 0 })).toBe(state);
-    expect(reduce(state, { type: 'callPrive', seat: 0 })).toBe(state);
+    expect(state.envido.status).toBe('none');
+    expect(state.envido.level).toBeNull();
+    expect(state.prive.called).toBe(false);
+    expect(state.flor.declarations).toEqual([]);
+    expect(state.settlements).toEqual([]);
   });
 });

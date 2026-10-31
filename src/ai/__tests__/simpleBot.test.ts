@@ -86,12 +86,20 @@ const DECENT = [card(3, 'oro'), card(2, 'copa'), card(6, 'espada')] as const;
 const STRONG = [card(3, 'oro'), card(3, 'copa'), card(2, 'espada')] as const;
 
 describe('the simple bot', () => {
-  it('always takes a legal action and never burns', () => {
+  it('always takes a legal action and burns at most once per reparto', () => {
     let state = createGame({ seed: 'bot-legal' });
     let guard = 0;
+    let handNumber = state.handNumber;
+    const burns = new Map<Seat, number>();
 
-    while (state.phase === 'playing' && guard < 200) {
+    while (state.phase === 'playing' && guard < 400) {
       guard += 1;
+
+      if (state.handNumber !== handNumber) {
+        burns.clear();
+        handNumber = state.handNumber;
+      }
+
       const view = viewFor(state, actingSeat(state));
       const action = chooseSimpleAction(view);
       const next = reduce(state, action);
@@ -101,12 +109,30 @@ describe('the simple bot', () => {
       if (action.type === 'playCard') {
         expect(action.seat).toBe(view.seat);
         expect(view.legal.playableCardKeys).toContain(action.cardKey);
-        expect(action.burned).toBeUndefined();
+
+        if (action.burned) {
+          const count = (burns.get(action.seat) ?? 0) + 1;
+          burns.set(action.seat, count);
+          expect(count).toBeLessThanOrEqual(1);
+          expect(view.legal.canBurn).toBe(true);
+        }
       } else if (action.type === 'callTruco') {
         expect(view.legal.canCallTruco).toBe(true);
         expect(action.seat).toBe(view.seat);
+      } else if (action.type === 'callEnvido') {
+        expect(view.legal.canCallEnvido).toBe(true);
+        expect(action.seat).toBe(view.seat);
+      } else if (action.type === 'callFlor') {
+        expect(view.legal.canCallFlor).toBe(true);
+        expect(action.seat).toBe(view.seat);
+      } else if (action.type === 'callPrive') {
+        expect(view.legal.canCallPrive).toBe(true);
+        expect(action.seat).toBe(view.seat);
       } else if (action.type === 'respondTruco') {
         expect(view.legal.canRespondTruco).toBe(true);
+        expect(action.seat).toBe(view.seat);
+      } else if (action.type === 'respondEnvido') {
+        expect(view.legal.canRespondEnvido).toBe(true);
         expect(action.seat).toBe(view.seat);
       } else {
         throw new Error(`The bot chose an unexpected action: ${action.type}`);
@@ -115,7 +141,7 @@ describe('the simple bot', () => {
       state = next;
     }
 
-    expect(state.phase).toBe('handOver');
+    expect(state.phase).not.toBe('playing');
   });
 
   it('is deterministic for the same view', () => {

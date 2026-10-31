@@ -1,4 +1,5 @@
 import { useLocale } from '../content/locale-context';
+import { settlementNote, settlementSource } from '../content/settlements';
 import { shortCardName, type ShellContent } from '../content/types';
 import { SUITS } from '../domain/cards';
 import { PERSONA_BY_SEAT, type Seat } from '../domain/seats';
@@ -44,19 +45,48 @@ function entryText(entry: GameLogEntry, content: ShellContent): string {
       return entry.winnerSeat === 0
         ? content.log.trickWinYou(entry.baza)
         : content.log.trickWin(entry.baza, personaName(content, entry.winnerSeat));
-    case 'points':
-      return content.log.points(
-        content.scoreboard.teams[entry.team].name,
-        entry.points,
-        content.summary.reasons[entry.reason],
+    case 'points': {
+      const note = settlementNote(entry.settlement, content);
+      const source = settlementSource(entry.settlement, content);
+
+      return content.log.award(
+        content.scoreboard.teams[entry.settlement.team].name,
+        entry.settlement.points,
+        source,
+        note,
       );
+    }
     case 'handOver':
-      return content.log.handOver(content.scoreboard.teams[entry.winnerTeam].name, entry.points);
+      return content.log.handOver(
+        content.scoreboard.teams[entry.winnerTeam].name,
+        entry.points,
+        entry.matchOver,
+      );
     case 'matchOver':
       return content.log.matchOver(content.scoreboard.teams[entry.winnerTeam].name);
     case 'turn':
       return content.log.turn(personaName(content, entry.seat), entry.baza);
     case 'call': {
+      if (entry.call === 'envido') {
+        const call = content.envido.names[entry.level];
+
+        return entry.seat === 0
+          ? content.log.envidoCallYou(call)
+          : content.log.envidoCall(personaName(content, entry.seat), call);
+      }
+
+      if (entry.call === 'flor') {
+        return entry.seat === 0
+          ? content.log.florCallYou(entry.flor)
+          : content.log.florCall(personaName(content, entry.seat), entry.flor);
+      }
+
+      if (entry.call === 'prive') {
+        return entry.seat === 0
+          ? content.log.priveCallYou
+          : content.log.priveCall(personaName(content, entry.seat));
+      }
+
       const call = content.truco.names[entry.level];
 
       return entry.seat === 0
@@ -64,6 +94,20 @@ function entryText(entry: GameLogEntry, content: ShellContent): string {
         : content.log.call(personaName(content, entry.seat), call);
     }
     case 'respond': {
+      if (entry.call === 'envido') {
+        const call = content.envido.names[entry.level];
+        const response =
+          entry.response === 'accept'
+            ? content.envido.accept
+            : entry.response === 'decline'
+              ? content.envido.decline
+              : content.envido.raises[(entry.level + 1) as 2 | 3 | 4];
+
+        return entry.seat === 0
+          ? content.log.respondYou(response, call)
+          : content.log.respond(personaName(content, entry.seat), response, call);
+      }
+
       const call = content.truco.names[entry.level];
       const response =
         entry.response === 'accept'

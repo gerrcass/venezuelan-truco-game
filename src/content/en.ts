@@ -84,12 +84,17 @@ export const en: ShellContent = {
     empty: 'No cards left in hand.',
     aria: 'Your hand',
     playCard: (card) => `Play ${card}`,
+    burn: 'Play face down',
+    burnArmed: 'Face down',
+    burnAria: 'Burn your next card (play it face down)',
+    burnHint: 'Armed: the next card you pick goes face down. Press B to disarm.',
   },
   actions: {
     label: 'Calls',
     cantar: 'Call',
     envido: 'Envido',
     flor: 'Flor',
+    prive: 'Prive',
     fold: 'Fold',
     yourTurn: 'Your turn',
     yourTurnHint: 'Tap a card or press 1, 2 or 3.',
@@ -103,8 +108,64 @@ export const en: ShellContent = {
     handOverHint: 'Check the summary and start the next deal.',
     matchOver: 'Match closed',
     matchOverHint: 'A rematch is waiting.',
-    note: 'Envido and flor arrive soon.',
-    soon: 'Soon',
+  },
+  envido: {
+    names: {
+      1: 'Envido',
+      2: 'Envido',
+      3: 'Envido',
+      4: 'Envido la falta',
+    },
+    raises: {
+      2: 'Quiero y envido',
+      3: 'Quiero y 5 piedras más',
+      4: 'Quiero y falta',
+    },
+    callAria: 'Call envido',
+    dialogLabel: 'Answer the envido',
+    calledBy: (name, call) => `${name} called ${call}`,
+    stakeNote: (stake) => `At stake: ${stake} ${stake === 1 ? 'stone' : 'stones'}.`,
+    faltaNote: (stake) => `La falta: ${stake} ${stake === 1 ? 'stone' : 'stones'} to reach 24.`,
+    declineNote: (points) =>
+      `Declining pays the callers ${points} ${points === 1 ? 'stone' : 'stones'}.`,
+    answerNote: 'Your team answers. The tantos are compared when the deal closes.',
+    accept: 'Quiero',
+    decline: 'No quiero',
+    acceptAria: (call) => `Accept the ${call}`,
+    declineAria: (call) => `Decline the ${call}`,
+    speech: {
+      call: (call) => `¡${call}!`,
+      accept: '¡Quiero!',
+      decline: 'No quiero, pana.',
+      raise: (call) => `¡${call}!`,
+    },
+  },
+  flor: {
+    name: 'Flor',
+    reservada: 'Flor reservada',
+    points: (points) => `Flor +${points}`,
+    callAria: 'Declare flor',
+    speech: {
+      call: (kind) => (kind === 'reservada' ? '¡Flor reservada!' : '¡Flor!'),
+    },
+  },
+  prive: {
+    name: 'Prive',
+    callAria: 'Call prive',
+    note: (tantos) => `Prive: ${tantos.nosotros} against ${tantos.ellos} tantos.`,
+    speech: {
+      call: '¡Prive!',
+    },
+  },
+  lances: {
+    label: 'Lances on the table',
+    envidoPending: (call) => `${call} waiting for an answer`,
+    envidoAccepted: (call, stake) =>
+      `${call} accepted · ${stake} ${stake === 1 ? 'stone' : 'stones'}`,
+    envidoDeclined: (call, points) => `${call} declined · ${points} to the callers`,
+    flor: (kind, points) =>
+      `${kind === 'reservada' ? 'Flor reservada' : 'Flor'} +${points} when the first trick closes`,
+    prive: (points, tantos) => `Prive +${points} · tantos ${tantos.nosotros}–${tantos.ellos}`,
   },
   truco: {
     names: {
@@ -163,18 +224,27 @@ export const en: ShellContent = {
     trickParda: (baza) => `Trick ${baza}: parda.`,
     call: (name, call) => `${name} called ${call}.`,
     callYou: (call) => `You called ${call}.`,
+    envidoCall: (name, call) => `${name} called ${call}.`,
+    envidoCallYou: (call) => `You called ${call}.`,
+    florCall: (name, kind) =>
+      `${name} declared ${kind === 'reservada' ? 'flor reservada' : 'flor'}.`,
+    florCallYou: (kind) => `You declared ${kind === 'reservada' ? 'flor reservada' : 'flor'}.`,
+    priveCall: (name) => `${name} called prive.`,
+    priveCallYou: 'You called prive.',
     respond: (name, response, call) => `${name}: ${response} · ${call}.`,
     respondYou: (response, call) => `${response} · ${call}.`,
     fold: (name) => `${name} folded.`,
     foldYou: 'You folded.',
-    points: (team, points, reason) =>
-      points === 'match'
-        ? `${team} take the match (${reason}).`
-        : `${team} score ${points} ${points === 1 ? 'stone' : 'stones'} (${reason}).`,
-    handOver: (team, points) =>
-      points === 'match'
-        ? `${team} take the hand and the match.`
-        : `${team} take the hand: ${points} ${points === 1 ? 'stone' : 'stones'}.`,
+    award: (team, points, source, note) =>
+      `${team} +${points} (${source}${note ? ` · ${note}` : ''}).`,
+    handOver: (team, points, matchOver) =>
+      matchOver
+        ? `${team} take the match.`
+        : points === 'match'
+          ? `${team} take the deal and the match.`
+          : points === 0
+            ? `${team} take the deal.`
+            : `${team} take the deal: ${points} ${points === 1 ? 'stone' : 'stones'}.`,
     matchOver: (team) => `${team} win the match.`,
     turn: (name, baza) => `Turn: ${name} · trick ${baza}.`,
   },
@@ -192,13 +262,40 @@ export const en: ShellContent = {
       bazas: 'Tricks won',
       decline: 'The call was declined',
       fold: 'A fold',
+      envido: 'The envido',
+      flor: 'The flor',
+      prive: 'The prive',
     },
     trucoLabel: 'Truco',
     noTruco: 'No truco',
     trucoAccepted: (call) => `${call} accepted`,
     payoutLabel: 'Pays',
+    ledgerTitle: 'Every stone, itemized',
+    ledgerSource: 'Source',
+    ledgerTeam: 'Team',
+    ledgerPoints: 'Stones',
+    sources: {
+      flor: 'Flor',
+      prive: 'Prive',
+      envido: 'Envido',
+      truco: 'Truco',
+    },
+    details: {
+      accepted: 'accepted',
+      declined: 'declined',
+      reservada: 'flor reservada',
+      match: 'the match',
+      bazas: 'tricks',
+      fold: 'a fold',
+    },
+    tantos: (nosotros, ellos) => `tantos ${nosotros}–${ellos}`,
+    florTantos: (nosotros, ellos) =>
+      `tantos ${nosotros === 100 ? 'reservada' : nosotros}–${ellos === 100 ? 'reservada' : ellos}`,
+    totalLabel: 'Total of the deal',
+    settlementPoints: (points) => `+${points}`,
     bazasTitle: 'The tricks',
     handsTitle: 'Hands on the table',
+    burnedTag: 'burned',
     baza: (baza) => `Trick ${baza}`,
     parda: 'Parda',
     nextHand: 'Next deal',
@@ -207,6 +304,7 @@ export const en: ShellContent = {
   hints: {
     label: 'Shortcuts',
     cards: 'cards',
+    burn: 'burn',
     rules: 'rules',
     rulesLink: 'Game rules',
     logOpen: 'The table says',
@@ -215,16 +313,15 @@ export const en: ShellContent = {
   rulesDialog: {
     eyebrow: 'The school',
     title: 'The rules school',
-    body: 'The table is live: play your three cards and follow the tricks. The full school of the vira, envido, flor, truco and prive arrives with the next deal.',
+    body: 'The table plays to 24 stones: first to 24 wins. Each deal has three tricks. Envido and flor are called before the first card, prive when a team is one stone away, and truco raises the stake of the deal. The hand summary itemizes every stone.',
     topics: [
       'The vira, perico and perica',
-      'Envido and its stones',
-      'Flor and flor reservada',
+      'Envido and its four calls',
+      'Flor, the reservada and the envido it cancels',
       'Truco, retruco and vale nueve',
-      'Prive and burning a card',
+      'Prive at 23, and burning a card',
       'El Pana and the señas',
     ],
-    soon: 'Coming soon',
     close: 'Close',
     back: 'Back to the table',
   },
