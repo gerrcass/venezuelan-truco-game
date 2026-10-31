@@ -84,6 +84,10 @@ export function cardPower(card: Card, vira: Card, burned = false): number {
       return 40;
     case 12:
       return 50;
+    default: {
+      const exhaustive: never = card.rank;
+      return exhaustive;
+    }
   }
 }
 
