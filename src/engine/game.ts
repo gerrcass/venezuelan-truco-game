@@ -9,11 +9,15 @@ import type {
   GameLogEntry,
   GameState,
   GameView,
+  HandReason,
   HandResult,
   LegalActions,
+  PendingTrucoCall,
   PlayedCardView,
   TrickRecord,
   TrickView,
+  TrucoCallLevel,
+  TrucoLevel,
 } from './types';
 
 /** Seats are counterclockwise: 0 → 1 → 2 → 3. */
@@ -24,6 +28,61 @@ export function nextSeat(seat: Seat): Seat {
 /** A seat's partner sits opposite. */
 export function partnerOf(seat: Seat): Seat {
   return ((seat + 2) % 4) as Seat;
+}
+
+const OTHER_TEAM: Record<Team, Team> = { nosotros: 'ellos', ellos: 'nosotros' };
+
+/** The accepted stake for a truco level: 1, 3, 6, 9 or the partida. */
+export function stakeForLevel(level: TrucoLevel): number | 'match' {
+  switch (level) {
+    case 0:
+      return 1;
+    case 1:
+      return 3;
+    case 2:
+      return 6;
+    case 3:
+      return 9;
+    case 4:
+      return 'match';
+    default: {
+      const exhaustive: never = level;
+      return exhaustive;
+    }
+  }
+}
+
+/** What the caller's team takes when a call at `level` is declined. */
+export function declinePayout(level: TrucoCallLevel): number {
+  switch (level) {
+    case 1:
+      return 1;
+    case 2:
+      return 3;
+    case 3:
+      return 6;
+    case 4:
+      return 9;
+    default: {
+      const exhaustive: never = level;
+      return exhaustive;
+    }
+  }
+}
+
+/**
+ * The seat the table is waiting on. A pending call is a team decision, so when
+ * the turn seat is the caller we pick its next opponent to answer; after a
+ * raise the turn seat is already on the responding team.
+ */
+export function actingSeat(state: GameState): Seat {
+  if (state.phase !== 'playing' || state.pending === null) {
+    return state.turn;
+  }
+
+  return TEAM_BY_SEAT[state.turn] === state.pending.respondingTeam
+    ? state.turn
+    : nextSeat(state.turn);
 }
 
 export interface CreateGameOptions {
@@ -201,6 +260,82 @@ export function handWinner(
   return firstWinner ?? TEAM_BY_SEAT[mano];
 }
 
+interface HandOutcome {
+  readonly winnerTeam: Team;
+  readonly points: number | 'match';
+  readonly reason: HandReason;
+  readonly trucoLevel: TrucoLevel;
+}
+
+/**
+ * Close the reparto: pay the winner, clamp the score at the target, and decide
+ * whether the partida is over. A vale juego payout sets the winner to 24; the
+ * loser keeps their score.
+ */
+function finishHand(state: GameState, outcome: HandOutcome): GameState {
+  const rawScore =
+    outcome.points === 'match' ? state.target : state.scores[outcome.winnerTeam] + outcome.points;
+  const score = Math.min(state.target, rawScore);
+  const scores: Record<Team, number> = { ...state.scores, [outcome.winnerTeam]: score };
+  const matchWinner = score >= state.target ? outcome.winnerTeam : null;
+  const phase = matchWinner ? 'matchOver' : 'handOver';
+  const result: HandResult = {
+    winnerTeam: outcome.winnerTeam,
+    points: outcome.points,
+    reason: outcome.reason,
+    trucoLevel: outcome.trucoLevel,
+    bazaWins: state.bazaWins,
+    bazas: state.tricks,
+    hands: state.dealtHands,
+    vira: state.vira,
+  };
+
+  const resolved: GameState = {
+    ...state,
+    phase,
+    scores,
+    result,
+    matchWinner,
+    pending: null,
+    event: matchWinner
+      ? { type: 'matchEnded', winnerTeam: outcome.winnerTeam }
+      : {
+          type: 'handEnded',
+          winnerTeam: outcome.winnerTeam,
+          points: outcome.points,
+          reason: outcome.reason,
+        },
+  };
+
+  const withPoints = {
+    ...resolved,
+    ...appendLog(resolved, {
+      kind: 'points',
+      team: outcome.winnerTeam,
+      points: outcome.points,
+      reason: outcome.reason,
+      level: outcome.trucoLevel,
+    }),
+  };
+
+  const withHandOver = {
+    ...withPoints,
+    ...appendLog(withPoints, {
+      kind: 'handOver',
+      winnerTeam: outcome.winnerTeam,
+      points: outcome.points,
+      reason: outcome.reason,
+    }),
+  };
+
+  return matchWinner
+    ? {
+        ...withHandOver,
+        ...appendLog(withHandOver, { kind: 'matchOver', winnerTeam: outcome.winnerTeam }),
+      }
+    : withHandOver;
+}
+
 function resolveTrick(state: GameState): GameState {
   let bestPower = Number.NEGATIVE_INFINITY;
   let bestSeat: Seat | null = null;
@@ -278,47 +413,13 @@ function resolveTrick(state: GameState): GameState {
   }
 
   const winner = handWinner(bazaWins, tricks, state.mano);
-  const score = state.scores[winner] + 1;
-  const scores: Record<Team, number> = { ...state.scores, [winner]: score };
-  const result: HandResult = {
+
+  return finishHand(withTrickLog, {
     winnerTeam: winner,
-    points: 1,
+    points: stakeForLevel(state.truco.level),
     reason: 'bazas',
-    bazaWins,
-    bazas: tricks,
-    hands: state.dealtHands,
-    vira: state.vira,
-  };
-  const matchWinner = score >= state.target ? winner : null;
-  const phase = matchWinner ? 'matchOver' : 'handOver';
-
-  const scored: GameState = {
-    ...withTrickLog,
-    phase,
-    scores,
-    result,
-    matchWinner,
-    event: matchWinner
-      ? { type: 'matchEnded', winnerTeam: winner }
-      : { type: 'handEnded', winnerTeam: winner, points: 1 },
-  };
-
-  const withPoints = {
-    ...scored,
-    ...appendLog(scored, { kind: 'points', team: winner, points: 1, reason: 'bazas' }),
-  };
-
-  const withHandOver = {
-    ...withPoints,
-    ...appendLog(withPoints, { kind: 'handOver', winnerTeam: winner, points: 1 }),
-  };
-
-  return matchWinner
-    ? {
-        ...withHandOver,
-        ...appendLog(withHandOver, { kind: 'matchOver', winnerTeam: winner }),
-      }
-    : withHandOver;
+    trucoLevel: state.truco.level,
+  });
 }
 
 function playCard(state: GameState, action: Extract<GameAction, { type: 'playCard' }>): GameState {
@@ -375,6 +476,145 @@ function playCard(state: GameState, action: Extract<GameAction, { type: 'playCar
   return currentTrick.length === 4 ? resolveTrick(withLog) : withLog;
 }
 
+function callTruco(state: GameState, seat: Seat): GameState {
+  if (state.phase !== 'playing' || state.pending !== null || state.turn !== seat) {
+    return state;
+  }
+
+  const team = TEAM_BY_SEAT[seat];
+  const accepted = state.truco.level;
+  const mayCall = accepted === 0 || (accepted < 4 && state.truco.acceptedByTeam === team);
+
+  if (!mayCall) {
+    return state;
+  }
+
+  const level = (accepted + 1) as TrucoCallLevel;
+  const pending: PendingTrucoCall = {
+    kind: 'truco',
+    level,
+    callerSeat: seat,
+    callerTeam: team,
+    respondingTeam: OTHER_TEAM[team],
+  };
+  const called: GameState = {
+    ...state,
+    pending,
+    event: { type: 'trucoCalled', seat, team, level },
+  };
+
+  return {
+    ...called,
+    ...appendLog(called, { kind: 'call', seat, team, call: 'truco', level }),
+  };
+}
+
+function respondTruco(
+  state: GameState,
+  action: Extract<GameAction, { type: 'respondTruco' }>,
+): GameState {
+  if (state.phase !== 'playing') {
+    return state;
+  }
+
+  const pending = state.pending;
+
+  if (!pending || pending.kind !== 'truco') {
+    return state;
+  }
+
+  const team = TEAM_BY_SEAT[action.seat];
+
+  if (team !== pending.respondingTeam) {
+    return state;
+  }
+
+  const responded: GameState = {
+    ...state,
+    event: {
+      type: 'trucoResponded',
+      seat: action.seat,
+      team,
+      level: pending.level,
+      response: action.response,
+    },
+  };
+  const withLog = {
+    ...responded,
+    ...appendLog(responded, {
+      kind: 'respond',
+      seat: action.seat,
+      team,
+      call: 'truco',
+      level: pending.level,
+      response: action.response,
+    }),
+  };
+
+  if (action.response === 'accept') {
+    return {
+      ...withLog,
+      truco: { level: pending.level, acceptedByTeam: team },
+      pending: null,
+      turn: pending.callerSeat,
+    };
+  }
+
+  if (action.response === 'decline') {
+    return finishHand(
+      { ...withLog, pending: null },
+      {
+        winnerTeam: pending.callerTeam,
+        points: declinePayout(pending.level),
+        reason: 'decline',
+        trucoLevel: (pending.level - 1) as TrucoLevel,
+      },
+    );
+  }
+
+  if (pending.level === 4) {
+    return state;
+  }
+
+  const raisedLevel = (pending.level + 1) as TrucoCallLevel;
+  const raisedPending: PendingTrucoCall = {
+    kind: 'truco',
+    level: raisedLevel,
+    callerSeat: action.seat,
+    callerTeam: team,
+    respondingTeam: pending.callerTeam,
+  };
+
+  return {
+    ...withLog,
+    truco: { level: pending.level, acceptedByTeam: team },
+    pending: raisedPending,
+  };
+}
+
+function fold(state: GameState, seat: Seat): GameState {
+  if (state.phase !== 'playing' || state.pending !== null || state.turn !== seat) {
+    return state;
+  }
+
+  const team = TEAM_BY_SEAT[seat];
+  const folded: GameState = {
+    ...state,
+    event: { type: 'folded', seat, team },
+  };
+  const withLog = {
+    ...folded,
+    ...appendLog(folded, { kind: 'fold', seat, team }),
+  };
+
+  return finishHand(withLog, {
+    winnerTeam: OTHER_TEAM[team],
+    points: stakeForLevel(state.truco.level),
+    reason: 'fold',
+    trucoLevel: state.truco.level,
+  });
+}
+
 function nextHand(state: GameState): GameState {
   if (state.phase !== 'handOver') {
     return state;
@@ -417,12 +657,15 @@ export function reduce(state: GameState, action: GameAction): GameState {
     case 'rematch':
       return rematch(state, action.seed);
     case 'callTruco':
+      return callTruco(state, action.seat);
     case 'respondTruco':
+      return respondTruco(state, action);
+    case 'fold':
+      return fold(state, action.seat);
     case 'callEnvido':
     case 'respondEnvido':
     case 'callFlor':
     case 'callPrive':
-    case 'fold':
       return state;
     default: {
       const exhaustive: never = action;
@@ -433,26 +676,38 @@ export function reduce(state: GameState, action: GameAction): GameState {
 
 /** The single source of truth for UI and bots. Only the turn seat may play. */
 export function getLegalActions(state: GameState, seat: Seat): LegalActions {
+  const isPlaying = state.phase === 'playing';
+  const onTurn = isPlaying && state.turn === seat;
   const canPlay =
-    state.phase === 'playing' &&
-    state.pending === null &&
-    state.turn === seat &&
-    !state.currentTrick.some((play) => play.seat === seat);
+    onTurn && state.pending === null && !state.currentTrick.some((play) => play.seat === seat);
   const playableCardKeys = canPlay ? state.hands[seat].map(cardKey) : [];
+  const team = TEAM_BY_SEAT[seat];
+  const pendingTruco = state.pending?.kind === 'truco' ? state.pending : null;
+  const canRespondTruco =
+    isPlaying && pendingTruco !== null && pendingTruco.respondingTeam === team;
+  const canCallTruco =
+    onTurn &&
+    state.pending === null &&
+    (state.truco.level === 0 || (state.truco.level < 4 && state.truco.acceptedByTeam === team));
+  const canRaiseTruco = canRespondTruco && pendingTruco !== null && pendingTruco.level < 4;
+  const trucoRaiseLevel: TrucoCallLevel | null =
+    canRaiseTruco && pendingTruco !== null ? ((pendingTruco.level + 1) as TrucoCallLevel) : null;
 
   return {
     playableCardKeys,
     canBurn: playableCardKeys.length > 0,
     canNextHand: state.phase === 'handOver',
     canRematch: state.phase === 'matchOver',
-    canCallTruco: false,
-    canRespondTruco: false,
+    canCallTruco,
+    trucoLevel: canCallTruco ? ((state.truco.level + 1) as TrucoCallLevel) : null,
+    canRespondTruco,
+    canRaiseTruco,
+    trucoRaiseLevel,
     canCallEnvido: false,
     canRespondEnvido: false,
     canCallFlor: false,
     canCallPrive: false,
-    canFold: false,
-    trucoLevel: null,
+    canFold: onTurn && state.pending === null,
     envidoLevel: null,
   };
 }
@@ -471,7 +726,8 @@ export function viewFor(state: GameState, seat: Seat): GameView {
     handNumber: state.handNumber,
     target: state.target,
     scores: state.scores,
-    stake: 1,
+    stake: stakeForLevel(state.truco.level),
+    pending: state.pending,
     dealer: state.dealer,
     mano: state.mano,
     vira: state.vira,

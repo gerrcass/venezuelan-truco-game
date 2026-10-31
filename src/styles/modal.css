@@ -183,6 +183,20 @@
   padding-right: 20px;
 }
 
+.summary__badge {
+  align-self: flex-start;
+  padding: 3px 8px;
+  border: 1px solid rgba(196, 85, 59, 0.3);
+  border-radius: 999px;
+  background: rgba(196, 85, 59, 0.08);
+  color: var(--terracotta-ink);
+  font-size: 7.5px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
 .summary__title {
   color: var(--ink);
   font-family: var(--font-display);
@@ -220,6 +234,58 @@
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+}
+
+.summary__score--final {
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.summary__ledger {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.summary__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 5px 8px;
+  border-radius: 6px;
+  background: rgba(33, 27, 20, 0.045);
+}
+
+.summary__row dt {
+  color: var(--ink-soft);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.summary__row dd {
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-align: right;
+}
+
+.summary__row--payout {
+  background: rgba(240, 180, 41, 0.12);
+}
+
+.summary__row--payout dt {
+  color: var(--marigold-ink);
+}
+
+.summary__row--payout dd {
+  color: var(--marigold-ink);
 }
 
 .summary__section {
@@ -352,6 +418,93 @@
 .summary__action {
   width: 100%;
   margin-top: 20px;
+}
+
+/* ---------------------------------------------------------- truco dialog */
+
+.truco-dialog {
+  width: min(460px, 100%);
+}
+
+.truco-dialog__head {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-right: 10px;
+}
+
+.truco-dialog__title {
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 31px;
+  font-variation-settings:
+    'SOFT' 60,
+    'WONK' 1,
+    'opsz' 60;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1.02;
+}
+
+.truco-dialog__stake {
+  color: var(--marigold-ink);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
+.truco-dialog__note {
+  margin-top: 14px;
+  color: var(--ink-soft);
+  font-size: 13px;
+  font-weight: 450;
+  line-height: 1.5;
+}
+
+.truco-dialog__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.truco-dialog__actions .button {
+  min-width: 0;
+  flex: 1 1 118px;
+  margin-top: 0;
+}
+
+.button--quiet {
+  border-color: rgba(33, 27, 20, 0.18);
+  background: rgba(33, 27, 20, 0.04);
+  color: var(--ink);
+}
+
+.button--quiet:hover {
+  background: rgba(33, 27, 20, 0.09);
+}
+
+.button--raise {
+  border-color: rgba(196, 85, 59, 0.35);
+  background: rgba(196, 85, 59, 0.1);
+  color: var(--terracotta-ink);
+}
+
+.button--raise:hover {
+  background: rgba(196, 85, 59, 0.16);
+}
+
+.truco-dialog__score {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(33, 27, 20, 0.12);
+  color: var(--ink-soft);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
 /* --------------------------------------------------------------- drawer */

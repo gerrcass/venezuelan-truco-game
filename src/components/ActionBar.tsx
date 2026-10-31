@@ -1,26 +1,43 @@
 import { useLocale } from '../content/locale-context';
-import { PERSONA_BY_SEAT } from '../domain/seats';
+import { PERSONA_BY_SEAT, TEAM_BY_SEAT } from '../domain/seats';
 import type { GameView } from '../engine/types';
 
 interface ActionBarProps {
   readonly view: GameView;
+  readonly onCallTruco: () => void;
+  readonly onFold: () => void;
 }
 
-export function ActionBar({ view }: ActionBarProps) {
+export function ActionBar({ view, onCallTruco, onFold }: ActionBarProps) {
   const { content } = useLocale();
   const actions = content.actions;
+  const truco = content.truco;
   const noteId = 'actions-note';
-  const isYourTurn = view.phase === 'playing' && view.turn === view.seat;
+  const playing = view.phase === 'playing';
+  const pending = view.pending?.kind === 'truco' ? view.pending : null;
+  const mustRespond =
+    playing && pending !== null && pending.respondingTeam === TEAM_BY_SEAT[view.seat];
+  const isYourTurn = playing && view.turn === view.seat && pending === null;
   const waitingPerson = content.personas[PERSONA_BY_SEAT[view.turn]];
+  const pendingCall = pending ? truco.names[pending.level] : null;
+  const callLevel = view.legal.trucoLevel;
+  const callName = callLevel === null ? null : truco.names[callLevel];
 
   const prompt =
     view.phase === 'matchOver'
       ? { title: actions.matchOver, hint: actions.matchOverHint }
       : view.phase === 'handOver'
         ? { title: actions.handOver, hint: actions.handOverHint }
-        : isYourTurn
-          ? { title: actions.yourTurn, hint: actions.yourTurnHint }
-          : { title: actions.waiting(waitingPerson.name), hint: actions.waitingHint };
+        : mustRespond && pendingCall
+          ? { title: actions.respondPrompt(pendingCall), hint: actions.respondPromptHint }
+          : pending
+            ? {
+                title: actions.waitingResponse,
+                hint: actions.waitingResponseHint,
+              }
+            : isYourTurn
+              ? { title: actions.yourTurn, hint: actions.yourTurnHint }
+              : { title: actions.waiting(waitingPerson.name), hint: actions.waitingHint };
 
   return (
     <section className="actions" aria-labelledby="actions-title">
@@ -49,28 +66,25 @@ export function ActionBar({ view }: ActionBarProps) {
         >
           {actions.flor}
         </button>
+        {callName !== null && (
+          <button
+            type="button"
+            className="action action--truco action--call"
+            onClick={onCallTruco}
+            aria-label={truco.callAria(callName)}
+          >
+            {callName}
+          </button>
+        )}
       </div>
 
       <span className="actions__divider" aria-hidden="true" />
 
-      <button
-        type="button"
-        className="action action--truco"
-        disabled
-        title={actions.soon}
-        aria-describedby={noteId}
-      >
-        {actions.truco}
-      </button>
-      <button
-        type="button"
-        className="action action--fold"
-        disabled
-        title={actions.soon}
-        aria-describedby={noteId}
-      >
-        {actions.fold}
-      </button>
+      {view.legal.canFold && (
+        <button type="button" className="action action--fold" onClick={onFold}>
+          {actions.fold}
+        </button>
+      )}
 
       <p className="actions__note" id={noteId}>
         {actions.note}

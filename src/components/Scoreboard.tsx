@@ -42,11 +42,23 @@ export function Scoreboard({ view }: ScoreboardProps) {
 
       <div className="table-meta">
         <div className="table-meta__stats">
-          <div className="table-meta__stat">
+          <div
+            className={`table-meta__stat${view.stake === 'match' ? ' table-meta__stat--match' : ''}`}
+            role="group"
+            aria-label={`${scoreboard.stakeLabel}: ${scoreboard.stakeSpoken(view.stake)}`}
+          >
             <span className="table-meta__label">{scoreboard.stakeLabel}</span>
-            <span className="table-meta__value">
-              <StoneIcon className="table-meta__stone" />
-              {view.stake}
+            <span
+              className={`table-meta__value${view.stake === 'match' ? ' table-meta__value--match' : ''}`}
+            >
+              {view.stake === 'match' ? (
+                scoreboard.stakeShort('match')
+              ) : (
+                <>
+                  <StoneIcon className="table-meta__stone" />
+                  {view.stake}
+                </>
+              )}
             </span>
           </div>
           <div className="table-meta__stat">

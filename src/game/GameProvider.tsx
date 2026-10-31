@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useState, type PropsWithChildren } from 'react';
 
 import { chooseSimpleAction } from '../ai/simpleBot';
-import { createGame, reduce, viewFor } from '../engine/game';
+import { TEAM_BY_SEAT } from '../domain/seats';
+import { actingSeat, createGame, reduce, viewFor } from '../engine/game';
 import type { GameAction, GameState } from '../engine/types';
 import { GameContext } from './game-context';
 
@@ -62,13 +63,30 @@ export function GameProvider({
   const value = useMemo(() => ({ view, dispatch, botDelayMs: delay }), [delay, dispatch, view]);
 
   useEffect(() => {
-    if (state.phase !== 'playing' || state.turn === HUMAN_SEAT || state.pending !== null) {
+    if (state.phase !== 'playing') {
       return;
     }
 
-    const botView = viewFor(state, state.turn);
+    // A pending call is a team decision. If the human's team must answer, the
+    // response dialog owns the table; otherwise a bot on the responding team
+    // answers. Without a call, the turn seat acts.
+    if (state.pending !== null && state.pending.respondingTeam === TEAM_BY_SEAT[HUMAN_SEAT]) {
+      return;
+    }
 
-    if (botView.legal.playableCardKeys.length === 0) {
+    const actor = actingSeat(state);
+
+    if (actor === HUMAN_SEAT) {
+      return;
+    }
+
+    const botView = viewFor(state, actor);
+
+    if (
+      !botView.legal.canRespondTruco &&
+      botView.legal.playableCardKeys.length === 0 &&
+      !botView.legal.canCallTruco
+    ) {
       return;
     }
 

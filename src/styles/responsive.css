@@ -672,6 +672,24 @@
     font-size: 9px;
   }
 
+  .table-meta__value--match {
+    font-size: 12px;
+    letter-spacing: 0.02em;
+  }
+
+  .truco-dialog__title {
+    font-size: 25px;
+  }
+
+  .truco-dialog__actions {
+    flex-direction: column;
+  }
+
+  .truco-dialog__actions .button {
+    width: 100%;
+    flex-basis: auto;
+  }
+
   .rules-dialog__topics {
     grid-template-columns: 1fr;
     gap: 9px;

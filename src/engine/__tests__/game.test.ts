@@ -2,7 +2,15 @@ import { chooseSimpleAction } from '../../ai/simpleBot';
 import { cardKey, type Card, type Rank, type Suit } from '../../domain/cards';
 import { SEATS, type Seat } from '../../domain/seats';
 
-import { createGame, getLegalActions, handWinner, nextSeat, reduce, viewFor } from '../game';
+import {
+  actingSeat,
+  createGame,
+  getLegalActions,
+  handWinner,
+  nextSeat,
+  reduce,
+  viewFor,
+} from '../game';
 import type { GameState } from '../types';
 
 function card(rank: Rank, suit: Suit): Card {
@@ -52,9 +60,9 @@ function simulateHand(seed: string, target = 24): GameState {
   let state = createGame({ seed, target });
   let guard = 0;
 
-  while (state.phase === 'playing' && guard < 80) {
+  while (state.phase === 'playing' && guard < 200) {
     guard += 1;
-    const action = chooseSimpleAction(viewFor(state, state.turn));
+    const action = chooseSimpleAction(viewFor(state, actingSeat(state)));
     const next = reduce(state, action);
     expect(next).not.toBe(state);
     state = next;
@@ -515,10 +523,8 @@ describe('the hand lifecycle', () => {
   it('leaves the future cantos inert but typed', () => {
     const state = createGame({ seed: 'futuro' });
 
-    expect(reduce(state, { type: 'callTruco', seat: 0 })).toBe(state);
     expect(reduce(state, { type: 'callEnvido', seat: 0 })).toBe(state);
     expect(reduce(state, { type: 'callFlor', seat: 0 })).toBe(state);
     expect(reduce(state, { type: 'callPrive', seat: 0 })).toBe(state);
-    expect(reduce(state, { type: 'fold', seat: 0 })).toBe(state);
   });
 });

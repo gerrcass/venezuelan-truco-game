@@ -1,9 +1,20 @@
 import type { Card, CourtRank, Piece, Rank, Suit } from '../domain/cards';
 import type { PersonaKey, Team } from '../domain/seats';
+import type { HandReason, TrucoCallLevel } from '../engine/types';
 
 export type Locale = 'es' | 'en';
 
-export type LogKind = 'deal' | 'play' | 'trick' | 'points' | 'handOver' | 'matchOver' | 'turn';
+export type LogKind =
+  | 'deal'
+  | 'play'
+  | 'trick'
+  | 'points'
+  | 'handOver'
+  | 'matchOver'
+  | 'turn'
+  | 'call'
+  | 'respond'
+  | 'fold';
 
 export interface PersonaCopy {
   readonly name: string;
@@ -53,6 +64,8 @@ export interface ShellContent {
     readonly statusMano: string;
     readonly statusPie: string;
     readonly stakeLabel: string;
+    readonly stakeShort: (stake: number | 'match') => string;
+    readonly stakeSpoken: (stake: number | 'match') => string;
     readonly dealWord: string;
     readonly viraLabel: string;
   };
@@ -90,6 +103,7 @@ export interface ShellContent {
     readonly count: (count: number) => string;
     readonly hint: string;
     readonly waiting: string;
+    readonly pending: string;
     readonly closed: string;
     readonly empty: string;
     readonly aria: string;
@@ -100,18 +114,41 @@ export interface ShellContent {
     readonly cantar: string;
     readonly envido: string;
     readonly flor: string;
-    readonly truco: string;
     readonly fold: string;
     readonly yourTurn: string;
     readonly yourTurnHint: string;
     readonly waiting: (name: string) => string;
     readonly waitingHint: string;
+    readonly waitingResponse: string;
+    readonly waitingResponseHint: string;
+    readonly respondPrompt: (call: string) => string;
+    readonly respondPromptHint: string;
     readonly handOver: string;
     readonly handOverHint: string;
     readonly matchOver: string;
     readonly matchOverHint: string;
     readonly note: string;
     readonly soon: string;
+  };
+  readonly truco: {
+    readonly names: Record<TrucoCallLevel, string>;
+    readonly dialogLabel: string;
+    readonly calledBy: (name: string, call: string) => string;
+    readonly stakeNote: (stake: number | 'match') => string;
+    readonly answerNote: string;
+    readonly callAria: (call: string) => string;
+    readonly accept: string;
+    readonly decline: string;
+    readonly raise: (call: string) => string;
+    readonly acceptAria: (call: string) => string;
+    readonly declineAria: (call: string) => string;
+    readonly raiseAria: (call: string) => string;
+    readonly speech: {
+      readonly call: (call: string) => string;
+      readonly accept: string;
+      readonly decline: string;
+      readonly raise: (call: string) => string;
+    };
   };
   readonly log: {
     readonly title: string;
@@ -128,8 +165,14 @@ export interface ShellContent {
     readonly trickWin: (baza: number, name: string) => string;
     readonly trickWinYou: (baza: number) => string;
     readonly trickParda: (baza: number) => string;
-    readonly points: (team: string, points: number) => string;
-    readonly handOver: (team: string, points: number) => string;
+    readonly call: (name: string, call: string) => string;
+    readonly callYou: (call: string) => string;
+    readonly respond: (name: string, response: string, call: string) => string;
+    readonly respondYou: (response: string, call: string) => string;
+    readonly fold: (name: string) => string;
+    readonly foldYou: string;
+    readonly points: (team: string, points: number | 'match', reason: string) => string;
+    readonly handOver: (team: string, points: number | 'match') => string;
     readonly matchOver: (team: string) => string;
     readonly turn: (name: string, baza: number) => string;
   };
@@ -137,8 +180,16 @@ export interface ShellContent {
     readonly eyebrow: string;
     readonly title: (team: string) => string;
     readonly matchTitle: (team: string) => string;
-    readonly points: (points: number) => string;
+    readonly matchBadge: string;
+    readonly points: (points: number | 'match') => string;
     readonly score: (nosotros: number, ellos: number) => string;
+    readonly accountLabel: string;
+    readonly reasonLabel: string;
+    readonly reasons: Record<HandReason, string>;
+    readonly trucoLabel: string;
+    readonly noTruco: string;
+    readonly trucoAccepted: (call: string) => string;
+    readonly payoutLabel: string;
     readonly bazasTitle: string;
     readonly handsTitle: string;
     readonly baza: (baza: number) => string;

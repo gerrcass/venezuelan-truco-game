@@ -4,11 +4,17 @@ import type { Seat, Team } from '../domain/seats';
 /** The three phases of a partida. */
 export type Phase = 'playing' | 'handOver' | 'matchOver';
 
-/** Why a reparto was awarded. Later tickets add truco, envido, flor, prive and fold. */
-export type HandReason = 'bazas';
+/** Why a reparto was awarded. Envido, flor and prive arrive in ticket #5. */
+export type HandReason = 'bazas' | 'decline' | 'fold';
 
-/** The accepted truco level. Inert in ticket #3. */
+/**
+ * The truco ladder. 0 means no call has been accepted, 1–3 are truco,
+ * retruco and vale nueve, and 4 is vale juego (the reparto decides the partida).
+ */
 export type TrucoLevel = 0 | 1 | 2 | 3 | 4;
+
+/** A level that can actually be called or raised to. */
+export type TrucoCallLevel = Exclude<TrucoLevel, 0>;
 
 /** The state of the envido call. Inert in ticket #3. */
 export type EnvidoStatus = 'none' | 'called' | 'accepted' | 'declined';
@@ -30,7 +36,7 @@ export interface TrickRecord {
   readonly parda: boolean;
 }
 
-/** Forward-looking truco state. Ticket #4 fills it in. */
+/** Forward-looking truco state: the last accepted level and who accepted it. */
 export interface TrucoState {
   readonly level: TrucoLevel;
   readonly acceptedByTeam: Team | null;
@@ -58,16 +64,31 @@ export interface PriveState {
   readonly called: boolean;
 }
 
-/** A call waiting for a team response. Ticket #4 fills it in. */
-export type PendingCall =
-  | { readonly kind: 'truco'; readonly callerTeam: Team; readonly level: TrucoLevel }
-  | { readonly kind: 'envido'; readonly callerTeam: Team };
+/** A call waiting for a team response. Envido is typed but inert until ticket #5. */
+export interface PendingTrucoCall {
+  readonly kind: 'truco';
+  readonly level: TrucoCallLevel;
+  readonly callerSeat: Seat;
+  readonly callerTeam: Team;
+  readonly respondingTeam: Team;
+}
+
+export interface PendingEnvidoCall {
+  readonly kind: 'envido';
+  readonly level: number;
+  readonly callerSeat: Seat;
+  readonly callerTeam: Team;
+  readonly respondingTeam: Team;
+}
+
+export type PendingCall = PendingTrucoCall | PendingEnvidoCall;
 
 /** The hand summary: enough to render the overlay without reading hidden state. */
 export interface HandResult {
   readonly winnerTeam: Team;
-  readonly points: number;
+  readonly points: number | 'match';
   readonly reason: HandReason;
+  readonly trucoLevel: TrucoLevel;
   readonly bazaWins: Record<Team, number>;
   readonly bazas: readonly TrickRecord[];
   readonly hands: Record<Seat, readonly Card[]>;
@@ -106,14 +127,16 @@ export interface TrickLogEntry extends LogEntryBase {
 export interface PointsLogEntry extends LogEntryBase {
   readonly kind: 'points';
   readonly team: Team;
-  readonly points: number;
+  readonly points: number | 'match';
   readonly reason: HandReason;
+  readonly level: TrucoLevel;
 }
 
 export interface HandOverLogEntry extends LogEntryBase {
   readonly kind: 'handOver';
   readonly winnerTeam: Team;
-  readonly points: number;
+  readonly points: number | 'match';
+  readonly reason: HandReason;
 }
 
 export interface MatchOverLogEntry extends LogEntryBase {
@@ -127,13 +150,39 @@ export interface TurnLogEntry extends LogEntryBase {
   readonly baza: number;
 }
 
+export interface CallLogEntry extends LogEntryBase {
+  readonly kind: 'call';
+  readonly seat: Seat;
+  readonly team: Team;
+  readonly call: 'truco';
+  readonly level: TrucoCallLevel;
+}
+
+export interface RespondLogEntry extends LogEntryBase {
+  readonly kind: 'respond';
+  readonly seat: Seat;
+  readonly team: Team;
+  readonly call: 'truco';
+  readonly level: TrucoCallLevel;
+  readonly response: 'accept' | 'decline' | 'raise';
+}
+
+export interface FoldLogEntry extends LogEntryBase {
+  readonly kind: 'fold';
+  readonly seat: Seat;
+  readonly team: Team;
+}
+
 export type GameLogEntry =
+  | CallLogEntry
   | DealLogEntry
-  | PlayLogEntry
-  | TrickLogEntry
-  | PointsLogEntry
+  | FoldLogEntry
   | HandOverLogEntry
   | MatchOverLogEntry
+  | PlayLogEntry
+  | PointsLogEntry
+  | RespondLogEntry
+  | TrickLogEntry
   | TurnLogEntry;
 
 /** Public events for animation and announcements, with no hidden card data. */
@@ -146,7 +195,26 @@ export type GameEvent =
       readonly winnerTeam: Team | null;
       readonly parda: boolean;
     }
-  | { readonly type: 'handEnded'; readonly winnerTeam: Team; readonly points: number }
+  | {
+      readonly type: 'trucoCalled';
+      readonly seat: Seat;
+      readonly team: Team;
+      readonly level: TrucoCallLevel;
+    }
+  | {
+      readonly type: 'trucoResponded';
+      readonly seat: Seat;
+      readonly team: Team;
+      readonly level: TrucoCallLevel;
+      readonly response: 'accept' | 'decline' | 'raise';
+    }
+  | { readonly type: 'folded'; readonly seat: Seat; readonly team: Team }
+  | {
+      readonly type: 'handEnded';
+      readonly winnerTeam: Team;
+      readonly points: number | 'match';
+      readonly reason: HandReason;
+    }
   | { readonly type: 'matchEnded'; readonly winnerTeam: Team };
 
 /** What a seat may do right now. The UI and the AI both read this. */
@@ -156,13 +224,15 @@ export interface LegalActions {
   readonly canNextHand: boolean;
   readonly canRematch: boolean;
   readonly canCallTruco: boolean;
+  readonly trucoLevel: TrucoCallLevel | null;
   readonly canRespondTruco: boolean;
+  readonly canRaiseTruco: boolean;
+  readonly trucoRaiseLevel: TrucoCallLevel | null;
   readonly canCallEnvido: boolean;
   readonly canRespondEnvido: boolean;
   readonly canCallFlor: boolean;
   readonly canCallPrive: boolean;
   readonly canFold: boolean;
-  readonly trucoLevel: TrucoLevel | null;
   readonly envidoLevel: number | null;
 }
 
@@ -190,7 +260,8 @@ export interface GameView {
   readonly handNumber: number;
   readonly target: number;
   readonly scores: Record<Team, number>;
-  readonly stake: number;
+  readonly stake: number | 'match';
+  readonly pending: PendingCall | null;
   readonly dealer: Seat;
   readonly mano: Seat;
   readonly vira: Card;

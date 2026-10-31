@@ -570,6 +570,15 @@
   justify-content: center;
 }
 
+.table-meta__value--match {
+  color: var(--marigold);
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
 .table-meta__stone {
   width: 13px;
   height: 13px;

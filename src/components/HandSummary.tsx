@@ -21,9 +21,14 @@ export function HandSummary({ view, onNextHand, onRematch }: HandSummaryProps) {
   }
 
   const summary = content.summary;
+  const scoreboard = content.scoreboard;
   const matchOver = view.phase === 'matchOver';
   const winner = content.scoreboard.teams[result.winnerTeam].name;
   const hands = view.revealedHands ?? result.hands;
+  const acceptedCall =
+    result.trucoLevel === 0
+      ? summary.noTruco
+      : summary.trucoAccepted(content.truco.names[result.trucoLevel]);
 
   return (
     <Modal
@@ -36,6 +41,7 @@ export function HandSummary({ view, onNextHand, onRematch }: HandSummaryProps) {
     >
       <header className="summary__head">
         <p className="eyebrow">{summary.eyebrow}</p>
+        {matchOver && <span className="summary__badge">{summary.matchBadge}</span>}
         <h2 className="summary__title" id="hand-summary-title">
           {matchOver ? summary.matchTitle(winner) : summary.title(winner)}
         </h2>
@@ -43,26 +49,52 @@ export function HandSummary({ view, onNextHand, onRematch }: HandSummaryProps) {
           <StoneIcon className="summary__stone" />
           {summary.points(result.points)}
         </p>
-        <p className="summary__score">{summary.score(view.scores.nosotros, view.scores.ellos)}</p>
+        <p className={`summary__score${matchOver ? ' summary__score--final' : ''}`}>
+          {summary.score(view.scores.nosotros, view.scores.ellos)}
+        </p>
       </header>
 
-      <div className="summary__section">
-        <h3 className="summary__section-title">{summary.bazasTitle}</h3>
-        <ol className="summary__bazas">
-          {result.bazas.map((baza) => (
-            <li className="summary__baza" key={baza.baza}>
-              <span className="summary__baza-label">{summary.baza(baza.baza)}</span>
-              <span
-                className={`summary__baza-result${baza.parda ? ' summary__baza-result--parda' : ''}`}
-              >
-                {baza.parda || baza.winnerSeat === null
-                  ? summary.parda
-                  : content.personas[PERSONA_BY_SEAT[baza.winnerSeat]].name}
-              </span>
-            </li>
-          ))}
-        </ol>
+      <div className="summary__section summary__account">
+        <h3 className="summary__section-title">{summary.accountLabel}</h3>
+        <dl className="summary__ledger">
+          <div className="summary__row">
+            <dt>{scoreboard.stakeLabel}</dt>
+            <dd>{scoreboard.stakeSpoken(view.stake)}</dd>
+          </div>
+          <div className="summary__row">
+            <dt>{summary.reasonLabel}</dt>
+            <dd>{summary.reasons[result.reason]}</dd>
+          </div>
+          <div className="summary__row">
+            <dt>{summary.trucoLabel}</dt>
+            <dd>{acceptedCall}</dd>
+          </div>
+          <div className="summary__row summary__row--payout">
+            <dt>{summary.payoutLabel}</dt>
+            <dd>{summary.points(result.points)}</dd>
+          </div>
+        </dl>
       </div>
+
+      {result.bazas.length > 0 && (
+        <div className="summary__section">
+          <h3 className="summary__section-title">{summary.bazasTitle}</h3>
+          <ol className="summary__bazas">
+            {result.bazas.map((baza) => (
+              <li className="summary__baza" key={baza.baza}>
+                <span className="summary__baza-label">{summary.baza(baza.baza)}</span>
+                <span
+                  className={`summary__baza-result${baza.parda ? ' summary__baza-result--parda' : ''}`}
+                >
+                  {baza.parda || baza.winnerSeat === null
+                    ? summary.parda
+                    : content.personas[PERSONA_BY_SEAT[baza.winnerSeat]].name}
+                </span>
+              </li>
+            ))}
+          </ol>
+        </div>
+      )}
 
       <div className="summary__section">
         <h3 className="summary__section-title">{summary.handsTitle}</h3>

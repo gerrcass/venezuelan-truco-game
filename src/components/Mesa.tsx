@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useState } from 'react';
 
 import { useLocale } from '../content/locale-context';
+import type { ShellContent } from '../content/types';
 import { cardKey } from '../domain/cards';
-import { PERSONA_BY_SEAT, SEATS } from '../domain/seats';
+import { PERSONA_BY_SEAT, SEATS, TEAM_BY_SEAT, type Seat as SeatId } from '../domain/seats';
 import { BAZAS_PER_HAND } from '../engine/game';
+import type { GameLogEntry, TrucoCallLevel } from '../engine/types';
 import { useGame } from '../game/game-context';
 import { ActionBar } from './ActionBar';
 import { HandDock } from './HandDock';
@@ -17,6 +19,7 @@ import { Seat } from './Seat';
 import { SpeechBubble } from './SpeechBubble';
 import { TopBar } from './TopBar';
 import { TrickArea } from './TrickArea';
+import { TrucoDialog } from './TrucoDialog';
 
 const SOUND_KEY = 'truco.sound';
 
@@ -26,6 +29,47 @@ function readSoundPreference(): boolean {
   } catch {
     return true;
   }
+}
+
+/** The last call or answer of the current reparto, for the table-talk bubble. */
+function latestTalk(
+  entries: readonly GameLogEntry[],
+  content: ShellContent,
+): { seat: SeatId; quote: string } | null {
+  let start = 0;
+
+  for (let index = 0; index < entries.length; index += 1) {
+    if (entries[index].kind === 'deal') {
+      start = index;
+    }
+  }
+
+  for (let index = entries.length - 1; index >= start; index -= 1) {
+    const entry = entries[index];
+
+    if (entry.kind === 'call') {
+      return {
+        seat: entry.seat,
+        quote: content.truco.speech.call(content.truco.names[entry.level]),
+      };
+    }
+
+    if (entry.kind === 'respond') {
+      if (entry.response === 'accept') {
+        return { seat: entry.seat, quote: content.truco.speech.accept };
+      }
+
+      if (entry.response === 'decline') {
+        return { seat: entry.seat, quote: content.truco.speech.decline };
+      }
+
+      const raised = content.truco.names[(entry.level + 1) as TrucoCallLevel];
+
+      return { seat: entry.seat, quote: content.truco.speech.raise(raised) };
+    }
+  }
+
+  return null;
 }
 
 export function Mesa() {
@@ -44,6 +88,19 @@ export function Mesa() {
     (key: string) => dispatch({ type: 'playCard', seat: view.seat, cardKey: key }),
     [dispatch, view.seat],
   );
+  const callTruco = useCallback(
+    () => dispatch({ type: 'callTruco', seat: view.seat }),
+    [dispatch, view.seat],
+  );
+  const fold = useCallback(
+    () => dispatch({ type: 'fold', seat: view.seat }),
+    [dispatch, view.seat],
+  );
+  const respondTruco = useCallback(
+    (response: 'accept' | 'decline' | 'raise') =>
+      dispatch({ type: 'respondTruco', seat: view.seat, response }),
+    [dispatch, view.seat],
+  );
 
   useEffect(() => {
     try {
@@ -59,7 +116,7 @@ export function Mesa() {
         return;
       }
 
-      if (rulesOpen || logOpen || view.phase !== 'playing') {
+      if (rulesOpen || logOpen || view.phase !== 'playing' || view.pending !== null) {
         return;
       }
 
@@ -117,6 +174,10 @@ export function Mesa() {
   }, [view.phase]);
 
   const manoName = content.personas[PERSONA_BY_SEAT[view.mano]].name;
+  const pendingTruco = view.pending?.kind === 'truco' ? view.pending : null;
+  const mustRespond =
+    pendingTruco !== null && pendingTruco.respondingTeam === TEAM_BY_SEAT[view.seat];
+  const talk = latestTalk(view.log, content);
 
   return (
     <div className="app">
@@ -155,11 +216,11 @@ export function Mesa() {
                 ))}
 
                 <TrickArea view={view} />
-                <SpeechBubble seat={1} quote={content.trick.bubble} />
+                <SpeechBubble seat={talk?.seat ?? 1} quote={talk?.quote ?? content.trick.bubble} />
               </div>
             </section>
 
-            <ActionBar view={view} />
+            <ActionBar view={view} onCallTruco={callTruco} onFold={fold} />
             <HandDock view={view} onPlay={playCard} />
           </div>
 
@@ -184,6 +245,10 @@ export function Mesa() {
         >
           <LogRail idPrefix="log-drawer" entries={view.log} />
         </Modal>
+      )}
+
+      {mustRespond && pendingTruco && (
+        <TrucoDialog view={view} pending={pendingTruco} onRespond={respondTruco} />
       )}
 
       <HandSummary

@@ -13,12 +13,15 @@ interface HandDockProps {
 export function HandDock({ view, onPlay }: HandDockProps) {
   const { content } = useLocale();
   const playable = new Set(view.legal.playableCardKeys);
-  const canPlay = view.phase === 'playing' && view.turn === view.seat;
-  const hint = canPlay
-    ? content.hand.hint
-    : view.phase === 'playing'
-      ? content.hand.waiting
-      : content.hand.closed;
+  const canPlay = view.phase === 'playing' && view.turn === view.seat && view.pending === null;
+  const hint =
+    view.pending !== null
+      ? content.hand.pending
+      : canPlay
+        ? content.hand.hint
+        : view.phase === 'playing'
+          ? content.hand.waiting
+          : content.hand.closed;
 
   return (
     <section className="hand" aria-labelledby="hand-title">
