@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 
-const JOURNEY_URL = '/?seed=e2e-mesa&fast=1&skipIntro=1&lang=es';
+const JOURNEY_URL = '/?seed=e2e-mesa-0&fast=1&skipIntro=1&lang=es';
 
 // The table is self-contained: fonts, art and sound all ship with the build.
 // Fail loudly if a test ever reaches for an external host.
