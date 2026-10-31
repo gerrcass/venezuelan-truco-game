@@ -1,4 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="14" fill="#2563eb"/>
-  <text x="32" y="32" dy="0.35em" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, sans-serif" font-size="26" font-weight="600" fill="#ffffff">VT</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Truco e' Piedra">
+  <rect width="64" height="64" rx="14" fill="#0d3b36"/>
+  <g transform="translate(6 6) scale(1.18)">
+    <g transform="rotate(-8 20 21)">
+      <rect x="7.5" y="4" width="24" height="33" rx="3.6" fill="#f6ecd8" stroke="#211b14" stroke-opacity=".3" stroke-width=".8"/>
+      <rect x="10.7" y="7.2" width="17.6" height="26.6" rx="2" fill="none" stroke="#211b14" stroke-opacity=".18" stroke-width=".7"/>
+      <path d="M13.2 12.8h4.6M15.5 10.5V15" fill="none" stroke="#c4553b" stroke-width="1.2" stroke-linecap="round"/>
+      <path d="M23.4 16l3.2 3.2-3.2 3.2-3.2-3.2 3.2-3.2Z" fill="none" stroke="#2a9d8f" stroke-opacity=".7" stroke-width=".9"/>
+    </g>
+    <ellipse cx="32.7" cy="38" rx="7.3" ry="2.2" fill="#000" fill-opacity=".3"/>
+    <path d="M23.2 27.5c2.7-2 6.8-2.3 9.6-.7 3.3 1.9 4.6 6 3 9.2-1.5 3-5 4.5-8.2 3.6-1 .4-2.1.5-3.2.3-2.9-.5-5-3.1-4.7-6 .1-2.4 1.3-4.8 3.5-6.4Z" fill="#f0b429" stroke="#5a3624" stroke-width="1.2"/>
+    <path d="M25.8 29.8c1.8-1 4-1.1 5.9-.3" fill="none" stroke="#f6ecd8" stroke-opacity=".85" stroke-width="1.7" stroke-linecap="round"/>
+    <path d="M32.2 31.4l1.9 1.9-1.9 1.9-1.9-1.9 1.9-1.9Z" fill="none" stroke="#5a3624" stroke-opacity=".55" stroke-width=".7"/>
+  </g>
 </svg>
