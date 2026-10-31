@@ -1,7 +1,7 @@
 {
   "name": "truco-e-piedra",
   "private": true,
-  "version": "0.1.0",
+  "version": "1.0.0",
   "type": "module",
   "description": "Truco e' Piedra — a single-player Venezuelan truco mesa at 24 piedras.",
   "license": "MIT",
@@ -12,6 +12,8 @@
     "typecheck": "tsc -b",
     "lint": "eslint .",
     "test": "vitest run",
+    "e2e": "playwright test",
+    "e2e:ui": "playwright test --ui",
     "check": "npm run typecheck && npm run lint && npm run test && npm run build",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
@@ -24,6 +26,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
+    "@playwright/test": "^1.64.1",
     "@testing-library/dom": "^10.4.2",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
@@ -44,5 +47,8 @@
     "typescript-eslint": "^8.48.1",
     "vite": "^7.2.6",
     "vitest": "^4.1.12"
+  },
+  "engines": {
+    "node": ">=22"
   }
 }
