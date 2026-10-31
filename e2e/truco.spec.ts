@@ -2,6 +2,16 @@ import { expect, test, type Page } from '@playwright/test';
 
 const JOURNEY_URL = '/?seed=e2e-mesa&fast=1&skipIntro=1&lang=es';
 
+// The table is self-contained: fonts, art and sound all ship with the build.
+// Fail loudly if a test ever reaches for an external host.
+test.beforeEach(async ({ context }) => {
+  await context.route('**/*', (route) => {
+    const host = new URL(route.request().url()).hostname;
+
+    return host === '127.0.0.1' || host === 'localhost' ? route.continue() : route.abort();
+  });
+});
+
 function responseDialog(page: Page) {
   return page.getByRole('dialog', { name: /cantó|called/i });
 }
