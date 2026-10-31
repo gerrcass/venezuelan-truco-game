@@ -1,8 +1,8 @@
 import { cardKey, type Card } from '../domain/cards';
-import { TEAM_BY_SEAT, type PersonaKey, type Seat, type Team } from '../domain/seats';
+import { partnerOf, TEAM_BY_SEAT, type PersonaKey, type Seat, type Team } from '../domain/seats';
 
 import { BURNED_POWER, cardPower } from '../engine/cards';
-import { hashSeed } from '../engine/rng';
+import { createRng, hashSeed } from '../engine/rng';
 import type { GameAction, GameView, PendingEnvidoCall, PendingTrucoCall } from '../engine/types';
 
 import { PERSONA_PROFILES, type PersonaProfile } from './personas';
@@ -35,27 +35,16 @@ function compareKeys(a: string, b: string): number {
 }
 
 /**
- * A local mulberry32. The engine stays the only shuffle authority; this stream
- * only breaks ties in the bot's head, and it is seeded from the public view so
- * the same view and seed always choose the same action.
+ * The engine's seeded stream, reused as a tie-breaker in the bot's head. It is
+ * seeded from the public view so the same view and seed always choose the same
+ * action, and the shuffle remains the engine's only randomness authority.
  */
-function mulberry32(seed: number): () => number {
-  let value = seed >>> 0;
-
-  return () => {
-    value = (value + 0x6d2b79f5) | 0;
-    let mixed = value;
-    mixed = Math.imul(mixed ^ (mixed >>> 15), mixed | 1);
-    mixed ^= mixed + Math.imul(mixed ^ (mixed >>> 7), mixed | 61);
-    return ((mixed ^ (mixed >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
 function decisionRng(view: GameView, aiSeed: number): () => number {
   const decision = view.log.length;
   const seed = hashSeed(`${aiSeed}:${view.handNumber}:${view.seat}:${decision}`);
+  const rng = createRng(seed);
 
-  return mulberry32(seed);
+  return () => rng.next();
 }
 
 function chance(rng: () => number, probability: number): boolean {
@@ -81,10 +70,6 @@ function readTable(view: GameView): TableRead {
   }
 
   return { highestPower, highestSeat };
-}
-
-function partnerOf(seat: Seat): Seat {
-  return ((seat + 2) % 4) as Seat;
 }
 
 function opponentOf(team: Team): Team {

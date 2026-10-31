@@ -49,7 +49,7 @@ describe('the mesa shell', () => {
     expect(screen.getByRole('heading', { name: 'You' })).toBeVisible();
     expect(screen.getByRole('heading', { name: 'The table says' })).toBeVisible();
     expect(screen.getByText('Your turn')).toBeVisible();
-    expect(screen.getByText('Trick 1 of 3')).toBeVisible();
+    expect(screen.getByText('Baza 1 of 3')).toBeVisible();
     expect(window.localStorage.getItem('truco.locale')).toBe('en');
 
     await user.click(screen.getByRole('button', { name: /view the table in spanish/i }));

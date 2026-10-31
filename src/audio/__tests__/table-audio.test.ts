@@ -47,7 +47,7 @@ describe('cue selection', () => {
       [{ type: 'trucoResponded', seat: 1, team: 'ellos', level: 1, response: 'accept' }, 'call'],
       [{ type: 'envidoCalled', seat: 0, team: 'nosotros', level: 1 }, 'call'],
       [{ type: 'envidoResponded', seat: 1, team: 'ellos', level: 1, response: 'decline' }, 'call'],
-      [{ type: 'florCalled', seat: 0, team: 'nosotros', kind: 'flor', value: 33 }, 'flor'],
+      [{ type: 'florCalled', seat: 0, team: 'nosotros', kind: 'flor' }, 'flor'],
       [{ type: 'priveCalled', seat: 0, team: 'nosotros' }, 'prive'],
       [
         {

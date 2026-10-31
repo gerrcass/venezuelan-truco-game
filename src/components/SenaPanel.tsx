@@ -6,7 +6,7 @@ import type { Sena } from '../engine/types';
 
 interface SenaPanelProps {
   readonly sena: Sena;
-  /** The partida seed plus the reparto number: one reveal per deal, never across a rematch. */
+  /** The public match seed plus the reparto number: one reveal per deal, never across a rematch. */
   readonly dealKey: string;
 }
 

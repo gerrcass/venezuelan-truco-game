@@ -545,6 +545,15 @@ export const es: ShellContent = {
       `tantos ${nosotros === 100 ? 'reservada' : nosotros}–${ellos === 100 ? 'reservada' : ellos}`,
     totalLabel: 'Total del reparto',
     settlementPoints: (points) => `+${points}`,
+    matchStatsTitle: 'La partida en números',
+    matchStatsColumns: {
+      hands: 'Manos',
+      envidos: 'Envidos',
+      flores: 'Flores',
+      trucos: 'Trucos',
+    },
+    rules: 'Ver reglas',
+    settings: 'Ajustes',
     bazasTitle: 'Las bazas',
     handsTitle: 'Las manos sobre la mesa',
     burnedTag: 'quemada',
@@ -617,6 +626,7 @@ export const es: ShellContent = {
             headers: ['Tecla', 'Qué hace'],
             rows: [
               ['1 · 2 · 3', 'Juega esa carta de tu mano.'],
+              ['Enter', 'Confirma la acción principal que tenga el foco.'],
               ['B', 'Arma o desarma el quemar.'],
               ['R', 'Abre esta escuela de reglas.'],
               ['Esc', 'Cierra el diálogo que tengas abierto.'],

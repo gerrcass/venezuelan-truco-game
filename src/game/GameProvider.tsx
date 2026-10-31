@@ -97,7 +97,7 @@ export function GameProvider({
       return;
     }
 
-    const action = chooseBotAction(botView, PERSONA_BY_SEAT[actor], state.seed);
+    const action = chooseBotAction(botView, PERSONA_BY_SEAT[actor], botView.matchSeed);
     const timer = window.setTimeout(() => dispatch(action), delay);
 
     return () => window.clearTimeout(timer);

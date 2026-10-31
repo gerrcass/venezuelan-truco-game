@@ -7,6 +7,11 @@ export type Seat = (typeof SEATS)[number];
 /** Teams are fixed partnerships: 0 + 2 play against 1 + 3. */
 export type Team = 'nosotros' | 'ellos';
 
+/** A seat's partner sits opposite. */
+export function partnerOf(seat: Seat): Seat {
+  return ((seat + 2) % 4) as Seat;
+}
+
 /** A stable persona key for content lookups. */
 export type PersonaKey = 'you' | 'catire' | 'pana' | 'comadre';
 

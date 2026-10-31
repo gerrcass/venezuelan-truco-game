@@ -90,6 +90,25 @@ export interface FlorState {
   readonly points: number;
 }
 
+/**
+ * The public flor declaration. During play every seat may know who declared
+ * what, but not the numeric tanto behind it: that stays in `FlorState`.
+ */
+export interface FlorDeclarationView {
+  readonly seat: Seat;
+  readonly team: Team;
+  readonly kind: 'flor' | 'reservada';
+}
+
+/** The seat-scoped flor window. It never carries a declaration's value. */
+export interface FlorView {
+  readonly declarations: readonly FlorDeclarationView[];
+  readonly settled: boolean;
+  readonly winnerTeam: Team | null;
+  readonly winnerSeat: Seat | null;
+  readonly points: number;
+}
+
 /** Forward-looking prive state. It pays immediately and replaces envido. */
 export interface PriveState {
   readonly called: boolean;
@@ -238,7 +257,6 @@ export interface EnvidoCallLogEntry extends CallLogBase {
 export interface FlorCallLogEntry extends CallLogBase {
   readonly call: 'flor';
   readonly flor: 'flor' | 'reservada';
-  readonly value: number;
 }
 
 export interface PriveCallLogEntry extends CallLogBase {
@@ -326,7 +344,6 @@ export type GameEvent =
       readonly seat: Seat;
       readonly team: Team;
       readonly kind: 'flor' | 'reservada';
-      readonly value: number;
     }
   | { readonly type: 'priveCalled'; readonly seat: Seat; readonly team: Team }
   | { readonly type: 'pointsAwarded'; readonly settlement: Settlement }
@@ -399,8 +416,11 @@ export interface TrickView {
 /** The seat-scoped window into the game. Opponent hands never appear here during play. */
 export interface GameView {
   readonly seat: Seat;
-  /** The seed that produced this reparto's deal. Public, and used to keep bot talk reproducible. */
-  readonly seed: number;
+  /**
+   * A stable hash of the engine's private shuffle seed. Public consumers use
+   * it to key table talk and per-deal UI; it cannot be reversed into the deal.
+   */
+  readonly matchSeed: number;
   readonly phase: Phase;
   readonly handNumber: number;
   readonly target: number;
@@ -430,7 +450,7 @@ export interface GameView {
   /** El Pana's seña, computed at the deal. Only seat 0 ever receives it. */
   readonly sena: Sena | null;
   readonly envido: EnvidoState;
-  readonly flor: FlorState;
+  readonly flor: FlorView;
   readonly prive: PriveState;
   readonly settlements: readonly Settlement[];
   readonly event: GameEvent | null;
@@ -460,7 +480,6 @@ export interface GameState {
   readonly lastTrick: TrickRecord | null;
   readonly result: HandResult | null;
   readonly matchWinner: Team | null;
-  readonly playedThisHand: Record<Seat, number>;
   readonly truco: TrucoState;
   readonly envido: EnvidoState;
   readonly flor: FlorState;

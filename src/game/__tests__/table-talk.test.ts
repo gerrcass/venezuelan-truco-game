@@ -2,7 +2,7 @@ import { botPersonaForSeat } from '../../ai/personas';
 import { chooseBotAction } from '../../ai/policy';
 import { en, es } from '../../content';
 import { actingSeat, createGame, reduce, viewFor } from '../../engine/game';
-import type { GameState } from '../../engine/types';
+import type { GameState, GameView } from '../../engine/types';
 import { deriveTableBeat, speechForEntry } from '../table-talk';
 
 function botStep(state: GameState): GameState {
@@ -90,6 +90,25 @@ describe('the table-talk beats', () => {
     if (beat?.kind === 'taunt') {
       expect(['trickWin', 'trickLose']).toContain(beat.event);
     }
+  });
+
+  it('never gives a parda a trickWin taunt', () => {
+    const view = viewFor(createGame({ seed: 'habla-parda' }), 0);
+    const pardaView: GameView = {
+      ...view,
+      log: [
+        {
+          kind: 'trick',
+          id: 1,
+          baza: 1,
+          winnerSeat: null,
+          winnerTeam: null,
+          parda: true,
+        },
+      ],
+    };
+
+    expect(deriveTableBeat(pardaView)).toBeNull();
   });
 
   it('speaks after the reparto closes', () => {

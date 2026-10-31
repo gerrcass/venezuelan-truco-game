@@ -403,6 +403,12 @@ describe('the live table', () => {
     expect(panel).toHaveTextContent('El Pana te señala 11 de basto.');
   });
 
+  it('renders no speech bubble when there is no table talk', () => {
+    renderTableState(rigGame());
+
+    expect(screen.queryByLabelText('Lo que se dice en la mesa')).not.toBeInTheDocument();
+  });
+
   it('fills the deal with persona table talk', async () => {
     renderMesa('mesa-habladora');
     await expectTableTaunt(['deal']);
@@ -530,7 +536,7 @@ describe('the truco response dialog', () => {
 
     const dialog = screen.getByRole('dialog', { name: 'El Catire called Retruco' });
 
-    expect(within(dialog).getByText('At stake: 6 stones.')).toBeVisible();
+    expect(within(dialog).getByText('At stake: 6 piedras.')).toBeVisible();
     expect(within(dialog).getByRole('button', { name: 'Accept the Retruco' })).toBeVisible();
     expect(within(dialog).getByRole('button', { name: 'Decline the Retruco' })).toBeVisible();
     expect(
@@ -589,6 +595,77 @@ describe('the hand summary', () => {
     expect(screen.getByRole('region', { name: winnerName })).toBeVisible();
   });
 
+  it('summarizes the match with hands, envidos, flores and trucos for each team', () => {
+    const finished = matchPoint();
+
+    expect(finished.phase).toBe('matchOver');
+    renderTableState(finished);
+
+    const dialog = screen.getByRole('dialog', { name: 'Ganó la partida Nosotros' });
+    const rows = dialog.querySelectorAll('.summary__match-stats tbody tr');
+
+    expect(within(dialog).getByText('La partida en números')).toBeVisible();
+    expect(within(dialog).getByRole('columnheader', { name: 'Manos' })).toBeVisible();
+    expect(within(dialog).getByRole('columnheader', { name: 'Envidos' })).toBeVisible();
+    expect(within(dialog).getByRole('columnheader', { name: 'Flores' })).toBeVisible();
+    expect(within(dialog).getByRole('columnheader', { name: 'Trucos' })).toBeVisible();
+    expect(rows).toHaveLength(2);
+    expect(rows[0]).toHaveTextContent(/Nosotros\s*1\s*0\s*0\s*1/);
+    expect(rows[1]).toHaveTextContent(/Ellos\s*0\s*0\s*0\s*0/);
+  });
+
+  it('opens the rules and the settings from the summary and returns focus', async () => {
+    const user = userEvent.setup();
+    const finished = playToHandOver('resumen-ajustes');
+
+    renderTableState(finished);
+
+    const summary = screen.getByRole('dialog', { name: /^Ganó/ });
+    const rulesButton = within(summary).getByRole('button', { name: 'Ver reglas' });
+
+    await user.click(rulesButton);
+
+    const rules = await screen.findByRole('dialog', { name: 'La escuela de reglas' });
+    expect(rules).toBeVisible();
+
+    await user.keyboard('{Escape}');
+
+    await waitFor(() =>
+      expect(
+        screen.queryByRole('dialog', { name: 'La escuela de reglas' }),
+      ).not.toBeInTheDocument(),
+    );
+    expect(rulesButton).toHaveFocus();
+
+    const settingsButton = within(summary).getByRole('button', { name: 'Ajustes' });
+
+    await user.click(settingsButton);
+
+    expect(await screen.findByRole('dialog', { name: 'Ajustes' })).toBeVisible();
+
+    await user.keyboard('{Escape}');
+
+    await waitFor(() =>
+      expect(screen.queryByRole('dialog', { name: 'Ajustes' })).not.toBeInTheDocument(),
+    );
+    expect(settingsButton).toHaveFocus();
+  });
+
+  it('confirms the summary action with Enter when focus is not on a button', async () => {
+    const user = userEvent.setup();
+    const finished = playToHandOver('resumen-enter');
+
+    renderTableState(finished);
+
+    const summary = screen.getByRole('dialog', { name: /^Ganó/ });
+
+    summary.focus();
+    await user.keyboard('{Enter}');
+
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    expect(screen.getByText('Reparto 2')).toBeVisible();
+  });
+
   it('shows the accepted stake and the baza payout', () => {
     const finished = playBazaHand(rigBazaHand({ truco: { level: 2, acceptedByTeam: 'nosotros' } }));
 
@@ -600,6 +677,21 @@ describe('the hand summary', () => {
     expect(within(dialog).getByText('Bazas ganadas')).toBeVisible();
     expect(within(dialog).getAllByText('6 piedras').length).toBeGreaterThan(0);
     expect(within(dialog).getByText('Las bazas')).toBeVisible();
+  });
+
+  it('shows both tantos when the envido was declined', () => {
+    const base = rigLanceGame(ENVIDO_HANDS);
+    const opened = reduce(base, { type: 'callEnvido', seat: 0 });
+    const declined = reduce(opened, { type: 'respondEnvido', seat: 1, response: 'decline' });
+    const finished = playOutUi(declined);
+
+    expect(finished.phase).toBe('handOver');
+    renderTableState(finished);
+
+    const dialog = screen.getByRole('dialog');
+
+    expect(within(dialog).getByText(/tantos 33–25/)).toBeVisible();
+    expect(within(dialog).getByText('Envido')).toBeVisible();
   });
 
   it('shows a 24-piedra match winner and offers another partida', async () => {
@@ -702,8 +794,8 @@ describe('the envido dialog', () => {
 
     const dialog = screen.getByRole('dialog', { name: 'El Catire called Envido' });
 
-    expect(within(dialog).getByText('At stake: 4 stones.')).toBeVisible();
-    expect(within(dialog).getByText('Declining pays the callers 2 stones.')).toBeVisible();
+    expect(within(dialog).getByText('At stake: 4 piedras.')).toBeVisible();
+    expect(within(dialog).getByText('Declining pays the callers 2 piedras.')).toBeVisible();
     expect(within(dialog).getByRole('button', { name: 'Accept the Envido' })).toBeVisible();
     expect(within(dialog).getByRole('button', { name: 'Decline the Envido' })).toBeVisible();
     expect(within(dialog).getByRole('button', { name: 'Quiero y 5 piedras más' })).toBeVisible();
@@ -911,6 +1003,8 @@ describe('the itemized summary', () => {
           stats={EMPTY_CAREER}
           onNextHand={vi.fn()}
           onRematch={vi.fn()}
+          onOpenRules={vi.fn()}
+          onOpenSettings={vi.fn()}
         />
       </LocaleProvider>,
     );
@@ -947,7 +1041,7 @@ describe('the itemized summary', () => {
 
     const dialog = screen.getByRole('dialog');
 
-    expect(within(dialog).getByText('Every stone, itemized')).toBeVisible();
+    expect(within(dialog).getByText('Every piedra, itemized')).toBeVisible();
     expect(within(dialog).getByText('Source')).toBeVisible();
     expect(within(dialog).getByText('Total of the deal')).toBeVisible();
     expect(within(dialog).getByText(/tantos 33–25/)).toBeVisible();
@@ -969,8 +1063,8 @@ describe('the itemized summary', () => {
     expect(within(dialog).getByText('Partida cerrada')).toBeVisible();
     expect(within(dialog).getByText('La flor')).toBeVisible();
     expect(within(dialog).getByText('Nosotros 24 · Ellos 10')).toBeVisible();
-    expect(within(dialog).getByText(/La última mano · \+3/)).toBeVisible();
-    expect(within(dialog).getAllByText('+3').length).toBeGreaterThan(0);
+    expect(within(dialog).getByText(/La última mano · \+2/)).toBeVisible();
+    expect(within(dialog).getAllByText('+2').length).toBeGreaterThan(0);
     expect(within(dialog).getByRole('button', { name: 'Otra partida' })).toBeVisible();
   });
 

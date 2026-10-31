@@ -7,6 +7,7 @@ import { PERSONA_BY_SEAT, SEATS, TEAM_BY_SEAT, type Seat } from '../domain/seats
 import { pieceOf } from '../engine/cards';
 import type { GameView } from '../engine/types';
 import type { CareerStats } from '../game/career';
+import { matchStatsFromLog } from '../game/match-stats';
 import { deriveTableBeat, tauntPersonaForSeat } from '../game/table-talk';
 import { Avatar } from './Avatar';
 import { Modal } from './Modal';
@@ -17,6 +18,8 @@ interface HandSummaryProps {
   readonly stats: CareerStats;
   readonly onNextHand: () => void;
   readonly onRematch: () => void;
+  readonly onOpenRules: () => void;
+  readonly onOpenSettings: () => void;
 }
 
 function burnedCardsBySeat(view: GameView): Map<Seat, Set<string>> {
@@ -37,7 +40,14 @@ function burnedCardsBySeat(view: GameView): Map<Seat, Set<string>> {
   return burned;
 }
 
-export function HandSummary({ view, stats, onNextHand, onRematch }: HandSummaryProps) {
+export function HandSummary({
+  view,
+  stats,
+  onNextHand,
+  onRematch,
+  onOpenRules,
+  onOpenSettings,
+}: HandSummaryProps) {
   const { content } = useLocale();
   const result = view.result;
 
@@ -48,6 +58,7 @@ export function HandSummary({ view, stats, onNextHand, onRematch }: HandSummaryP
   const summary = content.summary;
   const scoreboard = content.scoreboard;
   const matchOver = view.phase === 'matchOver';
+  const matchStats = matchStatsFromLog(view.log);
   const winner = content.scoreboard.teams[result.winnerTeam].name;
   const hands = view.revealedHands ?? result.hands;
   const burned = burnedCardsBySeat(view);
@@ -70,6 +81,7 @@ export function HandSummary({ view, stats, onNextHand, onRematch }: HandSummaryP
       closeLabel={matchOver ? summary.rematch : summary.nextHand}
       panelClassName="summary"
       dismissible={false}
+      initialFocus=".summary__action"
     >
       <header className={`summary__head${matchOver ? ' summary__head--match' : ''}`}>
         <p className="eyebrow">{summary.eyebrow}</p>
@@ -154,6 +166,34 @@ export function HandSummary({ view, stats, onNextHand, onRematch }: HandSummaryP
       </div>
 
       {matchOver && (
+        <div className="summary__section">
+          <h3 className="summary__section-title">{summary.matchStatsTitle}</h3>
+          <table className="summary__statement summary__match-stats">
+            <thead>
+              <tr>
+                <th scope="col">{summary.ledgerTeam}</th>
+                <th scope="col">{summary.matchStatsColumns.hands}</th>
+                <th scope="col">{summary.matchStatsColumns.envidos}</th>
+                <th scope="col">{summary.matchStatsColumns.flores}</th>
+                <th scope="col">{summary.matchStatsColumns.trucos}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {(['nosotros', 'ellos'] as const).map((team) => (
+                <tr key={team}>
+                  <th scope="row">{scoreboard.teams[team].name}</th>
+                  <td>{matchStats.hands[team]}</td>
+                  <td>{matchStats.envidos[team]}</td>
+                  <td>{matchStats.flores[team]}</td>
+                  <td>{matchStats.trucos[team]}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {matchOver && (
         <p className="summary__career">
           {summary.careerLine(stats.matches, stats.wins, stats.hands)}
         </p>
@@ -213,13 +253,26 @@ export function HandSummary({ view, stats, onNextHand, onRematch }: HandSummaryP
         </ul>
       </div>
 
-      <button
-        type="button"
-        className="button button--primary summary__action"
-        onClick={matchOver ? onRematch : onNextHand}
-      >
-        {matchOver ? summary.rematch : summary.nextHand}
-      </button>
+      <div className="summary__footer">
+        <button type="button" className="button button--quiet summary__link" onClick={onOpenRules}>
+          {summary.rules}
+        </button>
+        <button
+          type="button"
+          className="button button--quiet summary__link"
+          onClick={onOpenSettings}
+        >
+          {summary.settings}
+        </button>
+        <button
+          type="button"
+          className="button button--primary summary__action"
+          data-primary-action
+          onClick={matchOver ? onRematch : onNextHand}
+        >
+          {matchOver ? summary.rematch : summary.nextHand}
+        </button>
+      </div>
     </Modal>
   );
 }

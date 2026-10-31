@@ -31,7 +31,7 @@ function pickBotSeat(seed: number): BotSeat {
 }
 
 function beatSeed(view: GameView, id: number): number {
-  return hashSeed(`${view.seed}:${view.handNumber}:${id}`);
+  return hashSeed(`${view.matchSeed}:${view.handNumber}:${id}`);
 }
 
 function tauntBeat(view: GameView, id: number, seat: BotSeat, event: TauntEvent): TauntBeat {
@@ -130,6 +130,11 @@ export function deriveTableBeat(view: GameView): TableBeat | null {
     }
 
     if (entry.kind === 'trick') {
+      // A parda is nobody's win: it should never trigger a trickWin taunt.
+      if (entry.parda) {
+        continue;
+      }
+
       const winnerTeam = entry.winnerTeam ?? TEAM_BY_SEAT[view.mano];
 
       return teamEvent(view, entry.id, winnerTeam, 'trickWin', 'trickLose');

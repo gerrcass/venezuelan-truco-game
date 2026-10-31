@@ -32,13 +32,13 @@ export const en: ShellContent = {
       nosotros: { name: 'Us', members: 'You & El Pana' },
       ellos: { name: 'Them', members: 'La Comadre & El Catire' },
     },
-    piedras: (score) => `${score} of 24 stones`,
+    piedras: (score) => `${score} of 24 piedras`,
     statusMano: 'Mano',
     statusPie: 'Pie',
     stakeLabel: 'At stake',
     stakeShort: (stake) => (stake === 'match' ? 'Vale juego' : `${stake}`),
     stakeSpoken: (stake) =>
-      stake === 'match' ? 'Vale juego' : `${stake} ${stake === 1 ? 'stone' : 'stones'}`,
+      stake === 'match' ? 'Vale juego' : `${stake} ${stake === 1 ? 'piedra' : 'piedras'}`,
     dealWord: 'Deal',
     viraLabel: 'Vira',
   },
@@ -65,7 +65,7 @@ export const en: ShellContent = {
       none: 'A shrug',
     },
     meanings: {
-      reservada: 'He has flor reservada. Five stones nobody says out loud.',
+      reservada: 'He has flor reservada. Five piedras nobody says out loud.',
       flor: 'He has flor. Save it for the right moment.',
       perico: 'He has the perico. The highest card on the table.',
       perica: 'He has the perica. Only the perico beats it.',
@@ -308,17 +308,17 @@ export const en: ShellContent = {
     label: 'The table',
   },
   trick: {
-    label: (baza) => `Trick ${baza}`,
-    aria: (baza) => `Trick ${baza} in progress`,
+    label: (baza) => `Baza ${baza}`,
+    aria: (baza) => `Baza ${baza} in progress`,
     empty: 'To play',
     won: (name) => `${name} takes it`,
     parda: 'Parda',
-    resultAria: (baza, result) => `Trick ${baza}: ${result}`,
+    resultAria: (baza, result) => `Baza ${baza}: ${result}`,
     bubbleAria: 'Table talk',
     bubble: '“That vira is mine, pana. Don’t even look.”',
   },
   status: {
-    baza: (baza, total) => `Trick ${baza} of ${total}`,
+    baza: (baza, total) => `Baza ${baza} of ${total}`,
     reparto: (handNumber) => `Deal ${handNumber}`,
     mano: (name) => `Mano: ${name}`,
     separator: '·',
@@ -344,11 +344,11 @@ export const en: ShellContent = {
     envido: 'Envido',
     flor: 'Flor',
     prive: 'Prive',
-    fold: 'Fold',
+    fold: 'Irse al mazo',
     yourTurn: 'Your turn',
     yourTurnHint: 'Tap a card or press 1, 2 or 3.',
     waiting: (name) => `${name} is thinking…`,
-    waitingHint: 'The table plays for you. Watch the trick.',
+    waitingHint: 'The table plays for you. Watch the baza.',
     waitingResponse: 'The rivals are deciding…',
     waitingResponseHint: 'The call is on the table.',
     respondPrompt: (call) => `They called ${call}`,
@@ -373,10 +373,10 @@ export const en: ShellContent = {
     callAria: 'Call envido',
     dialogLabel: 'Answer the envido',
     calledBy: (name, call) => `${name} called ${call}`,
-    stakeNote: (stake) => `At stake: ${stake} ${stake === 1 ? 'stone' : 'stones'}.`,
-    faltaNote: (stake) => `La falta: ${stake} ${stake === 1 ? 'stone' : 'stones'} to reach 24.`,
+    stakeNote: (stake) => `At stake: ${stake} ${stake === 1 ? 'piedra' : 'piedras'}.`,
+    faltaNote: (stake) => `La falta: ${stake} ${stake === 1 ? 'piedra' : 'piedras'} to reach 24.`,
     declineNote: (points) =>
-      `Declining pays the callers ${points} ${points === 1 ? 'stone' : 'stones'}.`,
+      `Declining pays the callers ${points} ${points === 1 ? 'piedra' : 'piedras'}.`,
     answerNote: 'Your team answers. The tantos are compared when the deal closes.',
     accept: 'Quiero',
     decline: 'No quiero',
@@ -410,10 +410,10 @@ export const en: ShellContent = {
     label: 'Lances on the table',
     envidoPending: (call) => `${call} waiting for an answer`,
     envidoAccepted: (call, stake) =>
-      `${call} accepted · ${stake} ${stake === 1 ? 'stone' : 'stones'}`,
+      `${call} accepted · ${stake} ${stake === 1 ? 'piedra' : 'piedras'}`,
     envidoDeclined: (call, points) => `${call} declined · ${points} to the callers`,
     flor: (kind, points) =>
-      `${kind === 'reservada' ? 'Flor reservada' : 'Flor'} +${points} when the first trick closes`,
+      `${kind === 'reservada' ? 'Flor reservada' : 'Flor'} +${points} when the first baza closes`,
     prive: (points, tantos) => `Prive +${points} · tantos ${tantos.nosotros}–${tantos.ellos}`,
   },
   truco: {
@@ -428,7 +428,7 @@ export const en: ShellContent = {
     stakeNote: (stake) =>
       stake === 'match'
         ? 'Vale juego: the hand decides the match.'
-        : `At stake: ${stake} ${stake === 1 ? 'stone' : 'stones'}.`,
+        : `At stake: ${stake} ${stake === 1 ? 'piedra' : 'piedras'}.`,
     answerNote: 'Your team answers. Accept, decline or raise the call.',
     callAria: (call) => `Call ${call}`,
     accept: 'Quiero',
@@ -449,18 +449,18 @@ export const en: ShellContent = {
     subtitle: 'What you hear between cards',
     label: 'Table log',
     footer: "What's said at the table stays at the table.",
-    stamp: '24 stones',
+    stamp: '24 piedras',
     kinds: {
       deal: 'Deal',
       play: 'Play',
-      trick: 'Trick',
-      points: 'Stones',
+      trick: 'Baza',
+      points: 'Piedras',
       handOver: 'Hand closed',
       matchOver: 'Match',
       turn: 'Turn',
       call: 'Call',
       respond: 'Answer',
-      fold: 'Fold',
+      fold: 'Irse al mazo',
     },
     deal: (handNumber, dealer, mano, vira) =>
       `Deal ${handNumber}. ${dealer} deals; mano: ${mano}. Vira: ${vira}.`,
@@ -468,9 +468,9 @@ export const en: ShellContent = {
     playYou: (card) => `You play ${card}.`,
     burn: (name) => `${name} burns a card face down.`,
     burnYou: 'You burn a card face down.',
-    trickWin: (baza, name) => `Trick ${baza}: ${name} takes it.`,
-    trickWinYou: (baza) => `Trick ${baza}: you take it.`,
-    trickParda: (baza) => `Trick ${baza}: parda.`,
+    trickWin: (baza, name) => `Baza ${baza}: ${name} takes it.`,
+    trickWinYou: (baza) => `Baza ${baza}: you take it.`,
+    trickParda: (baza) => `Baza ${baza}: parda.`,
     call: (name, call) => `${name} called ${call}.`,
     callYou: (call) => `You called ${call}.`,
     envidoCall: (name, call) => `${name} called ${call}.`,
@@ -482,8 +482,8 @@ export const en: ShellContent = {
     priveCallYou: 'You called prive.',
     respond: (name, response, call) => `${name}: ${response} · ${call}.`,
     respondYou: (response, call) => `${response} · ${call}.`,
-    fold: (name) => `${name} folded.`,
-    foldYou: 'You folded.',
+    fold: (name) => `${name} went to the mazo.`,
+    foldYou: 'You went to the mazo.',
     award: (team, points, source, note) =>
       `${team} +${points} (${source}${note ? ` · ${note}` : ''}).`,
     handOver: (team, points, matchOver) =>
@@ -493,9 +493,9 @@ export const en: ShellContent = {
           ? `${team} take the deal and the match.`
           : points === 0
             ? `${team} take the deal.`
-            : `${team} take the deal: ${points} ${points === 1 ? 'stone' : 'stones'}.`,
+            : `${team} take the deal: ${points} ${points === 1 ? 'piedra' : 'piedras'}.`,
     matchOver: (team) => `${team} win the match.`,
-    turn: (name, baza) => `Turn: ${name} · trick ${baza}.`,
+    turn: (name, baza) => `Turn: ${name} · baza ${baza}.`,
   },
   summary: {
     eyebrow: 'Hand summary',
@@ -503,13 +503,13 @@ export const en: ShellContent = {
     matchTitle: (team) => `${team} win the match`,
     matchBadge: 'Match closed',
     points: (points) =>
-      points === 'match' ? 'The match' : `${points} ${points === 1 ? 'stone' : 'stones'}`,
+      points === 'match' ? 'The match' : `${points} ${points === 1 ? 'piedra' : 'piedras'}`,
     score: (nosotros, ellos) => `Us ${nosotros} · Them ${ellos}`,
     reasonLabel: 'Reason',
     reasons: {
-      bazas: 'Tricks won',
+      bazas: 'Bazas won',
       decline: 'The call was declined',
-      fold: 'A fold',
+      fold: 'Irse al mazo',
       envido: 'The envido',
       flor: 'The flor',
       prive: 'The prive',
@@ -522,10 +522,10 @@ export const en: ShellContent = {
       `Your career: ${matches} ${matches === 1 ? 'match' : 'matches'} · ${wins} ${
         wins === 1 ? 'win' : 'wins'
       } · ${hands} ${hands === 1 ? 'hand' : 'hands'}`,
-    ledgerTitle: 'Every stone, itemized',
+    ledgerTitle: 'Every piedra, itemized',
     ledgerSource: 'Source',
     ledgerTeam: 'Team',
-    ledgerPoints: 'Stones',
+    ledgerPoints: 'Piedras',
     sources: {
       flor: 'Flor',
       prive: 'Prive',
@@ -537,18 +537,27 @@ export const en: ShellContent = {
       declined: 'declined',
       reservada: 'flor reservada',
       match: 'the match',
-      bazas: 'tricks',
-      fold: 'a fold',
+      bazas: 'bazas',
+      fold: 'irse al mazo',
     },
     tantos: (nosotros, ellos) => `tantos ${nosotros}–${ellos}`,
     florTantos: (nosotros, ellos) =>
       `tantos ${nosotros === 100 ? 'reservada' : nosotros}–${ellos === 100 ? 'reservada' : ellos}`,
     totalLabel: 'Total of the deal',
     settlementPoints: (points) => `+${points}`,
-    bazasTitle: 'The tricks',
+    matchStatsTitle: 'The match in numbers',
+    matchStatsColumns: {
+      hands: 'Hands',
+      envidos: 'Envidos',
+      flores: 'Flores',
+      trucos: 'Trucos',
+    },
+    rules: 'See the rules',
+    settings: 'Settings',
+    bazasTitle: 'The bazas',
     handsTitle: 'Hands on the table',
     burnedTag: 'burned',
-    baza: (baza) => `Trick ${baza}`,
+    baza: (baza) => `Baza ${baza}`,
     parda: 'Parda',
     nextHand: 'Next deal',
     rematch: 'Play again',
@@ -566,7 +575,7 @@ export const en: ShellContent = {
   rulesDialog: {
     eyebrow: 'The school',
     title: 'The rules school',
-    lead: 'Eight stops to learn Venezuelan truco without leaving the table. Every odd rule gets an explanation, and every stone that gets paid is in here.',
+    lead: 'Eight stops to learn Venezuelan truco without leaving the table. Every odd rule gets an explanation, and every piedra that gets paid is in here.',
     close: 'Close',
     back: 'Back to the table',
     tabsLabel: 'Rules sections',
@@ -578,7 +587,7 @@ export const en: ShellContent = {
         id: 'mesa',
         tab: 'The table',
         title: 'The table',
-        lead: 'Four at the table, two fixed pairs and one goal: reach 24 stones. You play with El Pana against La Comadre and El Catire.',
+        lead: 'Four at the table, two fixed pairs and one goal: reach 24 piedras. You play with El Pana against La Comadre and El Catire.',
         blocks: [
           {
             kind: 'table',
@@ -586,27 +595,27 @@ export const en: ShellContent = {
             headers: ['Topic', 'This table'],
             rows: [
               ['Players', 'Four, in pairs. El Pana is your partner.'],
-              ['Target', '24 stones. The first team there takes the match.'],
-              ['Deal', 'Three cards each and a vira. Up to three tricks.'],
-              ['Hand winner', 'The pair that wins two of the three tricks.'],
+              ['Target', '24 piedras. The first team there takes the match.'],
+              ['Deal', 'Three cards each and a vira. Up to three bazas.'],
+              ['Hand winner', 'The pair that wins two of the three bazas.'],
               ['Order', 'Counterclockwise. Mano leads; pie deals and plays last.'],
-              ['Ties', 'Parda: the first trick won settles it; with no winner, mano takes it.'],
+              ['Ties', 'Parda: the first baza won settles it; with no winner, mano takes it.'],
             ],
           },
           {
             kind: 'list',
             title: 'Parda and the tie-break',
             items: [
-              'If the first trick is parda, the second decides; if that is also parda, the third decides.',
-              'If each pair has won one trick and the third is parda, the first-trick winner takes the hand.',
-              'If all three tricks are parda, mano’s pair wins.',
-              'Whoever led a parda trick leads the next one.',
+              'If the first baza is parda, the second decides; if that is also parda, the third decides.',
+              'If each pair has won one baza and the third is parda, the first-baza winner takes the hand.',
+              'If all three bazas are parda, mano’s pair wins.',
+              'Whoever led a parda baza leads the next one.',
             ],
           },
           {
             kind: 'callout',
             title: 'No win by two',
-            text: 'At 24 the match is over. No extra hand, no two-stone cushion.',
+            text: 'At 24 the match is over. No extra hand, no two-piedra cushion.',
           },
           {
             kind: 'table',
@@ -614,6 +623,7 @@ export const en: ShellContent = {
             headers: ['Key', 'What it does'],
             rows: [
               ['1 · 2 · 3', 'Plays that card from your hand.'],
+              ['Enter', 'Confirms the focused primary action.'],
               ['B', 'Arms or disarms burning.'],
               ['R', 'Opens this rules school.'],
               ['Esc', 'Closes the dialog you have open.'],
@@ -621,7 +631,7 @@ export const en: ShellContent = {
           },
           {
             kind: 'paragraph',
-            text: 'The table log calls every play, every canto and every stone. If you lose the thread, look there: the account is always in sight.',
+            text: 'The table log calls every play, every canto and every piedra. If you lose the thread, look there: the account is always in sight.',
           },
         ],
       },
@@ -710,7 +720,7 @@ export const en: ShellContent = {
           {
             kind: 'callout',
             title: 'Burning still plays',
-            text: 'You may play a card face down. It has no rank: any face-up card beats it and it ties only another burned card. It still counts as your card for the trick.',
+            text: 'You may play a card face down. It has no rank: any face-up card beats it and it ties only another burned card. It still counts as your card for the baza.',
           },
         ],
       },
@@ -778,15 +788,15 @@ export const en: ShellContent = {
             title: 'The envido ladder',
             headers: ['Call', 'Accepted', 'Declined'],
             rows: [
-              ['Envido', '2 stones', '1 to the caller'],
-              ['Quiero y envido', '4 stones', '2 to the caller'],
-              ['Quiero y 5 piedras más', '7 stones', '4 to the caller'],
+              ['Envido', '2 piedras', '1 to the caller'],
+              ['Quiero y envido', '4 piedras', '2 to the caller'],
+              ['Quiero y 5 piedras más', '7 piedras', '4 to the caller'],
               ['Envido la falta', 'the leader’s distance to 24', '7 to the caller'],
             ],
           },
           {
             kind: 'paragraph',
-            text: 'The team that accepts may raise; the caller answers. La falta is fixed when it is accepted: the leader’s distance to 24 at that moment, never less than one stone. Later points do not change it.',
+            text: 'The team that accepts may raise; the caller answers. La falta is fixed when it is accepted: the leader’s distance to 24 at that moment, never less than one piedra. Later points do not change it.',
           },
           {
             kind: 'callout',
@@ -795,7 +805,7 @@ export const en: ShellContent = {
           },
           {
             kind: 'paragraph',
-            text: 'Envido is compared when the deal closes, after the last trick or after a fold. A declined envido is also paid at the close, unless a flor cancels it first.',
+            text: 'Envido is compared when the deal closes, after the last baza or after someone goes to the mazo. A declined envido is also paid at the close, unless a flor cancels it first.',
           },
         ],
       },
@@ -817,7 +827,7 @@ export const en: ShellContent = {
           {
             kind: 'table',
             title: 'What it pays',
-            headers: ['Flor', 'Stones'],
+            headers: ['Flor', 'Piedras'],
             rows: [
               ['Three of one suit', '3'],
               ['Perico or perica plus two of one suit', '3'],
@@ -863,7 +873,7 @@ export const en: ShellContent = {
           {
             kind: 'callout',
             title: 'When it settles (this table’s ruling)',
-            text: 'The flor is announced at once and shows as pending on the table, but it settles when the first trick closes. If the deal ends earlier, it settles in the final account. That gives both pairs the whole first trick to declare, so play order never decides the comparison.',
+            text: 'The flor is announced at once and shows as pending on the table, but it settles when the first baza closes. If the deal ends earlier, it settles in the final account. That gives both pairs the whole first baza to declare, so play order never decides the comparison.',
           },
           {
             kind: 'paragraph',
@@ -875,22 +885,22 @@ export const en: ShellContent = {
         id: 'truco',
         tab: 'Truco',
         title: 'Truco and its raises',
-        lead: 'Truco is the bet on the whole deal. It can be called on your turn, before playing, in any trick.',
+        lead: 'Truco is the bet on the whole deal. It can be called on your turn, before playing, in any baza.',
         blocks: [
           {
             kind: 'table',
             title: 'The ladder',
             headers: ['Call', 'Accepted', 'Declined'],
             rows: [
-              ['Truco', '3 stones', '1 to the caller'],
-              ['Retruco', '6 stones', '3 to the caller'],
-              ['Vale nueve', '9 stones', '6 to the caller'],
+              ['Truco', '3 piedras', '1 to the caller'],
+              ['Retruco', '6 piedras', '3 to the caller'],
+              ['Vale nueve', '9 piedras', '6 to the caller'],
               ['Vale juego', 'the deal decides the match', '9 to the caller'],
             ],
           },
           {
             kind: 'paragraph',
-            text: 'If nobody calls truco, a won deal pays 1 stone. Truco does not change who wins the deal: only what it pays.',
+            text: 'If nobody calls truco, a won deal pays 1 piedra. Truco does not change who wins the deal: only what it pays.',
           },
           {
             kind: 'list',
@@ -905,11 +915,11 @@ export const en: ShellContent = {
           {
             kind: 'callout',
             title: 'Vale juego',
-            text: 'If accepted, whoever wins this deal takes the match, no matter the score. If declined, the caller takes 9 stones.',
+            text: 'If accepted, whoever wins this deal takes the match, no matter the score. If declined, the caller takes 9 piedras.',
           },
           {
             kind: 'paragraph',
-            text: 'Irse al mazo concedes the deal and whatever stake is on the table (1 if no truco). An accepted envido is still compared: folding does not erase it.',
+            text: 'Irse al mazo concedes the deal and whatever stake is on the table (1 if no truco). An accepted envido is still compared: going to the mazo does not erase it.',
           },
           {
             kind: 'paragraph',
@@ -921,7 +931,7 @@ export const en: ShellContent = {
         id: 'prive',
         tab: 'Prive & burning',
         title: 'Prive and burning',
-        lead: 'Prive is the call of the team one stone from glory. Burning is the face-down card that hides everything.',
+        lead: 'Prive is the call of the team one piedra from glory. Burning is the face-down card that hides everything.',
         blocks: [
           {
             kind: 'list',
@@ -929,7 +939,7 @@ export const en: ShellContent = {
             items: [
               'Called by the pair sitting at 23, before the first card.',
               'Only if nobody called envido or flor in that deal.',
-              'Both pairs’ tantos are compared; the best takes 1 stone.',
+              'Both pairs’ tantos are compared; the best takes 1 piedra.',
               'A tie goes to mano. It replaces envido for that deal.',
               'It pays immediately and can end the match. If it reaches 24, the truco is not paid.',
             ],
@@ -937,7 +947,7 @@ export const en: ShellContent = {
           {
             kind: 'callout',
             title: 'Prive is not a truco',
-            text: 'Prive uses the cards you already have and does not raise the deal’s stake. It is a one-stone comparison of tantos, with your heart in your hand.',
+            text: 'Prive uses the cards you already have and does not raise the deal’s stake. It is a one-piedra comparison of tantos, with your heart in your hand.',
           },
           {
             kind: 'list',
@@ -946,7 +956,7 @@ export const en: ShellContent = {
               'Instead of playing a card face up, play it face down.',
               'It has no rank: any face-up card beats it.',
               'It ties only another burned card.',
-              'It counts as your card for the trick and closes your flor and envido window.',
+              'It counts as your card for the baza and closes your flor and envido window.',
               'You may burn on your turn. Bots burn at most once per deal.',
             ],
           },
@@ -978,7 +988,7 @@ export const en: ShellContent = {
           },
           {
             kind: 'paragraph',
-            text: 'If he has nothing to signal, he shrugs. The seña never changes the cards or the score: it is a friend’s advantage, not a trick.',
+            text: 'If he has nothing to signal, he shrugs. The seña never changes the cards or the score: it is a friend’s advantage, not a deception.',
           },
           {
             kind: 'callout',
@@ -1018,20 +1028,20 @@ export const en: ShellContent = {
             title: 'This table’s rulings',
             headers: ['Topic', 'This table'],
             rows: [
-              ['Target', '24 stones, no win by two.'],
-              ['Flor reservada', '5 stones and beats every numeric flor.'],
+              ['Target', '24 piedras, no win by two.'],
+              ['Flor reservada', '5 piedras and beats every numeric flor.'],
               ['Two flors', 'Compared automatically; no flor-envido auction.'],
               ['Flor declaration', 'Flor por derecho: before your first card.'],
               [
                 'Flor settlement',
-                'When the first trick closes, or at the deal’s end if it ends earlier.',
+                'When the first baza closes, or at the deal’s end if it ends earlier.',
               ],
               ['Envido', 'Only on your turn, before the first card.'],
               ['Declined envido', 'Settled at the deal’s end; a flor before that cancels it.'],
               ['Envido la falta', 'Fixed at acceptance: the leader’s distance to 24.'],
-              ['Prive', 'Called by the team at 23; 1 stone; replaces envido.'],
+              ['Prive', 'Called by the team at 23; 1 piedra; replaces envido.'],
               ['Burning', 'Implemented; bots burn at most once per deal.'],
-              ['Parda', 'Whoever led the parda trick leads the next one.'],
+              ['Parda', 'Whoever led the parda baza leads the next one.'],
               ['Tantos', 'Shown at envido resolution, for learning.'],
             ],
           },
@@ -1055,7 +1065,7 @@ export const en: ShellContent = {
   },
   welcome: {
     eyebrow: 'Welcome to the table',
-    title: 'Three cards, one table, 24 stones',
+    title: 'Three cards, one table, 24 piedras',
     lead: 'This is Venezuelan truco. You learn it by playing, but these three things put you at the table.',
     steps: [
       {
@@ -1063,15 +1073,15 @@ export const en: ShellContent = {
         body: 'Every deal gives you three cards and a vira that names the perico and the perica.',
       },
       {
-        title: 'Win two of the three tricks',
-        body: 'You and El Pana play against La Comadre and El Catire. The pair that wins two tricks takes the deal.',
+        title: 'Win two of the three bazas',
+        body: 'You and El Pana play against La Comadre and El Catire. The pair that wins two bazas takes the deal.',
       },
       {
         title: 'Call envido, flor and truco to raise the stake',
         body: 'Before you play, you can call envido or flor. Truco raises what the deal pays. And the first team to 24 takes the match.',
       },
     ],
-    goal: 'The first team to 24 stones wins. No win by two, no extra hand.',
+    goal: 'The first team to 24 piedras wins. No win by two, no extra hand.',
     play: 'Play',
     rules: 'See the rules',
     close: 'Close the tutorial',
@@ -1087,7 +1097,7 @@ export const en: ShellContent = {
     soundTitle: 'Sound',
     soundOn: 'Sound on',
     soundOff: 'Sound off',
-    soundHint: 'Synthesized cues: cards, stones, calls and the ending. No files.',
+    soundHint: 'Synthesized cues: cards, piedras, calls and the ending. No files.',
     speedTitle: 'Bot tempo',
     speedHint: 'How long they think before playing. It does not change their cards.',
     speeds: {
@@ -1097,7 +1107,7 @@ export const en: ShellContent = {
     },
     careerTitle: 'Your career',
     careerHint: 'Kept only in this browser. No accounts, no personal data.',
-    careerEmpty: 'You have not finished a match yet. The first stone is waiting.',
+    careerEmpty: 'You have not finished a match yet. The first piedra is waiting.',
     stats: {
       matches: 'Matches',
       wins: 'Won',

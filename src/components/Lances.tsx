@@ -1,5 +1,6 @@
 import { useLocale } from '../content/locale-context';
 import { PERSONA_BY_SEAT, type Seat } from '../domain/seats';
+import { florPoints } from '../engine/cards';
 import type { GameView } from '../engine/types';
 
 interface LancesProps {
@@ -37,7 +38,7 @@ export function Lances({ view }: LancesProps) {
 
   if (!view.flor.settled) {
     for (const declaration of view.flor.declarations) {
-      const points = declaration.kind === 'reservada' ? 5 : 3;
+      const points = florPoints(declaration.kind);
 
       chips.push({
         key: `flor-${declaration.seat}`,

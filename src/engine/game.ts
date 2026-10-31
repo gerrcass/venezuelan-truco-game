@@ -1,7 +1,7 @@
 import { cardKey, SPANISH_DECK, type Card } from '../domain/cards';
 import { SEATS, TEAM_BY_SEAT, type Seat, type Team } from '../domain/seats';
 
-import { cardPower, envidoTanto, florValue, scoreFlor } from './cards';
+import { cardPower, envidoTanto, florPoints, florValue, scoreFlor } from './cards';
 import { hashSeed, shuffle } from './rng';
 import { computeSena } from './sena';
 import type {
@@ -10,6 +10,8 @@ import type {
   EnvidoState,
   FlorDeclaration,
   FlorResult,
+  FlorState,
+  FlorView,
   GameAction,
   GameEvent,
   GameLogEntry,
@@ -33,11 +35,6 @@ import type {
 /** Seats are counterclockwise: 0 → 1 → 2 → 3. */
 export function nextSeat(seat: Seat): Seat {
   return ((seat + 1) % 4) as Seat;
-}
-
-/** A seat's partner sits opposite. */
-export function partnerOf(seat: Seat): Seat {
-  return ((seat + 2) % 4) as Seat;
 }
 
 const OTHER_TEAM: Record<Team, Team> = { nosotros: 'ellos', ellos: 'nosotros' };
@@ -254,7 +251,6 @@ function beginHand(setup: HandSetup): GameState {
     lastTrick: null,
     result: null,
     matchWinner: null,
-    playedThisHand: { 0: 0, 1: 0, 2: 0, 3: 0 },
     truco: { level: 0, acceptedByTeam: null },
     envido: {
       status: 'none',
@@ -299,7 +295,6 @@ function beginHand(setup: HandSetup): GameState {
         team: declaration.team,
         call: 'flor',
         flor: declaration.kind,
-        value: declaration.value,
       }),
     }),
     withDeal,
@@ -330,6 +325,17 @@ export function createGame({ seed, target = 24, dealer = 3 }: CreateGameOptions)
     log: [],
     nextLogId: 0,
   });
+}
+
+/** Drop the numeric flor value before the state crosses the seat boundary. */
+function toFlorView(flor: FlorState): FlorView {
+  return {
+    declarations: flor.declarations.map(({ seat, team, kind }) => ({ seat, team, kind })),
+    settled: flor.settled,
+    winnerTeam: flor.winnerTeam,
+    winnerSeat: flor.winnerSeat,
+    points: flor.points,
+  };
 }
 
 function toTrickView(trick: TrickRecord): TrickView {
@@ -413,20 +419,27 @@ function reachedTarget(state: GameState): Team | null {
   return null;
 }
 
-/** The single place where piedras are added to the score, and the ledger grows. */
+/**
+ * The single place where piedras are added to the score, and the ledger grows.
+ * The ledger stores the points actually applied at the 24 cap, so a settlement
+ * can never show more piedras than the score received.
+ */
 function award(state: GameState, settlement: Settlement): GameState {
+  const before = state.scores[settlement.team];
+  const after = Math.min(state.target, before + settlement.points);
+  const applied: Settlement = { ...settlement, points: after - before };
   const scores: Record<Team, number> = {
     ...state.scores,
-    [settlement.team]: Math.min(state.target, state.scores[settlement.team] + settlement.points),
+    [settlement.team]: after,
   };
   const next: GameState = {
     ...state,
     scores,
-    settlements: [...state.settlements, settlement],
+    settlements: [...state.settlements, applied],
   };
-  const withLog = { ...next, ...appendLog(next, { kind: 'points', settlement }) };
+  const withLog = { ...next, ...appendLog(next, { kind: 'points', settlement: applied }) };
 
-  return { ...withLog, event: { type: 'pointsAwarded', settlement } };
+  return { ...withLog, event: { type: 'pointsAwarded', settlement: applied } };
 }
 
 /** The best flor declaration of one team, or null. */
@@ -485,7 +498,7 @@ function settleFlor(state: GameState): GameState {
     return { ...state, flor: { ...state.flor, settled: true } };
   }
 
-  const points = winner.kind === 'reservada' ? 5 : 3;
+  const points = florPoints(winner.kind);
   const tantos: Record<Team, number> = {
     nosotros: ours ? florValue(ours) : 0,
     ellos: theirs ? florValue(theirs) : 0,
@@ -523,14 +536,21 @@ function settleEnvido(state: GameState): GameState {
   if (envido.status === 'declined') {
     const callerTeam = envido.callerTeam ?? TEAM_BY_SEAT[state.mano];
     const points = envido.stake ?? envidoDeclinePayout(level);
+    // Both tantos are shown even when nobody wanted the bet: the table is a
+    // school, and the losing pair learns what it was up against.
+    const tantos = teamTantos(state.dealtHands, state.vira);
 
-    return award(state, {
-      kind: 'envido',
-      team: callerTeam,
-      points,
-      detail: 'declined',
-      level,
-    });
+    return award(
+      { ...state, envido: { ...envido, tantos } },
+      {
+        kind: 'envido',
+        team: callerTeam,
+        points,
+        detail: 'declined',
+        tantos,
+        level,
+      },
+    );
   }
 
   const tantos = teamTantos(state.dealtHands, state.vira);
@@ -862,17 +882,12 @@ function playCard(state: GameState, action: Extract<GameAction, { type: 'playCar
     [action.seat]: hand.filter((candidate) => cardKey(candidate) !== action.cardKey),
   };
   const currentTrick = [...state.currentTrick, { seat: action.seat, card, burned }];
-  const playedThisHand: Record<Seat, number> = {
-    ...state.playedThisHand,
-    [action.seat]: state.playedThisHand[action.seat] + 1,
-  };
 
   const next: GameState = {
     ...state,
     hands,
     currentTrick,
     lastTrick: null,
-    playedThisHand,
     turn: nextSeat(action.seat),
     event: { type: 'cardPlayed', seat: action.seat, burned },
   };
@@ -1210,7 +1225,7 @@ function callFlor(state: GameState, seat: Seat): GameState {
       : state.envido,
     pending: clearingEnvido ? null : state.pending,
     turn: clearingEnvido && pending ? pending.returnSeat : state.turn,
-    event: { type: 'florCalled', seat, team, kind: score.kind, value: score.value },
+    event: { type: 'florCalled', seat, team, kind: score.kind },
   };
 
   return {
@@ -1221,7 +1236,6 @@ function callFlor(state: GameState, seat: Seat): GameState {
       team,
       call: 'flor',
       flor: score.kind,
-      value: score.value,
     }),
   };
 }
@@ -1393,23 +1407,9 @@ export function getLegalActions(state: GameState, seat: Seat): LegalActions {
     canRaiseTruco && pendingTruco !== null ? ((pendingTruco.level + 1) as TrucoCallLevel) : null;
   const canRespondEnvido =
     isPlaying && pendingEnvido !== null && pendingEnvido.respondingTeam === team;
-  const cleanTable = state.currentTrick.length === 0 && state.tricks.length === 0;
-  const canCallEnvido =
-    onTurn &&
-    state.pending === null &&
-    cleanTable &&
-    state.envido.status === 'none' &&
-    state.flor.declarations.length === 0 &&
-    !state.prive.called;
+  const canCallEnvido = canOpenEnvido(state, seat);
   const canCallFlor = canDeclareFlor(state, seat);
-  const canCallPrive =
-    onTurn &&
-    state.pending === null &&
-    cleanTable &&
-    state.envido.status === 'none' &&
-    state.flor.declarations.length === 0 &&
-    !state.prive.called &&
-    state.scores[team] === state.target - 1;
+  const canCallPrive = canOpenPrive(state, seat);
 
   return {
     playableCardKeys,
@@ -1440,7 +1440,7 @@ export function viewFor(state: GameState, seat: Seat): GameView {
 
   return {
     seat,
-    seed: state.seed,
+    matchSeed: hashSeed(`mesa:${state.seed}`),
     phase: state.phase,
     handNumber: state.handNumber,
     target: state.target,
@@ -1478,7 +1478,7 @@ export function viewFor(state: GameState, seat: Seat): GameView {
     ownFlor: scoreFlor(state.dealtHands[seat], state.vira),
     sena: seat === 0 ? computeSena(state.dealtHands[2], state.vira) : null,
     envido: state.envido,
-    flor: state.flor,
+    flor: toFlorView(state.flor),
     prive: state.prive,
     settlements: state.settlements,
     event: state.event,

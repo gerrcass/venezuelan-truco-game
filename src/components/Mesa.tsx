@@ -51,7 +51,7 @@ export function Mesa() {
   const [burnArmed, setBurnArmed] = useState(false);
   const [career, setCareer] = useState<CareerStats>(readCareerStats);
   const [audio] = useState(() => new TableAudio());
-  const recordedSeed = useRef<number | null>(null);
+  const recordedMatchSeed = useRef<number | null>(null);
 
   const openRules = useCallback(() => {
     setWelcomeOpen(false);
@@ -153,17 +153,47 @@ export function Mesa() {
       return;
     }
 
-    if (recordedSeed.current === view.seed) {
+    if (recordedMatchSeed.current === view.matchSeed) {
       return;
     }
 
-    recordedSeed.current = view.seed;
+    recordedMatchSeed.current = view.matchSeed;
     setCareer(recordMatchInCareer(view, readCareerStats()));
   }, [view]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.altKey) {
+        return;
+      }
+
+      const target = event.target;
+
+      if (
+        target instanceof HTMLElement &&
+        (target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName))
+      ) {
+        return;
+      }
+
+      // Enter confirms the primary action of a summary or response dialog when
+      // focus is not already on a button (a focused button activates natively).
+      if (event.key === 'Enter') {
+        if (rulesOpen || logOpen || settingsOpen || welcomeOpen) {
+          return;
+        }
+
+        if (document.activeElement instanceof HTMLButtonElement) {
+          return;
+        }
+
+        const primary = document.querySelector<HTMLElement>('[data-primary-action]');
+
+        if (primary) {
+          event.preventDefault();
+          primary.click();
+        }
+
         return;
       }
 
@@ -174,15 +204,6 @@ export function Mesa() {
         welcomeOpen ||
         view.phase !== 'playing' ||
         view.pending !== null
-      ) {
-        return;
-      }
-
-      const target = event.target;
-
-      if (
-        target instanceof HTMLElement &&
-        (target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName))
       ) {
         return;
       }
@@ -237,9 +258,7 @@ export function Mesa() {
 
   useEffect(() => {
     if (view.phase !== 'playing') {
-      setRulesOpen(false);
       setLogOpen(false);
-      setSettingsOpen(false);
     }
   }, [view.phase]);
 
@@ -309,11 +328,11 @@ export function Mesa() {
                 ))}
 
                 {view.phase === 'playing' && view.sena && (
-                  <SenaPanel sena={view.sena} dealKey={`${view.seed}:${view.handNumber}`} />
+                  <SenaPanel sena={view.sena} dealKey={`${view.matchSeed}:${view.handNumber}`} />
                 )}
 
                 <TrickArea view={view} />
-                <SpeechBubble seat={talk?.seat ?? 1} quote={talk?.quote ?? content.trick.bubble} />
+                {talk && <SpeechBubble seat={talk.seat} quote={talk.quote} />}
               </div>
             </section>
 
@@ -341,25 +360,7 @@ export function Mesa() {
         <HintStrip onOpenRules={openRules} onOpenLog={openLog} logOpen={logOpen} />
       </div>
 
-      <RulesDialog
-        open={rulesOpen && view.phase === 'playing'}
-        onClose={closeRules}
-        onOpenWelcome={openWelcome}
-      />
-
-      <WelcomeDialog
-        open={welcomeOpen && view.phase === 'playing'}
-        onClose={closeWelcome}
-        onOpenRules={openRules}
-      />
-
-      <SettingsDialog
-        open={settingsOpen && view.phase === 'playing'}
-        onClose={closeSettings}
-        onOpenWelcome={openWelcome}
-        stats={career}
-        onClearStats={clearStats}
-      />
+      <WelcomeDialog open={welcomeOpen} onClose={closeWelcome} onOpenRules={openRules} />
 
       {logOpen && view.phase === 'playing' && (
         <Modal
@@ -397,6 +398,19 @@ export function Mesa() {
         stats={career}
         onNextHand={() => dispatch({ type: 'nextHand' })}
         onRematch={() => dispatch({ type: 'rematch' })}
+        onOpenRules={openRules}
+        onOpenSettings={openSettings}
+      />
+
+      {/* Rendered after the summary so their portals stack above it. */}
+      <RulesDialog open={rulesOpen} onClose={closeRules} onOpenWelcome={openWelcome} />
+
+      <SettingsDialog
+        open={settingsOpen}
+        onClose={closeSettings}
+        onOpenWelcome={openWelcome}
+        stats={career}
+        onClearStats={clearStats}
       />
     </div>
   );

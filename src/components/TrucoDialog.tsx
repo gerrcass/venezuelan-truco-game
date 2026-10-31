@@ -43,6 +43,7 @@ export function TrucoDialog({ view, pending, onRespond, onCallFlor }: TrucoDialo
         <button
           type="button"
           className="button button--primary truco-dialog__accept"
+          data-primary-action
           onClick={() => onRespond('accept')}
           aria-label={truco.acceptAria(call)}
         >

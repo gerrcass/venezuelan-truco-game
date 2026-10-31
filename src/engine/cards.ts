@@ -91,28 +91,6 @@ export function cardPower(card: Card, vira: Card, burned = false): number {
   }
 }
 
-/**
- * Compare two cards for the baza. Negative means `a` is weaker, positive means
- * `a` is stronger, zero is a parda. Burned flags let the reducer compare the
- * actual plays without special-casing the baza.
- */
-export function compareCards(
-  a: Card,
-  b: Card,
-  vira: Card,
-  aBurned = false,
-  bBurned = false,
-): -1 | 0 | 1 {
-  const powerA = cardPower(a, vira, aBurned);
-  const powerB = cardPower(b, vira, bBurned);
-
-  if (powerA === powerB) {
-    return 0;
-  }
-
-  return powerA > powerB ? 1 : -1;
-}
-
 const FACE_VALUE: Record<Rank, number> = {
   1: 1,
   2: 2,
@@ -132,8 +110,19 @@ export interface FlorScore {
   readonly value: number;
 }
 
+/** A plain flor pays three piedras. */
+export const FLOR_POINTS = 3;
+
+/** A flor reservada pays five piedras. */
+export const FLOR_RESERVADA_POINTS = 5;
+
 /** A reservada beats any numeric flor; 100 is above the maximum numeric 43. */
 export const FLOR_RESERVADA_VALUE = 100;
+
+/** What a declared flor pays, by kind. */
+export function florPoints(kind: 'flor' | 'reservada'): number {
+  return kind === 'reservada' ? FLOR_RESERVADA_POINTS : FLOR_POINTS;
+}
 
 /** The comparison weight of a flor. Numeric flors compare by value. */
 export function florValue(score: Pick<FlorScore, 'kind' | 'value'>): number {
@@ -155,7 +144,7 @@ export function scoreFlor(hand: readonly Card[], vira: Card): FlorScore | null {
   const perica = hand.find((card) => pieceOf(card, vira) === 'perica');
 
   if (perico && perica) {
-    return { kind: 'reservada', value: 5 };
+    return { kind: 'reservada', value: FLOR_RESERVADA_POINTS };
   }
 
   if (perico) {

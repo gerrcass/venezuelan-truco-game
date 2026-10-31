@@ -90,7 +90,6 @@ function rigGame(overrides: Partial<GameState> = {}): GameState {
     log: [],
     nextLogId: 0,
     event: null,
-    playedThisHand: { 0: 0, 1: 0, 2: 0, 3: 0 },
     ...overrides,
   };
 }
@@ -401,11 +400,13 @@ describe('the envido ladder', () => {
         points: pays,
         detail: 'declined',
         level,
+        tantos: { nosotros: 33, ellos: 25 },
       });
       expect(finished.result?.envidoResult).toMatchObject({
         winnerTeam: callerTeam,
         points: pays,
         detail: 'declined',
+        tantos: { nosotros: 33, ellos: 25 },
       });
     },
   );
@@ -828,10 +829,12 @@ describe('the flor', () => {
       winnerTeam: 'nosotros',
       reason: 'flor',
       points: 0,
-      totalPoints: 3,
+      totalPoints: 2,
     });
     expect(afterFirst.result?.settlements).toHaveLength(1);
+    expect(afterFirst.result?.settlements[0]).toMatchObject({ kind: 'flor', points: 2 });
     expect(afterFirst.result?.bazas).toHaveLength(1);
+    expect(afterFirst.scores).toEqual({ nosotros: 24, ellos: 10 });
     expect(row(afterFirst, 'truco')).toBeUndefined();
   });
 
@@ -1114,7 +1117,7 @@ describe('the settlement ledger', () => {
       'prive',
       'truco',
     ]);
-    expect(finished.result?.totalPoints).toBe(7);
+    expect(finished.result?.totalPoints).toBe(5);
     expect(finished.result?.settlements[0]).toMatchObject({
       kind: 'flor',
       team: 'ellos',
@@ -1125,7 +1128,8 @@ describe('the settlement ledger', () => {
       team: 'ellos',
       points: 1,
     });
-    expect(finished.result?.settlements[2]).toMatchObject({ kind: 'truco', points: 3 });
+    expect(finished.result?.settlements[2]).toMatchObject({ kind: 'truco', points: 1 });
+    expect(finished.scores).toEqual({ nosotros: 23, ellos: 24 });
     expect(finished.phase).toBe('matchOver');
   });
 
@@ -1139,9 +1143,24 @@ describe('the settlement ledger', () => {
 
     expect(afterFirst.phase).toBe('matchOver');
     expect(afterFirst.result?.settlements.map((settlement) => settlement.kind)).toEqual(['flor']);
-    expect(afterFirst.result?.totalPoints).toBe(3);
+    expect(afterFirst.result?.totalPoints).toBe(2);
     expect(afterFirst.result?.points).toBe(0);
+    expect(afterFirst.result?.settlements[0]).toMatchObject({ kind: 'flor', points: 2 });
     expect(afterFirst.scores).toEqual({ nosotros: 24, ellos: 10 });
+  });
+
+  it('stores the applied piedras when the last settlement is clipped at 24', () => {
+    const state = rigHands(FLOR_HANDS, {
+      scores: { nosotros: 23, ellos: 10 },
+      truco: { level: 1, acceptedByTeam: 'nosotros' },
+    });
+    const declared = reduce(state, { type: 'callFlor', seat: 0 });
+    const finished = playFirstBaza(declared);
+
+    expect(finished.phase).toBe('matchOver');
+    expect(finished.result?.settlements[0]).toMatchObject({ kind: 'flor', points: 1 });
+    expect(finished.result?.totalPoints).toBe(1);
+    expect(finished.scores).toEqual({ nosotros: 24, ellos: 10 });
   });
 
   it('pays the truco stake at level 4 as a match row', () => {

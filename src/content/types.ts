@@ -375,6 +375,15 @@ export interface ShellContent {
     readonly florTantos: (nosotros: number, ellos: number) => string;
     readonly totalLabel: string;
     readonly settlementPoints: (points: number) => string;
+    readonly matchStatsTitle: string;
+    readonly matchStatsColumns: {
+      readonly hands: string;
+      readonly envidos: string;
+      readonly flores: string;
+      readonly trucos: string;
+    };
+    readonly rules: string;
+    readonly settings: string;
     readonly bazasTitle: string;
     readonly handsTitle: string;
     readonly burnedTag: string;

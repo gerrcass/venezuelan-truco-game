@@ -47,6 +47,7 @@ export function EnvidoDialog({ view, pending, onRespond, onCallFlor }: EnvidoDia
         <button
           type="button"
           className="button button--primary truco-dialog__accept"
+          data-primary-action
           onClick={() => onRespond('accept')}
           aria-label={envido.acceptAria(call)}
         >

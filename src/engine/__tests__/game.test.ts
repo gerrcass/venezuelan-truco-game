@@ -41,7 +41,6 @@ function rigGame(hands: Record<Seat, readonly Card[]>, vira: Card = VIRA_REY_BAS
     scores: { nosotros: 0, ellos: 0 },
     log: [],
     nextLogId: 0,
-    playedThisHand: { 0: 0, 1: 0, 2: 0, 3: 0 },
     event: null,
   };
 }
@@ -453,6 +452,25 @@ describe('the hand lifecycle', () => {
     const revealed = viewFor(finished, 0);
 
     expect(revealed.revealedHands?.[1]).toEqual(finished.dealtHands[1]);
+  });
+
+  it('never exposes the shuffle seed or a rival’s numeric flor in a view', () => {
+    const state = rigGame({
+      0: [card(7, 'copa'), card(6, 'copa'), card(5, 'copa')],
+      1: [card(3, 'oro'), card(2, 'oro'), card(5, 'espada')],
+      2: [card(5, 'oro'), card(4, 'oro'), card(6, 'espada')],
+      3: [card(7, 'espada'), card(3, 'oro'), card(2, 'oro')],
+    });
+    const declared = reduce(state, { type: 'callFlor', seat: 0 });
+    const rival = viewFor(declared, 1);
+    const own = viewFor(declared, 0);
+
+    expect('seed' in rival).toBe(false);
+    expect((rival as unknown as { seed?: number }).seed).toBeUndefined();
+    expect(typeof rival.matchSeed).toBe('number');
+    expect(rival.flor.declarations).toEqual([{ seat: 0, team: 'nosotros', kind: 'flor' }]);
+    expect(rival.flor.declarations[0]).not.toHaveProperty('value');
+    expect(own.ownFlor).toEqual({ kind: 'flor', value: 38 });
   });
 
   it('computes the seat’s own envido from the dealt hand', () => {

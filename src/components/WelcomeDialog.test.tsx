@@ -93,11 +93,11 @@ describe('the first-visit welcome', () => {
     renderApp();
 
     const dialog = screen.getByRole('dialog', {
-      name: 'Three cards, one table, 24 stones',
+      name: 'Three cards, one table, 24 piedras',
     });
 
     expect(within(dialog).getByText('You get three cards')).toBeVisible();
-    expect(within(dialog).getByText('Win two of the three tricks')).toBeVisible();
+    expect(within(dialog).getByText('Win two of the three bazas')).toBeVisible();
     expect(
       within(dialog).getByText('Call envido, flor and truco to raise the stake'),
     ).toBeVisible();

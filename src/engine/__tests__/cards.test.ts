@@ -1,7 +1,7 @@
 import { cardKey, SPANISH_DECK, type Card, type Rank, type Suit } from '../../domain/cards';
 import { SEATS, type Seat } from '../../domain/seats';
 
-import { cardPower, compareCards, envidoTanto, pieceOf } from '../cards';
+import { cardPower, envidoTanto, pieceOf } from '../cards';
 
 function card(rank: Rank, suit: Suit): Card {
   return { rank, suit };
@@ -91,13 +91,16 @@ describe('the card hierarchy', () => {
     );
   });
 
-  it('ties equal ranks and compares the rest in the right direction', () => {
+  it('ties equal ranks and keeps the stronger card above the weaker one', () => {
     expect(cardPower(card(3, 'espada'), VIRA_REY_BASTO)).toBe(
       cardPower(card(3, 'copa'), VIRA_REY_BASTO),
     );
-    expect(compareCards(card(11, 'basto'), card(1, 'espada'), VIRA_REY_BASTO)).toBe(1);
-    expect(compareCards(card(1, 'espada'), card(11, 'basto'), VIRA_REY_BASTO)).toBe(-1);
-    expect(compareCards(card(3, 'oro'), card(3, 'copa'), VIRA_REY_BASTO)).toBe(0);
+    expect(cardPower(card(11, 'basto'), VIRA_REY_BASTO)).toBeGreaterThan(
+      cardPower(card(1, 'espada'), VIRA_REY_BASTO),
+    );
+    expect(cardPower(card(1, 'espada'), VIRA_REY_BASTO)).toBeGreaterThan(
+      cardPower(card(12, 'oro'), VIRA_REY_BASTO),
+    );
   });
 
   it('promotes the rey when the vira is a caballo', () => {
@@ -109,9 +112,12 @@ describe('the card hierarchy', () => {
 
   it('drops burned cards below every face-up card and ties only burned cards', () => {
     expect(cardPower(card(4, 'oro'), VIRA_REY_BASTO, true)).toBe(-1);
-    expect(compareCards(card(4, 'oro'), card(4, 'copa'), VIRA_REY_BASTO, true, true)).toBe(0);
-    expect(compareCards(card(12, 'oro'), card(4, 'espada'), VIRA_REY_BASTO, false, true)).toBe(1);
-    expect(compareCards(card(4, 'espada'), card(12, 'oro'), VIRA_REY_BASTO, true, false)).toBe(-1);
+    expect(cardPower(card(4, 'oro'), VIRA_REY_BASTO, true)).toBe(
+      cardPower(card(4, 'copa'), VIRA_REY_BASTO, true),
+    );
+    expect(cardPower(card(12, 'oro'), VIRA_REY_BASTO, false)).toBeGreaterThan(
+      cardPower(card(4, 'espada'), VIRA_REY_BASTO, true),
+    );
   });
 });
 
