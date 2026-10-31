@@ -122,6 +122,7 @@ function pendingRetruco(): GameState {
       callerSeat: 1,
       callerTeam: 'ellos',
       respondingTeam: 'nosotros',
+      returnSeat: 1,
     },
   });
 }

@@ -496,6 +496,7 @@ function callTruco(state: GameState, seat: Seat): GameState {
     callerSeat: seat,
     callerTeam: team,
     respondingTeam: OTHER_TEAM[team],
+    returnSeat: state.turn,
   };
   const called: GameState = {
     ...state,
@@ -556,7 +557,7 @@ function respondTruco(
       ...withLog,
       truco: { level: pending.level, acceptedByTeam: team },
       pending: null,
-      turn: pending.callerSeat,
+      turn: pending.returnSeat,
     };
   }
 
@@ -583,6 +584,7 @@ function respondTruco(
     callerSeat: action.seat,
     callerTeam: team,
     respondingTeam: pending.callerTeam,
+    returnSeat: pending.returnSeat,
   };
 
   return {

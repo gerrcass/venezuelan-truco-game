@@ -98,6 +98,7 @@ describe('the truco call', () => {
       callerSeat: 0,
       callerTeam: 'nosotros',
       respondingTeam: 'ellos',
+      returnSeat: 0,
     });
     expect(called.truco).toEqual({ level: 0, acceptedByTeam: null });
     expect(called.turn).toBe(0);
@@ -262,6 +263,7 @@ describe('answering the truco', () => {
       callerSeat: 1,
       callerTeam: 'ellos',
       respondingTeam: 'nosotros',
+      returnSeat: 0,
     });
     expect(raised.truco).toEqual({ level: 1, acceptedByTeam: 'ellos' });
     expect(raised.turn).toBe(0);
@@ -276,17 +278,17 @@ describe('answering the truco', () => {
 
     expect(accepted.pending).toBeNull();
     expect(accepted.truco).toEqual({ level: 2, acceptedByTeam: 'nosotros' });
-    expect(accepted.turn).toBe(1);
+    expect(accepted.turn).toBe(0);
   });
 
-  it('lets the partner accept a raised call and returns the turn to the raiser', () => {
+  it('lets the partner accept a raised call and returns the turn to the original caller', () => {
     const called = reduce(rigGame(), { type: 'callTruco', seat: 0 });
     const raised = reduce(called, { type: 'respondTruco', seat: 1, response: 'raise' });
     const accepted = reduce(raised, { type: 'respondTruco', seat: 2, response: 'accept' });
 
     expect(accepted.truco).toEqual({ level: 2, acceptedByTeam: 'nosotros' });
     expect(accepted.pending).toBeNull();
-    expect(accepted.turn).toBe(1);
+    expect(accepted.turn).toBe(0);
   });
 
   it('does not allow a raise above vale juego', () => {
@@ -321,6 +323,7 @@ describe('answering the truco', () => {
       callerSeat: 1,
       callerTeam: 'ellos',
       respondingTeam: 'nosotros',
+      returnSeat: 1,
     });
   });
 

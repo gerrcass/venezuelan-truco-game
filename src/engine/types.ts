@@ -71,6 +71,8 @@ export interface PendingTrucoCall {
   readonly callerSeat: Seat;
   readonly callerTeam: Team;
   readonly respondingTeam: Team;
+  /** The seat whose play turn is paused by the call; it resumes after an accept. */
+  readonly returnSeat: Seat;
 }
 
 export interface PendingEnvidoCall {
@@ -79,6 +81,8 @@ export interface PendingEnvidoCall {
   readonly callerSeat: Seat;
   readonly callerTeam: Team;
   readonly respondingTeam: Team;
+  /** The seat whose play turn is paused by the call; it resumes after an accept. */
+  readonly returnSeat: Seat;
 }
 
 export type PendingCall = PendingTrucoCall | PendingEnvidoCall;

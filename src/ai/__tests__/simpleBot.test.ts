@@ -63,6 +63,7 @@ function pendingView(
     callerSeat,
     callerTeam,
     respondingTeam: TEAM_BY_SEAT[seat],
+    returnSeat: callerSeat,
   };
   const state: GameState = {
     ...base,
@@ -225,6 +226,7 @@ describe('the simple bot', () => {
         callerSeat: 0,
         callerTeam: 'nosotros',
         respondingTeam: 'ellos',
+        returnSeat: 0,
       },
     };
 
