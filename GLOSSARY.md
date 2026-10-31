@@ -30,6 +30,10 @@ _Avoid_: Repartidor, dealer
 One pass of four cards, one from each player. A reparto has up to three.
 _Avoid_: Ronda, trick, round
 
+> **English copy**: player-facing English says **baza**, never "trick". Internal
+> identifiers and test names may keep `Trick`/`trick` as the translation, because
+> they are not read at the table.
+
 **Parda**:
 A baza where the highest cards tie. The first team to win a baza wins the reparto if the tie leaves no outright winner.
 _Avoid_: Empate, draw
@@ -85,6 +89,11 @@ _Avoid_: Bid, announcement
 **Envido**:
 A bet comparing the best tanto of each team, built from two cards of one palo or a piece. Only before the first card of the reparto.
 _Avoid_: Envite, enviste (table variants)
+
+**Falta**:
+Also **envido la falta**: the fourth envido rung, played for the leader's
+remaining distance to 24 and fixed when it is accepted.
+_Avoid_: Match bet, all-in
 
 **Flor**:
 Three cards of one palo, or a piece plus two cards of one palo. Scores 3 piedras and cancels envido.
