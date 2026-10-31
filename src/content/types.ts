@@ -3,10 +3,12 @@ import type { PersonaKey, Team } from '../domain/seats';
 import type {
   EnvidoLevel,
   HandReason,
+  SenaKind,
   SettlementDetail,
   SettlementKind,
   TrucoCallLevel,
 } from '../engine/types';
+import type { TauntBank } from './taunts';
 
 export type Locale = 'es' | 'en';
 
@@ -27,6 +29,17 @@ export interface PersonaCopy {
   readonly persona: string;
   /** Short marker used inside the "Tú" token. */
   readonly marker: string;
+}
+
+/** The one seña panel near El Pana: the gesture, what it means, and the card. */
+export interface SenaCopy {
+  readonly label: string;
+  readonly invite: string;
+  readonly hide: string;
+  readonly gestureLabel: string;
+  readonly gestures: Record<SenaKind, string>;
+  readonly meanings: Record<SenaKind, string>;
+  readonly card: (name: string) => string;
 }
 
 export interface CardCopy {
@@ -76,6 +89,8 @@ export interface ShellContent {
     readonly viraLabel: string;
   };
   readonly personas: Record<PersonaKey, PersonaCopy>;
+  readonly sena: SenaCopy;
+  readonly taunts: TauntBank;
   readonly seats: {
     readonly cardCount: (count: number) => string;
     readonly mano: string;

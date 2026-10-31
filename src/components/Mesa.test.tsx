@@ -1,8 +1,11 @@
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { chooseSimpleAction } from '../ai/simpleBot';
+import { botPersonaForSeat } from '../ai/personas';
+import { chooseBotAction } from '../ai/policy';
+import { es } from '../content';
 import { LocaleProvider } from '../content/LocaleProvider';
+import type { TauntPersona } from '../content/taunts';
 import { cardKey, type Card, type Rank, type Suit } from '../domain/cards';
 import { actingSeat, createGame, reduce, viewFor } from '../engine/game';
 import type { GameState } from '../engine/types';
@@ -252,7 +255,7 @@ function playToHandOver(seed: string): GameState {
   let state = createGame({ seed });
   let guard = 0;
 
-  while (state.phase !== 'handOver' && guard < 400) {
+  while (guard < 600) {
     guard += 1;
 
     if (state.phase === 'matchOver') {
@@ -260,11 +263,23 @@ function playToHandOver(seed: string): GameState {
       continue;
     }
 
-    state = reduce(state, chooseSimpleAction(viewFor(state, actingSeat(state))));
+    if (state.phase === 'handOver') {
+      if (state.tricks.length > 0) {
+        return state;
+      }
+
+      state = reduce(state, { type: 'nextHand' });
+      continue;
+    }
+
+    const seat = actingSeat(state);
+    state = reduce(
+      state,
+      chooseBotAction(viewFor(state, seat), botPersonaForSeat(seat), state.seed),
+    );
   }
 
-  expect(state.phase).toBe('handOver');
-  return state;
+  throw new Error('The simulation never produced a reparto with bazas.');
 }
 
 function playToFirstTrick(seed: string): GameState {
@@ -284,7 +299,11 @@ function playToFirstTrick(seed: string): GameState {
       continue;
     }
 
-    state = reduce(state, chooseSimpleAction(viewFor(state, actingSeat(state))));
+    const seat = actingSeat(state);
+    state = reduce(
+      state,
+      chooseBotAction(viewFor(state, seat), botPersonaForSeat(seat), state.seed),
+    );
 
     if (state.tricks.length > 0) {
       return state;
@@ -292,6 +311,19 @@ function playToFirstTrick(seed: string): GameState {
   }
 
   throw new Error('The simulation never resolved a baza.');
+}
+
+async function expectTableTaunt(events: readonly ('deal' | 'trickWin' | 'trickLose')[]) {
+  await waitFor(() => {
+    const bubble = screen.getByLabelText('Lo que se dice en la mesa');
+    const name = within(bubble).getByText(/^(El Pana|La Comadre|El Catire)$/).textContent;
+    const persona: TauntPersona =
+      name === 'El Pana' ? 'pana' : name === 'La Comadre' ? 'comadre' : 'catire';
+    const quote = bubble.querySelector('.bubble__quote')?.textContent ?? '';
+    const lines = events.flatMap((event) => es.taunts[persona][event]);
+
+    expect(lines).toContain(quote);
+  });
 }
 
 describe('the live table', () => {
@@ -346,6 +378,37 @@ describe('the live table', () => {
 
     expect(within(trick).getAllByRole('img')).toHaveLength(4);
     expect(within(trick).getByText(verdict)).toBeVisible();
+  });
+
+  it('shows El Pana’s seña and reveals the gesture and card on click', async () => {
+    const user = userEvent.setup();
+    const base = rigGame();
+    const panaHand = [card(11, 'basto'), card(4, 'oro'), card(6, 'copa')];
+    const hands = { ...base.hands, 2: panaHand } as const;
+
+    renderTableState(rigGame({ hands, dealtHands: hands }));
+
+    const trigger = screen.getByRole('button', { name: /Seña de El Pana/ });
+
+    expect(trigger).toHaveAttribute('aria-expanded', 'false');
+    expect(screen.queryByRole('region', { name: 'Seña de El Pana' })).not.toBeInTheDocument();
+
+    await user.click(trigger);
+
+    const panel = screen.getByRole('region', { name: 'Seña de El Pana' });
+
+    expect(panel).toHaveTextContent('Guiño del ojo derecho');
+    expect(panel).toHaveTextContent('Te señala 11 de basto.');
+  });
+
+  it('fills the deal with persona table talk', async () => {
+    renderMesa('mesa-habladora');
+    await expectTableTaunt(['deal']);
+  });
+
+  it('fills the quiet beat after a trick with persona table talk', async () => {
+    renderTableState(playToFirstTrick('mesa-habladora-baza'));
+    await expectTableTaunt(['trickWin', 'trickLose']);
   });
 });
 
@@ -501,6 +564,7 @@ describe('the hand summary', () => {
     expect(within(dialog).getAllByText(pointsLabel).length).toBeGreaterThan(0);
     expect(within(dialog).getByText('Las bazas')).toBeVisible();
     expect(within(dialog).getByText('Las manos sobre la mesa')).toBeVisible();
+    expect(dialog.querySelector('.summary__talk')).not.toBeNull();
 
     for (const name of ['Tú', 'El Catire', 'El Pana', 'La Comadre']) {
       expect(within(dialog).getAllByText(name).length).toBeGreaterThan(0);

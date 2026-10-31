@@ -365,6 +365,27 @@ export interface PlayedCardView {
   readonly burned: boolean;
 }
 
+/**
+ * The one gesture El Pana sends the human each reparto. It is language-neutral:
+ * the content dictionary names the gesture and the card.
+ */
+export type SenaKind =
+  | 'reservada'
+  | 'flor'
+  | 'perico'
+  | 'perica'
+  | 'espadilla'
+  | 'bastillo'
+  | 'sieteEspada'
+  | 'sieteOro'
+  | 'none';
+
+export interface Sena {
+  readonly kind: SenaKind;
+  /** The card being signalled, or null for flor, reservada and the shrug. */
+  readonly card: Card | null;
+}
+
 /** A baza as the table sees it. */
 export interface TrickView {
   readonly baza: number;
@@ -378,6 +399,8 @@ export interface TrickView {
 /** The seat-scoped window into the game. Opponent hands never appear here during play. */
 export interface GameView {
   readonly seat: Seat;
+  /** The seed that produced this reparto's deal. Public, and used to keep bot talk reproducible. */
+  readonly seed: number;
   readonly phase: Phase;
   readonly handNumber: number;
   readonly target: number;
@@ -404,6 +427,8 @@ export interface GameView {
   readonly log: readonly GameLogEntry[];
   readonly ownEnvido: number;
   readonly ownFlor: FlorScore | null;
+  /** El Pana's seña, computed at the deal. Only seat 0 ever receives it. */
+  readonly sena: Sena | null;
   readonly envido: EnvidoState;
   readonly flor: FlorState;
   readonly prive: PriveState;

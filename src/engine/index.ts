@@ -28,6 +28,7 @@ export {
   type CreateGameOptions,
 } from './game';
 export { createRng, hashSeed, shuffle, type SeededRng } from './rng';
+export { computeSena } from './sena';
 export type {
   CallLogEntry,
   DealLogEntry,
@@ -63,6 +64,8 @@ export type {
   PriveResult,
   PriveState,
   RespondLogEntry,
+  Sena,
+  SenaKind,
   Settlement,
   SettlementDetail,
   SettlementKind,

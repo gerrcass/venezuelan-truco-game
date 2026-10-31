@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState, type PropsWithChildren } from 'react';
 
-import { chooseSimpleAction } from '../ai/simpleBot';
-import { TEAM_BY_SEAT } from '../domain/seats';
+import { chooseBotAction } from '../ai/policy';
+import { PERSONA_BY_SEAT, TEAM_BY_SEAT } from '../domain/seats';
 import { actingSeat, createGame, reduce, viewFor } from '../engine/game';
 import type { GameAction, GameState } from '../engine/types';
 import { GameContext } from './game-context';
@@ -89,12 +89,13 @@ export function GameProvider({
       !botView.legal.canCallTruco &&
       !botView.legal.canCallEnvido &&
       !botView.legal.canCallFlor &&
-      !botView.legal.canCallPrive
+      !botView.legal.canCallPrive &&
+      !botView.legal.canFold
     ) {
       return;
     }
 
-    const action = chooseSimpleAction(botView);
+    const action = chooseBotAction(botView, PERSONA_BY_SEAT[actor], state.seed);
     const timer = window.setTimeout(() => dispatch(action), delay);
 
     return () => window.clearTimeout(timer);

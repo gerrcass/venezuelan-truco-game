@@ -19,7 +19,9 @@ export function SpeechBubble({ seat, quote }: SpeechBubbleProps) {
       </span>
       <div className="bubble__body">
         <figcaption className="bubble__name">{person.name}</figcaption>
-        <blockquote className="bubble__quote">{quote}</blockquote>
+        <blockquote className="bubble__quote" aria-live="polite" aria-atomic="true">
+          {quote}
+        </blockquote>
       </div>
     </figure>
   );

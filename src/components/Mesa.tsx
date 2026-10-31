@@ -1,12 +1,11 @@
 import { useCallback, useEffect, useState } from 'react';
 
 import { useLocale } from '../content/locale-context';
-import type { ShellContent } from '../content/types';
 import { cardKey } from '../domain/cards';
-import { PERSONA_BY_SEAT, SEATS, TEAM_BY_SEAT, type Seat as SeatId } from '../domain/seats';
+import { PERSONA_BY_SEAT, SEATS, TEAM_BY_SEAT } from '../domain/seats';
 import { BAZAS_PER_HAND } from '../engine/game';
-import type { GameLogEntry, TrucoCallLevel } from '../engine/types';
 import { useGame } from '../game/game-context';
+import { useTableTalk } from '../game/useTableTalk';
 import { ActionBar } from './ActionBar';
 import { EnvidoDialog } from './EnvidoDialog';
 import { HandDock } from './HandDock';
@@ -18,6 +17,7 @@ import { Modal } from './Modal';
 import { RulesDialog } from './RulesDialog';
 import { Scoreboard } from './Scoreboard';
 import { Seat } from './Seat';
+import { SenaPanel } from './SenaPanel';
 import { SpeechBubble } from './SpeechBubble';
 import { TopBar } from './TopBar';
 import { TrickArea } from './TrickArea';
@@ -33,80 +33,10 @@ function readSoundPreference(): boolean {
   }
 }
 
-/** The last call or answer of the current reparto, for the table-talk bubble. */
-function latestTalk(
-  entries: readonly GameLogEntry[],
-  content: ShellContent,
-): { seat: SeatId; quote: string } | null {
-  let start = 0;
-
-  for (let index = 0; index < entries.length; index += 1) {
-    if (entries[index].kind === 'deal') {
-      start = index;
-    }
-  }
-
-  for (let index = entries.length - 1; index >= start; index -= 1) {
-    const entry = entries[index];
-
-    if (entry.kind === 'call') {
-      if (entry.call === 'truco') {
-        return {
-          seat: entry.seat,
-          quote: content.truco.speech.call(content.truco.names[entry.level]),
-        };
-      }
-
-      if (entry.call === 'envido') {
-        return {
-          seat: entry.seat,
-          quote: content.envido.speech.call(content.envido.names[entry.level]),
-        };
-      }
-
-      if (entry.call === 'flor') {
-        return { seat: entry.seat, quote: content.flor.speech.call(entry.flor) };
-      }
-
-      return { seat: entry.seat, quote: content.prive.speech.call };
-    }
-
-    if (entry.kind === 'respond') {
-      if (entry.call === 'envido') {
-        if (entry.response === 'accept') {
-          return { seat: entry.seat, quote: content.envido.speech.accept };
-        }
-
-        if (entry.response === 'decline') {
-          return { seat: entry.seat, quote: content.envido.speech.decline };
-        }
-
-        return {
-          seat: entry.seat,
-          quote: content.envido.speech.raise(content.envido.raises[(entry.level + 1) as 2 | 3 | 4]),
-        };
-      }
-
-      if (entry.response === 'accept') {
-        return { seat: entry.seat, quote: content.truco.speech.accept };
-      }
-
-      if (entry.response === 'decline') {
-        return { seat: entry.seat, quote: content.truco.speech.decline };
-      }
-
-      const raised = content.truco.names[(entry.level + 1) as TrucoCallLevel];
-
-      return { seat: entry.seat, quote: content.truco.speech.raise(raised) };
-    }
-  }
-
-  return null;
-}
-
 export function Mesa() {
   const { content } = useLocale();
   const { view, dispatch } = useGame();
+  const talk = useTableTalk(view, content);
   const [rulesOpen, setRulesOpen] = useState(false);
   const [logOpen, setLogOpen] = useState(false);
   const [soundOn, setSoundOn] = useState(readSoundPreference);
@@ -253,7 +183,6 @@ export function Mesa() {
     view.phase === 'playing' &&
     pendingEnvido !== null &&
     pendingEnvido.respondingTeam === TEAM_BY_SEAT[view.seat];
-  const talk = latestTalk(view.log, content);
 
   return (
     <div className="app">
@@ -292,6 +221,10 @@ export function Mesa() {
                     isTurn={view.phase === 'playing' && seat === view.turn}
                   />
                 ))}
+
+                {view.phase === 'playing' && view.sena && (
+                  <SenaPanel sena={view.sena} dealKey={`${view.seed}:${view.handNumber}`} />
+                )}
 
                 <TrickArea view={view} />
                 <SpeechBubble seat={talk?.seat ?? 1} quote={talk?.quote ?? content.trick.bubble} />

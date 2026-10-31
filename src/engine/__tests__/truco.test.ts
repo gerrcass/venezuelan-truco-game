@@ -1,4 +1,5 @@
-import { chooseSimpleAction } from '../../ai/simpleBot';
+import { chooseBotAction } from '../../ai/policy';
+import { botPersonaForSeat } from '../../ai/personas';
 import { cardKey, type Card, type Rank, type Suit } from '../../domain/cards';
 import { SEATS, type Seat, type Team } from '../../domain/seats';
 
@@ -547,7 +548,7 @@ describe('a partida to 24', () => {
 
       const seat = actingSeat(state);
       const view = viewFor(state, seat);
-      const action = chooseSimpleAction(view);
+      const action = chooseBotAction(view, botPersonaForSeat(seat), state.seed);
       const next = reduce(state, action);
 
       expect(next).not.toBe(state);
@@ -564,8 +565,11 @@ describe('a partida to 24', () => {
         expect(view.legal.canCallPrive).toBe(true);
       } else if (action.type === 'respondEnvido') {
         expect(view.legal.canRespondEnvido).toBe(true);
-      } else {
+      } else if (action.type === 'respondTruco') {
         expect(view.legal.canRespondTruco).toBe(true);
+      } else {
+        expect(action.type).toBe('fold');
+        expect(view.legal.canFold).toBe(true);
       }
 
       state = next;
@@ -575,7 +579,7 @@ describe('a partida to 24', () => {
   }
 
   it.each(['partida-a-24', 'partida-b-24'])(
-    'plays every seat with the simple bot, legally, to a 24 winner (%s)',
+    'plays every seat with the personas, legally, to a 24 winner (%s)',
     (seed) => {
       const { state, steps, repartos } = playPartida(seed);
 

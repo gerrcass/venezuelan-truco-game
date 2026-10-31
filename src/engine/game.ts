@@ -3,6 +3,7 @@ import { SEATS, TEAM_BY_SEAT, type Seat, type Team } from '../domain/seats';
 
 import { cardPower, envidoTanto, florValue, scoreFlor } from './cards';
 import { hashSeed, shuffle } from './rng';
+import { computeSena } from './sena';
 import type {
   EnvidoLevel,
   EnvidoResult,
@@ -1439,6 +1440,7 @@ export function viewFor(state: GameState, seat: Seat): GameView {
 
   return {
     seat,
+    seed: state.seed,
     phase: state.phase,
     handNumber: state.handNumber,
     target: state.target,
@@ -1474,6 +1476,7 @@ export function viewFor(state: GameState, seat: Seat): GameView {
     log: state.log,
     ownEnvido: envidoTanto(state.dealtHands[seat], state.vira),
     ownFlor: scoreFlor(state.dealtHands[seat], state.vira),
+    sena: seat === 0 ? computeSena(state.dealtHands[2], state.vira) : null,
     envido: state.envido,
     flor: state.flor,
     prive: state.prive,

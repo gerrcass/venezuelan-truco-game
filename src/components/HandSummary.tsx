@@ -1,10 +1,13 @@
 import { useLocale } from '../content/locale-context';
+import { pickTaunt } from '../content/taunts';
 import { settlementNote, settlementSource } from '../content/settlements';
 import { shortCardName } from '../content/types';
 import { cardKey } from '../domain/cards';
 import { PERSONA_BY_SEAT, SEATS, TEAM_BY_SEAT, type Seat } from '../domain/seats';
 import { pieceOf } from '../engine/cards';
 import type { GameView } from '../engine/types';
+import { deriveTableBeat, tauntPersonaForSeat } from '../game/table-talk';
+import { Avatar } from './Avatar';
 import { Modal } from './Modal';
 import { StoneIcon } from './icons';
 
@@ -50,6 +53,12 @@ export function HandSummary({ view, onNextHand, onRematch }: HandSummaryProps) {
     result.trucoLevel === 0
       ? summary.noTruco
       : summary.trucoAccepted(content.truco.names[result.trucoLevel]);
+  const talkBeat = deriveTableBeat(view);
+  const talkPersona = talkBeat?.kind === 'taunt' ? tauntPersonaForSeat(talkBeat.seat) : null;
+  const talkLine =
+    talkBeat?.kind === 'taunt' && talkPersona !== null
+      ? pickTaunt(talkPersona, talkBeat.event, talkBeat.seed, null, content.taunts)
+      : null;
 
   return (
     <Modal
@@ -74,6 +83,18 @@ export function HandSummary({ view, onNextHand, onRematch }: HandSummaryProps) {
           {summary.score(view.scores.nosotros, view.scores.ellos)}
         </p>
       </header>
+
+      {talkPersona !== null && talkLine !== null && (
+        <p className="summary__talk" aria-live="polite" aria-atomic="true">
+          <span className="summary__talk-avatar">
+            <Avatar persona={talkPersona} />
+          </span>
+          <span>
+            <span className="summary__talk-name">{content.personas[talkPersona].name}</span>{' '}
+            <span className="summary__talk-quote">«{talkLine}»</span>
+          </span>
+        </p>
+      )}
 
       <div className="summary__section summary__account">
         <h3 className="summary__section-title">{summary.accountLabel}</h3>

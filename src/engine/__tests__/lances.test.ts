@@ -1,4 +1,5 @@
-import { chooseSimpleAction } from '../../ai/simpleBot';
+import { chooseBotAction } from '../../ai/policy';
+import { botPersonaForSeat } from '../../ai/personas';
 import { cardKey, type Card, type Rank, type Suit } from '../../domain/cards';
 import { SEATS, type Seat, type Team } from '../../domain/seats';
 
@@ -1165,13 +1166,13 @@ describe('the settlement ledger', () => {
   });
 });
 
-describe('the simple bot at the new lances', () => {
+describe('the personas at the new lances', () => {
   it('declares its flor before anything else', () => {
     const state = rigHands(FLOR_HANDS);
     const view = viewFor(state, 0);
 
     expect(view.legal.canCallFlor).toBe(true);
-    expect(chooseSimpleAction(view)).toEqual({ type: 'callFlor', seat: 0 });
+    expect(chooseBotAction(view, 'pana', state.seed)).toEqual({ type: 'callFlor', seat: 0 });
   });
 
   it('opens envido with a decent tanto', () => {
@@ -1179,27 +1180,29 @@ describe('the simple bot at the new lances', () => {
     const view = viewFor(state, 0);
 
     expect(view.ownEnvido).toBe(33);
-    expect(chooseSimpleAction(view)).toEqual({ type: 'callEnvido', seat: 0 });
+    expect(chooseBotAction(view, 'pana', state.seed)).toEqual({ type: 'callEnvido', seat: 0 });
   });
 
   it('declines, accepts or raises an envido from its own tanto', () => {
-    const base = rigHands(ENVIDO_HANDS);
-    const opened = reduce(base, { type: 'callEnvido', seat: 0 });
+    const weakHands: Record<Seat, readonly Card[]> = {
+      ...ENVIDO_HANDS,
+      1: [card(12, 'basto'), card(11, 'oro'), card(5, 'espada')],
+    };
+    const weak = reduce(rigHands(weakHands), { type: 'callEnvido', seat: 0 });
+    const weakView = viewFor(weak, 1);
 
-    expect(chooseSimpleAction(viewFor(opened, 1))).toEqual({
+    expect(weakView.ownEnvido).toBe(5);
+    expect(chooseBotAction(weakView, 'catire', weak.seed)).toEqual({
       type: 'respondEnvido',
       seat: 1,
       response: 'decline',
     });
 
-    const decentHands: Record<Seat, readonly Card[]> = {
-      ...ENVIDO_HANDS,
-      1: [card(7, 'copa'), card(5, 'copa'), card(4, 'espada')],
-    };
-    const decent = reduce(rigHands(decentHands), { type: 'callEnvido', seat: 0 });
+    const decent = reduce(rigHands(ENVIDO_HANDS), { type: 'callEnvido', seat: 0 });
+    const decentView = viewFor(decent, 1);
 
-    expect(viewFor(decent, 1).ownEnvido).toBe(32);
-    expect(chooseSimpleAction(viewFor(decent, 1))).toEqual({
+    expect(decentView.ownEnvido).toBe(25);
+    expect(chooseBotAction(decentView, 'catire', decent.seed)).toEqual({
       type: 'respondEnvido',
       seat: 1,
       response: 'accept',
@@ -1210,9 +1213,10 @@ describe('the simple bot at the new lances', () => {
       1: [card(7, 'copa'), card(6, 'copa'), card(4, 'espada')],
     };
     const strong = reduce(rigHands(strongHands), { type: 'callEnvido', seat: 0 });
+    const strongView = viewFor(strong, 1);
 
-    expect(viewFor(strong, 1).ownEnvido).toBe(33);
-    expect(chooseSimpleAction(viewFor(strong, 1))).toEqual({
+    expect(strongView.ownEnvido).toBe(33);
+    expect(chooseBotAction(strongView, 'catire', strong.seed)).toEqual({
       type: 'respondEnvido',
       seat: 1,
       response: 'raise',
@@ -1222,7 +1226,9 @@ describe('the simple bot at the new lances', () => {
   it('never answers an envido for the other team', () => {
     const opened = reduce(rigHands(ENVIDO_HANDS), { type: 'callEnvido', seat: 0 });
 
-    expect(() => chooseSimpleAction(viewFor(opened, 0))).toThrow('does not answer');
+    expect(() => chooseBotAction(viewFor(opened, 0), 'pana', opened.seed)).toThrow(
+      'does not answer',
+    );
   });
 
   it('calls prive at 23 with a strong tanto', () => {
@@ -1230,44 +1236,11 @@ describe('the simple bot at the new lances', () => {
     const view = viewFor(state, 0);
 
     expect(view.legal.canCallPrive).toBe(true);
-    expect(chooseSimpleAction(view)).toEqual({ type: 'callPrive', seat: 0 });
-  });
-
-  it('burns a hopeless low card when a rival is winning', () => {
-    const base = createGame({ seed: 'bot-burn' });
-    const hands: Record<Seat, readonly Card[]> = {
-      0: [card(7, 'espada'), card(2, 'copa'), card(3, 'basto')],
-      1: [card(3, 'oro'), card(2, 'basto'), card(3, 'espada')],
-      2: [card(5, 'oro'), card(4, 'copa'), card(5, 'espada')],
-      3: [card(4, 'copa'), card(5, 'oro'), card(6, 'basto')],
-    };
-    const state: GameState = {
-      ...base,
-      vira: VIRA,
-      hands,
-      dealtHands: hands,
-      turn: 3,
-      lead: 0,
-      currentTrick: [
-        { seat: 0, card: card(7, 'espada'), burned: false },
-        { seat: 1, card: card(3, 'oro'), burned: false },
-        { seat: 2, card: card(5, 'oro'), burned: false },
-      ],
-      pending: null,
-      truco: { level: 0, acceptedByTeam: null },
-      flor: { declarations: [], settled: false, winnerTeam: null, winnerSeat: null, points: 0 },
-    };
-
-    expect(chooseSimpleAction(viewFor(state, 3))).toEqual({
-      type: 'playCard',
-      seat: 3,
-      cardKey: cardKey(card(4, 'copa')),
-      burned: true,
-    });
+    expect(chooseBotAction(view, 'pana', state.seed)).toEqual({ type: 'callPrive', seat: 0 });
   });
 });
 
-describe('a partida with the simple bot and every lance', () => {
+describe('a partida with the personas and every lance', () => {
   function playPartida(seed: string) {
     let state = createGame({ seed });
     let steps = 0;
@@ -1285,7 +1258,7 @@ describe('a partida with the simple bot and every lance', () => {
 
       const seat = actingSeat(state);
       const view = viewFor(state, seat);
-      const action = chooseSimpleAction(view);
+      const action = chooseBotAction(view, botPersonaForSeat(seat), state.seed);
       const next = reduce(state, action);
 
       expect(next).not.toBe(state);
@@ -1314,6 +1287,9 @@ describe('a partida with the simple bot and every lance', () => {
           break;
         case 'respondEnvido':
           expect(view.legal.canRespondEnvido).toBe(true);
+          break;
+        case 'fold':
+          expect(view.legal.canFold).toBe(true);
           break;
         default:
           throw new Error(`Unexpected action ${JSON.stringify(action)}`);
@@ -1352,7 +1328,7 @@ describe('a partida with the simple bot and every lance', () => {
   it('exercises every settlement source across a seeded partida', () => {
     const kinds = new Set<Settlement['kind']>();
 
-    for (const seed of ['lances-a', 'lances-b', 'lances-c', 'lances-d']) {
+    for (const seed of ['lances-a', 'lances-b', 'lances-c', 'lances-d', 'prive-busca-4']) {
       const { kinds: found } = playPartida(seed);
 
       for (const kind of found) {

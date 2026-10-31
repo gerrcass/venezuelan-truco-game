@@ -236,6 +236,149 @@
   justify-content: flex-end;
 }
 
+/* ---------------------------------------------------------------- seña */
+
+.sena {
+  position: absolute;
+  z-index: 4;
+  top: 8px;
+  left: calc(50% - 290px);
+  display: flex;
+  width: 178px;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 5px;
+}
+
+.sena__trigger {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 8px;
+  border: 1px solid rgba(240, 180, 41, 0.32);
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(4, 25, 23, 0.86), rgba(4, 22, 20, 0.72));
+  color: var(--cream);
+  text-align: left;
+  box-shadow:
+    0 8px 18px rgba(0, 0, 0, 0.24),
+    inset 0 1px rgba(255, 255, 255, 0.045);
+  transition:
+    border-color var(--dur-1) var(--ease-soft),
+    background var(--dur-1) var(--ease-soft);
+}
+
+.sena__trigger:hover {
+  border-color: rgba(240, 180, 41, 0.55);
+}
+
+.sena--open .sena__trigger {
+  border-color: rgba(240, 180, 41, 0.62);
+  background: linear-gradient(180deg, rgba(4, 25, 23, 0.94), rgba(4, 22, 20, 0.82));
+}
+
+.sena__mark {
+  width: 22px;
+  height: 22px;
+  flex: 0 0 22px;
+  color: var(--marigold);
+}
+
+.sena__mark svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.sena__trigger-body {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.sena__label {
+  color: var(--marigold);
+  font-size: 7.5px;
+  font-weight: 800;
+  letter-spacing: 0.11em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.sena__invite {
+  overflow: hidden;
+  color: var(--cream-soft);
+  font-size: 8.5px;
+  font-weight: 500;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sena__panel {
+  padding: 8px 9px 9px;
+  border: 1px solid rgba(240, 180, 41, 0.3);
+  border-radius: 3px 10px 10px 10px;
+  background: linear-gradient(165deg, #fffdf7, var(--paper) 65%, #f6ead7);
+  color: var(--ink);
+  box-shadow:
+    0 14px 28px rgba(0, 0, 0, 0.32),
+    inset 0 1px rgba(255, 255, 255, 0.7);
+  animation: sena-in 180ms var(--ease-out) both;
+}
+
+.sena__eyebrow {
+  margin-bottom: 2px;
+  color: var(--terracotta-ink);
+  font-size: 6.5px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.sena__gesture {
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-variation-settings:
+    'SOFT' 65,
+    'WONK' 1;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.14;
+}
+
+.sena__meaning {
+  margin-top: 3px;
+  color: var(--ink-soft);
+  font-size: 8.5px;
+  line-height: 1.35;
+}
+
+.sena__card {
+  margin-top: 4px;
+  padding-top: 4px;
+  border-top: 1px solid var(--ink-faint);
+  color: var(--terracotta-ink);
+  font-size: 8.5px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+@keyframes sena-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* ---------------------------------------------------------------- trick */
 
 .trick {

@@ -42,9 +42,256 @@ export const es: ShellContent = {
   },
   personas: {
     you: { name: 'Tú', persona: 'Con El Pana', marker: 'Tú' },
-    pana: { name: 'El Pana', persona: 'Tu pana de siempre', marker: 'EP' },
-    comadre: { name: 'La Comadre', persona: 'Sabe todo el chisme', marker: 'LC' },
-    catire: { name: 'El Catire', persona: 'Truco antes de mirar', marker: 'EC' },
+    pana: { name: 'El Pana', persona: 'Firme y pendiente', marker: 'EP' },
+    comadre: { name: 'La Comadre', persona: 'Paciente, chismosa y viva', marker: 'LC' },
+    catire: { name: 'El Catire', persona: 'Canta truco antes de mirar', marker: 'EC' },
+  },
+  sena: {
+    label: 'Seña de El Pana',
+    invite: 'El Pana te mira',
+    hide: 'Ocultar la seña',
+    gestureLabel: 'El gesto',
+    gestures: {
+      reservada: 'Guiño izquierdo y luego derecho',
+      flor: 'Inflar los cachetes',
+      perico: 'Guiño del ojo derecho',
+      perica: 'Guiño del ojo izquierdo',
+      espadilla: 'Lengua a la derecha',
+      bastillo: 'Lengua a la izquierda',
+      sieteEspada: 'Punta de lengua a la derecha',
+      sieteOro: 'Punta de lengua a la izquierda',
+      none: 'Se encoge de hombros',
+    },
+    meanings: {
+      reservada: 'Tiene flor reservada. Cinco piedras que no se dicen.',
+      flor: 'Tiene flor. Guárdalo para cuando toque.',
+      perico: 'Tiene el perico. La carta más alta de la mesa.',
+      perica: 'Tiene la perica. Solo el perico le gana.',
+      espadilla: 'Tiene la espadilla. Ese as manda.',
+      bastillo: 'Tiene el bastillo. Otro as que pega duro.',
+      sieteEspada: 'Tiene el siete de espada. Fuerte y callado.',
+      sieteOro: 'Tiene el siete de oro. No es el más alto, pero asusta.',
+      none: 'No tiene nada que señalarte. Igual juega con fe.',
+    },
+    card: (name) => `Te señala ${name}.`,
+  },
+  taunts: {
+    pana: {
+      deal: [
+        'Reparto nuevo, pana. Respira y mira bien.',
+        'Tranquilo, chamo. La mesa es larga y nosotros somos dos.',
+        'Dale, mijo. Yo te cubro la espalda.',
+      ],
+      turn: [
+        'Te toca, pana. Sin miedo, que aquí estoy.',
+        'Tu turno, chamo. Juega suave y no te acoquines.',
+        'Dale, mijo. La carta que sea, pero con confianza.',
+      ],
+      call: [
+        '¡Vamos con esa apuesta, pana!',
+        'Esta la cantamos nosotros, chamo.',
+        'Con calma, pero con ganas.',
+      ],
+      accept: [
+        'Quiero. Aquí no se afloja nadie.',
+        'La aguanto, pana. Tengo con qué.',
+        'Dale, quiero. Confío en esta mano.',
+      ],
+      decline: [
+        'No quiero, chamo. Esta vez no me la creo.',
+        'Pasito. Guardo la pólvora para después.',
+        'No, mijo. Esa no me la llevo.',
+      ],
+      flor: [
+        '¡Flor! Y no lo digo dos veces.',
+        'Tengo flor, pana. Respira.',
+        '¡Flor! Esto se pone bueno.',
+      ],
+      prive: [
+        'Prive. Estamos a una piedra, chamo.',
+        'Voy con el prive. Tengo con qué.',
+        'Prive, mijo. La mesa está que arde.',
+      ],
+      trickWin: [
+        '¡Esa baza es nuestra, pana!',
+        'Bien jugado, chamo. Así se hace.',
+        'Ahí está la baza. Paso a paso.',
+      ],
+      trickLose: [
+        'Tranquilo, pana. Todavía hay bazas.',
+        'Se nos fue esa, chamo. No pasa nada.',
+        'Respira, mijo. La que viene es nuestra.',
+      ],
+      handWin: [
+        '¡Ahí está, pana! Esa es la nuestra.',
+        'Nos la llevamos, chamo. Con calma y con maña.',
+        'Bien, mijo. Así se juega en esta mesa.',
+      ],
+      handLose: [
+        'Se nos fue, pana. La próxima es nuestra.',
+        'No te me acoquines, chamo. Ya vendrá.',
+        'Tranquilo, mijo. Esto es largo.',
+      ],
+      matchWin: [
+        '¡Llegamos a 24, pana! ¡Qué noche!',
+        'Te lo dije, chamo. Somos una dupla.',
+        '¡Epa! Partida nuestra. Ahora sí, una arepa.',
+      ],
+      matchLose: [
+        'Perdimos, pana. Pero qué bueno fue jugar.',
+        'No pasa nada, chamo. La revancha es nuestra.',
+        'Nos ganaron bien, mijo. Hay que reconocerlo.',
+      ],
+      burn: [
+        'Quemo esta, chamo. Que la adivinen.',
+        'Boca abajo, pana. Sin dar ventaja.',
+        'Esta no la ven. Se la guardo a la mesa.',
+      ],
+    },
+    comadre: {
+      deal: [
+        'Ay, mijo, reparto nuevo. A ver qué telenovela nos toca.',
+        'Reparte, reparte. Que aquí todo se sabe.',
+        'Mesa nueva, chamo. Y yo con los ojos bien abiertos.',
+      ],
+      turn: [
+        'Te toca, mijo. A ver qué me cuentas.',
+        'Dale, chamo. Que se me hace tarde para el chisme.',
+        'Tu turno, mi amor. No me hagas esperar.',
+      ],
+      call: [
+        'Esta la canto yo, mijo. Y no es cuento.',
+        'Voy con esta, chamo. La mesa está aburrida.',
+        'Canto, que la noche es joven.',
+      ],
+      accept: [
+        'Quiero, mijo. Yo no me pierdo el chisme.',
+        'La quiero, chamo. Aunque después me arrepienta.',
+        'Dale, quiero. Que se anime esto.',
+      ],
+      decline: [
+        'No quiero, mijo. Esa no me la sé.',
+        'Ay, no. Guárdate ese cuento para otra.',
+        'No, chamo. Yo no compro cambur por kilo.',
+      ],
+      flor: [
+        '¡Flor, mijo! Y no es la del jardín.',
+        'Flor. Ya me imagino la cara que pusiste.',
+        '¡Flor! Esto lo cuento en la peluquería.',
+      ],
+      prive: [
+        'Prive, mijo. A una piedra y con la lengua afuera.',
+        'Voy con prive, chamo. Que tiemblen.',
+        'Prive. La comadre no se queda callada.',
+      ],
+      trickWin: [
+        '¡Esa es mía, mijo! La vi venir.',
+        'Se la llevó la casa, chamo.',
+        'Así se lleva una baza, mijo. Sin despeinarse.',
+      ],
+      trickLose: [
+        'Ay, mijo. Esa se la dejé de regalo.',
+        'Se me escapó, chamo. Pero no me voy a poner a llorar.',
+        'Bien jugado, mijo. Me lo apunto.',
+      ],
+      handWin: [
+        '¡Reparto para nosotras, mijo! Como en la novela.',
+        'Se acabó, chamo. La comadre cobra.',
+        'Así mismo, mijo. Sin prisa y sin piedad.',
+      ],
+      handLose: [
+        'Me lo ganaron, mijo. Pero qué bien lo hicieron.',
+        'Ay, chamo. Esta vez la trama me quedó mal.',
+        'Se nos fue, mijo. Voy a llorar un ratico y vuelvo.',
+      ],
+      matchWin: [
+        '¡24, mijo! ¡Esto se celebra con hallaca!',
+        'Te lo conté, chamo: la comadre sabe.',
+        '¡Partida nuestra! Ay, qué rico.',
+      ],
+      matchLose: [
+        'Nos ganaron, mijo. Pero qué buen chisme.',
+        'Ay, chamo. La revancha la cuento yo.',
+        'Perdimos, mijo. No todo puede ser telenovela.',
+      ],
+      burn: [
+        'Quemo, mijo. Que adivinen el final.',
+        'Boca abajo, chamo. El suspenso es mío.',
+        'Esta no la muestro, mijo. Es secreto de comadre.',
+      ],
+    },
+    catire: {
+      deal: [
+        '¡Epa! Reparto nuevo y aquí llegó el que sabe.',
+        'Denme las cartas, chamo. Que esto ya está decidido.',
+        '¡Burda de reparto! Prepárense.',
+      ],
+      turn: [
+        '¡Dale, que me toca a mí! Abran paso.',
+        'Mi turno, chamo. No me miren mucho.',
+        '¡Voy con todo, nojoda! Bueno, con lo que hay.',
+      ],
+      call: [
+        '¡Truco, chamo! Ni miren las cartas.',
+        '¡Esta la canto yo! Que se oiga en Caracas.',
+        '¡Apuesto, nojoda! El Catire no se raja.',
+      ],
+      accept: [
+        '¡Quiero! ¿Y qué más?',
+        '¡La aguanto, chamo! Aquí no se corre.',
+        '¡Quiero, quiero! Pongan la arepa.',
+      ],
+      decline: [
+        'No quiero, chamo. Hasta el Catire tiene dignidad.',
+        'Pasito, que esta no me gusta ni un cambur.',
+        'No, nojoda. Esa se la dejo a otro.',
+      ],
+      flor: [
+        '¡Flor, chamo! ¿Vieron eso?',
+        '¡Flor! Hasta las cartas me quieren.',
+        '¡Flor, nojoda! Esto es un paseo.',
+      ],
+      prive: [
+        '¡Prive! A una piedra y con el pecho inflado.',
+        '¡Voy con prive, chamo! Que se acabe esto ya.',
+        '¡Prive, nojoda! El Catire cierra la noche.',
+      ],
+      trickWin: [
+        '¡Esa baza es mía! Como debe ser.',
+        '¡Toma, chamo! El Catire no perdona.',
+        '¡Burda! Ni se acerquen.',
+      ],
+      trickLose: [
+        '¡Ay, chamo! Esa fue de regalo.',
+        'Me la quitaron, nojoda. Pero la próxima es mía.',
+        'Bueno, bueno. Hasta el Catire tiene un mal día.',
+      ],
+      handWin: [
+        '¡Reparto nuestro, chamo! ¡A celebrar!',
+        '¡Se acabó! El Catire cobra y sonríe.',
+        '¡Eso es, nojoda! Así se gana.',
+      ],
+      handLose: [
+        '¡Nojoda! Se nos fue. Pero no me quejo.',
+        'Me ganaron, chamo. Disfruten que no dura.',
+        '¡Ay, ladilla! La próxima la canto más fuerte.',
+      ],
+      matchWin: [
+        '¡24, chamo! ¡El Catire se lleva la noche!',
+        '¡Partida nuestra, nojoda! ¡Pongan la música!',
+        '¡Ganamos! Y sí, fue idea mía.',
+      ],
+      matchLose: [
+        '¡Nojoda! Perdimos. Pero qué partida, chamo.',
+        'Me ganaron, burda. La revancha es ya mismo.',
+        '¡Ay, ladilla! Hoy no era. Mañana sí.',
+      ],
+      burn: [
+        '¡Quemo, chamo! Que se coman la curiosidad.',
+        'Boca abajo, nojoda. El Catire también tiene secretos.',
+        'Esta no la ven. Pura viveza criolla.',
+      ],
+    },
   },
   seats: {
     cardCount: (count) => `${count} ${count === 1 ? 'carta' : 'cartas'}`,

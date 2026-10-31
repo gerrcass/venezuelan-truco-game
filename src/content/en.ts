@@ -42,9 +42,256 @@ export const en: ShellContent = {
   },
   personas: {
     you: { name: 'You', persona: 'With El Pana', marker: 'You' },
-    pana: { name: 'El Pana', persona: 'Your ride-or-die pana', marker: 'EP' },
-    comadre: { name: 'La Comadre', persona: 'Knows all the gossip', marker: 'LC' },
-    catire: { name: 'El Catire', persona: 'Calls truco first', marker: 'EC' },
+    pana: { name: 'El Pana', persona: 'Steady and supportive', marker: 'EP' },
+    comadre: { name: 'La Comadre', persona: 'Patient, gossipy and sharp', marker: 'LC' },
+    catire: { name: 'El Catire', persona: 'Calls truco before looking', marker: 'EC' },
+  },
+  sena: {
+    label: "El Pana's seña",
+    invite: 'El Pana is looking at you',
+    hide: 'Hide the seña',
+    gestureLabel: 'The gesture',
+    gestures: {
+      reservada: 'Left wink, then right',
+      flor: 'Puff the cheeks',
+      perico: 'Right-eye wink',
+      perica: 'Left-eye wink',
+      espadilla: 'Tongue to the right',
+      bastillo: 'Tongue to the left',
+      sieteEspada: 'Tongue tip to the right',
+      sieteOro: 'Tongue tip to the left',
+      none: 'A shrug',
+    },
+    meanings: {
+      reservada: 'He has flor reservada. Five stones nobody says out loud.',
+      flor: 'He has flor. Save it for the right moment.',
+      perico: 'He has the perico. The highest card on the table.',
+      perica: 'He has the perica. Only the perico beats it.',
+      espadilla: 'He has the espadilla. That ace rules.',
+      bastillo: 'He has the bastillo. Another ace that hits hard.',
+      sieteEspada: 'He has the seven of swords. Strong and quiet.',
+      sieteOro: 'He has the seven of coins. Not the highest, but it scares.',
+      none: 'He has nothing to signal. He still plays with faith.',
+    },
+    card: (name) => `He’s pointing at ${name}.`,
+  },
+  taunts: {
+    pana: {
+      deal: [
+        'New deal, pana. Breathe and keep your eyes open.',
+        "Easy, chamo. It's a long night and there's two of us.",
+        "Go on, mijo. I've got your back.",
+      ],
+      turn: [
+        "Your turn, pana. No fear, I'm right here.",
+        "Your turn, chamo. Play it soft and don't shrink.",
+        'Go on, mijo. Whatever card, play it with chest.',
+      ],
+      call: [
+        "Let's put it on the table, pana!",
+        "This one's ours to call, chamo.",
+        'Easy now, but with feeling.',
+      ],
+      accept: [
+        'Quiero. Nobody backs down here.',
+        "I'll take it, pana. I've got the goods.",
+        'Go on, I want it. I trust this hand.',
+      ],
+      decline: [
+        'No quiero, chamo. Not this time.',
+        "Easy. I'm saving the powder for later.",
+        "No, mijo. That one's not for me.",
+      ],
+      flor: [
+        "¡Flor! And I'm not saying it twice.",
+        "I've got flor, pana. Breathe.",
+        '¡Flor! Now it gets good.',
+      ],
+      prive: [
+        "Prive. We're one stone away, chamo.",
+        "I'm calling prive. I've got the goods.",
+        "Prive, mijo. The table's on fire.",
+      ],
+      trickWin: [
+        "That trick's ours, pana!",
+        "Well played, chamo. That's how it's done.",
+        "There's the trick. Step by step.",
+      ],
+      trickLose: [
+        'Easy, pana. There are tricks left.',
+        "That one slipped, chamo. It's all right.",
+        "Breathe, mijo. The next one's ours.",
+      ],
+      handWin: [
+        "There it is, pana! That's our hand.",
+        'We take it, chamo. Calm and clever.',
+        "Good, mijo. That's how this table plays.",
+      ],
+      handLose: [
+        "It got away, pana. The next one's ours.",
+        "Don't shrink on me, chamo. It'll come.",
+        'Easy, mijo. This night is long.',
+      ],
+      matchWin: [
+        'Twenty-four, pana! What a night!',
+        "Told you, chamo. We're a pair.",
+        'Epa! Match is ours. Now, an arepa.',
+      ],
+      matchLose: [
+        'We lost, pana. But what a game.',
+        "It's all right, chamo. The rematch is ours.",
+        'They beat us fair, mijo. Credit where it’s due.',
+      ],
+      burn: [
+        'Burning this one, chamo. Let them guess.',
+        'Face down, pana. Give nothing away.',
+        "They don't see this one. I'm saving it for the table.",
+      ],
+    },
+    comadre: {
+      deal: [
+        'Ay, mijo, a new deal. Let’s see what telenovela we get.',
+        'Deal, deal. Everything gets told at this table.',
+        'New table, chamo. And my eyes are wide open.',
+      ],
+      turn: [
+        'Your turn, mijo. Tell me a story.',
+        "Go on, chamo. I've got gossip to get to.",
+        'Your turn, dear. Don’t keep me waiting.',
+      ],
+      call: [
+        "I'm calling this one, mijo. And it's no tall tale.",
+        "I'll take this one, chamo. The table was getting bored.",
+        'Calling it. The night is young.',
+      ],
+      accept: [
+        'Quiero, mijo. I never miss the gossip.',
+        'I want it, chamo. Even if I regret it later.',
+        "Go on, I want it. Let's wake this table up.",
+      ],
+      decline: [
+        "No quiero, mijo. I don't know that story.",
+        'Ay, no. Save that tale for another day.',
+        "No, chamo. I don't buy bananas by the kilo.",
+      ],
+      flor: [
+        '¡Flor, mijo! And not the garden kind.',
+        'Flor. I can already see your face.',
+        '¡Flor! This one goes to the hairdresser’s.',
+      ],
+      prive: [
+        'Prive, mijo. One stone away and my tongue out.',
+        "I'm calling prive, chamo. Let them tremble.",
+        'Prive. La Comadre doesn’t stay quiet.',
+      ],
+      trickWin: [
+        "That one's mine, mijo! I saw it coming.",
+        'The house takes it, chamo.',
+        "That's how you take a trick, mijo. Without messing up your hair.",
+      ],
+      trickLose: [
+        'Ay, mijo. I gave that one away.',
+        "It slipped, chamo. But I'm not going to cry about it.",
+        "Well played, mijo. I'll remember that.",
+      ],
+      handWin: [
+        "Hand's ours, mijo! Just like the novela.",
+        "That's it, chamo. La Comadre collects.",
+        'Just like that, mijo. No rush, no mercy.',
+      ],
+      handLose: [
+        'They got me, mijo. But they played it well.',
+        'Ay, chamo. This time the plot went wrong.',
+        "It's gone, mijo. I'll cry a little and be back.",
+      ],
+      matchWin: [
+        'Twenty-four, mijo! This calls for hallaca!',
+        'Told you, chamo: La Comadre knows.',
+        'Match is ours! Ay, how sweet.',
+      ],
+      matchLose: [
+        'They beat us, mijo. But what good gossip.',
+        "Ay, chamo. I'll be telling the rematch story.",
+        "We lost, mijo. Not every night's a telenovela.",
+      ],
+      burn: [
+        'Burning it, mijo. Let them guess the ending.',
+        'Face down, chamo. The suspense is mine.',
+        "I'm not showing this one, mijo. Comadre's secret.",
+      ],
+    },
+    catire: {
+      deal: [
+        'Epa! New deal and the man who knows just walked in.',
+        'Hand them over, chamo. This one’s already decided.',
+        'What a deal! Brace yourselves.',
+      ],
+      turn: [
+        'My turn! Make some room.',
+        "My turn, chamo. Don't stare too hard.",
+        "I'm going all in, nojoda! Well, with what I've got.",
+      ],
+      call: [
+        "Truco, chamo! Don't even look at your cards.",
+        "I'm calling this one! Loud enough for Caracas.",
+        "I'm betting, nojoda! El Catire doesn't back down.",
+      ],
+      accept: [
+        'Quiero! What else?',
+        "I'll take it, chamo! Nobody runs here.",
+        'I want it, I want it! Put the arepa on.',
+      ],
+      decline: [
+        'No quiero, chamo. Even El Catire has dignity.',
+        "Easy. I don't like this one, not one banana.",
+        'No, nojoda. Leave that one for somebody else.',
+      ],
+      flor: [
+        '¡Flor, chamo! Did you see that?',
+        '¡Flor! Even the cards love me.',
+        '¡Flor, nojoda! This is a stroll.',
+      ],
+      prive: [
+        '¡Prive! One stone away and chest out.',
+        "I'm calling prive, chamo! Let's end this now.",
+        '¡Prive, nojoda! El Catire closes the night.',
+      ],
+      trickWin: [
+        "That trick's mine! As it should be.",
+        'Take that, chamo! El Catire doesn’t forgive.',
+        '¡Burda! Don’t even come close.',
+      ],
+      trickLose: [
+        '¡Ay, chamo! That one was a gift.',
+        "They took it, nojoda. But the next one's mine.",
+        'All right, all right. Even El Catire has a bad day.',
+      ],
+      handWin: [
+        "Hand's ours, chamo! Time to celebrate!",
+        "That's it! El Catire collects and smiles.",
+        "That's it, nojoda! That's how you win.",
+      ],
+      handLose: [
+        "¡Nojoda! It got away. But I'm not complaining.",
+        'They got me, chamo. Enjoy it while it lasts.',
+        '¡Ay, ladilla! Next time I call it louder.',
+      ],
+      matchWin: [
+        '¡Twenty-four, chamo! El Catire owns the night!',
+        '¡Match is ours, nojoda! Put the music on!',
+        'We won! And yes, it was my idea.',
+      ],
+      matchLose: [
+        '¡Nojoda! We lost. But what a match, chamo.',
+        'They got me, burda. Rematch, right now.',
+        '¡Ay, ladilla! Not tonight. Tomorrow, yes.',
+      ],
+      burn: [
+        '¡Burning it, chamo! Let them chew on the curiosity.',
+        'Face down, nojoda. El Catire has secrets too.',
+        "You don't see this one. Pure viveza criolla.",
+      ],
+    },
   },
   seats: {
     cardCount: (count) => `${count} ${count === 1 ? 'card' : 'cards'}`,
