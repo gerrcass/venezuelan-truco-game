@@ -1625,15 +1625,6 @@
   text-transform: none;
 }
 
-.summary__pot {
-  margin-top: 2px;
-  color: var(--ink-soft);
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
 .summary__meta {
   display: flex;
   flex-wrap: wrap;

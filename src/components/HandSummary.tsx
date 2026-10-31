@@ -55,10 +55,6 @@ export function HandSummary({ view, stats, onNextHand, onRematch }: HandSummaryP
     result.trucoLevel === 0
       ? summary.noTruco
       : summary.trucoAccepted(content.truco.names[result.trucoLevel]);
-  const tablePoints = result.settlements.reduce(
-    (total, settlement) => total + settlement.points,
-    0,
-  );
   const talkBeat = deriveTableBeat(view);
   const talkPersona = talkBeat?.kind === 'taunt' ? tauntPersonaForSeat(talkBeat.seat) : null;
   const talkLine =
@@ -84,11 +80,12 @@ export function HandSummary({ view, stats, onNextHand, onRematch }: HandSummaryP
         <p className={`summary__score${matchOver ? ' summary__score--final' : ''}`}>
           {summary.score(view.scores.nosotros, view.scores.ellos)}
         </p>
-        <p className="summary__points">
-          <StoneIcon className="summary__stone" />
-          {matchOver ? summary.points('match') : summary.points(result.totalPoints)}
-        </p>
-        {tablePoints > 0 && <p className="summary__pot">{summary.potLabel(tablePoints)}</p>}
+        {!matchOver && (
+          <p className="summary__points">
+            <StoneIcon className="summary__stone" />
+            {summary.points(result.totalPoints)}
+          </p>
+        )}
 
         <div className="summary__meta">
           <span className="summary__meta-label">{summary.reasonLabel}</span>
@@ -110,7 +107,7 @@ export function HandSummary({ view, stats, onNextHand, onRematch }: HandSummaryP
       )}
 
       <div className={`summary__section${matchOver ? ' summary__section--match' : ''}`}>
-        {matchOver && <p className="summary__last-hand">{summary.lastHand}</p>}
+        {matchOver && <p className="summary__last-hand">{summary.lastHand(result.totalPoints)}</p>}
         <h3 className="summary__section-title">{summary.ledgerTitle}</h3>
         <table className="summary__statement">
           <thead>

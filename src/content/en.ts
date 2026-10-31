@@ -517,8 +517,7 @@ export const en: ShellContent = {
     trucoLabel: 'Truco',
     noTruco: 'No truco',
     trucoAccepted: (call) => `${call} accepted`,
-    potLabel: (points) => `${points} ${points === 1 ? 'stone' : 'stones'} on the table`,
-    lastHand: 'The last hand',
+    lastHand: (points) => `The last hand · +${points}`,
     careerLine: (matches, wins, hands) =>
       `Your career: ${matches} ${matches === 1 ? 'match' : 'matches'} · ${wins} ${
         wins === 1 ? 'win' : 'wins'

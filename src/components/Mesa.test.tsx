@@ -614,7 +614,7 @@ describe('the hand summary', () => {
     const dialog = screen.getByRole('dialog', { name: 'Ganó la partida Nosotros' });
 
     expect(within(dialog).getByText('Partida cerrada')).toBeVisible();
-    expect(within(dialog).getAllByText('La partida').length).toBeGreaterThan(0);
+    expect(within(dialog).queryByText('La partida')).not.toBeInTheDocument();
     expect(within(dialog).getByText('Nosotros 24 · Ellos 10')).toBeVisible();
     expect(within(dialog).getByText('Las bazas')).toBeVisible();
     expect(within(dialog).getByText('Las manos sobre la mesa')).toBeVisible();
@@ -871,7 +871,7 @@ describe('the itemized summary', () => {
     expect(ledgerRows).toHaveLength(finished.result?.settlements.length ?? 0);
     expect(ledgerRows.length).toBeGreaterThan(0);
     expect(within(dialog).queryByText('La cuenta')).not.toBeInTheDocument();
-    expect(within(dialog).getByText(/piedras en la mesa/)).toBeVisible();
+    expect(within(dialog).queryByText(/piedras en la mesa/)).not.toBeInTheDocument();
     expect(within(dialog).getByText('Flor')).toBeVisible();
   });
 
@@ -918,7 +918,8 @@ describe('the itemized summary', () => {
     const dialog = screen.getByRole('dialog', { name: 'Ganó Ellos' });
     const rows = dialog.querySelectorAll('.summary__statement tbody tr');
 
-    expect(within(dialog).getByText('6 piedras en la mesa')).toBeVisible();
+    expect(within(dialog).getByText('+6')).toBeVisible();
+    expect(within(dialog).queryByText(/piedras en la mesa/)).not.toBeInTheDocument();
     expect(rows).toHaveLength(2);
     expect(rows[0]).toHaveTextContent('Nosotros');
     expect(rows[1]).toHaveTextContent('Ellos');
@@ -968,7 +969,7 @@ describe('the itemized summary', () => {
     expect(within(dialog).getByText('Partida cerrada')).toBeVisible();
     expect(within(dialog).getByText('La flor')).toBeVisible();
     expect(within(dialog).getByText('Nosotros 24 · Ellos 10')).toBeVisible();
-    expect(within(dialog).getByText('La última mano')).toBeVisible();
+    expect(within(dialog).getByText(/La última mano · \+3/)).toBeVisible();
     expect(within(dialog).getAllByText('+3').length).toBeGreaterThan(0);
     expect(within(dialog).getByRole('button', { name: 'Otra partida' })).toBeVisible();
   });

@@ -363,8 +363,7 @@ export interface ShellContent {
     readonly trucoLabel: string;
     readonly noTruco: string;
     readonly trucoAccepted: (call: string) => string;
-    readonly potLabel: (points: number) => string;
-    readonly lastHand: string;
+    readonly lastHand: (points: number) => string;
     readonly careerLine: (matches: number, wins: number, hands: number) => string;
     readonly ledgerTitle: string;
     readonly ledgerSource: string;
