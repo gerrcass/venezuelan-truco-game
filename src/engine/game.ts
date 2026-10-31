@@ -1159,16 +1159,25 @@ function respondEnvido(
   };
 }
 
-/** Flor por derecho: before your first card, on your turn, and only once. */
+/** Flor por derecho: before your first card, on your turn or while answering a canto. */
 function canDeclareFlor(state: GameState, seat: Seat): boolean {
-  return (
-    state.phase === 'playing' &&
-    state.pending === null &&
-    state.turn === seat &&
-    state.hands[seat].length === CARDS_PER_HAND &&
-    !state.flor.declarations.some((declaration) => declaration.seat === seat) &&
-    scoreFlor(state.hands[seat], state.vira) !== null
-  );
+  if (state.phase !== 'playing' || state.hands[seat].length !== CARDS_PER_HAND) {
+    return false;
+  }
+
+  if (state.flor.declarations.some((declaration) => declaration.seat === seat)) {
+    return false;
+  }
+
+  if (scoreFlor(state.hands[seat], state.vira) === null) {
+    return false;
+  }
+
+  const team = TEAM_BY_SEAT[seat];
+  const isTurn = state.pending === null && state.turn === seat;
+  const answersCanto = state.pending !== null && state.pending.respondingTeam === team;
+
+  return isTurn || answersCanto;
 }
 
 function callFlor(state: GameState, seat: Seat): GameState {
@@ -1391,12 +1400,7 @@ export function getLegalActions(state: GameState, seat: Seat): LegalActions {
     state.envido.status === 'none' &&
     state.flor.declarations.length === 0 &&
     !state.prive.called;
-  const canCallFlor =
-    onTurn &&
-    state.pending === null &&
-    state.hands[seat].length === CARDS_PER_HAND &&
-    !state.flor.declarations.some((declaration) => declaration.seat === seat) &&
-    scoreFlor(state.hands[seat], state.vira) !== null;
+  const canCallFlor = canDeclareFlor(state, seat);
   const canCallPrive =
     onTurn &&
     state.pending === null &&

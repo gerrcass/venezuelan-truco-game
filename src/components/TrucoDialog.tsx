@@ -8,9 +8,10 @@ interface TrucoDialogProps {
   readonly view: GameView;
   readonly pending: PendingTrucoCall;
   readonly onRespond: (response: 'accept' | 'decline' | 'raise') => void;
+  readonly onCallFlor: () => void;
 }
 
-export function TrucoDialog({ view, pending, onRespond }: TrucoDialogProps) {
+export function TrucoDialog({ view, pending, onRespond, onCallFlor }: TrucoDialogProps) {
   const { content } = useLocale();
   const truco = content.truco;
   const call = truco.names[pending.level];
@@ -66,6 +67,17 @@ export function TrucoDialog({ view, pending, onRespond }: TrucoDialogProps) {
           </button>
         )}
       </div>
+
+      {view.legal.canCallFlor && (
+        <button
+          type="button"
+          className="button button--quiet truco-dialog__flor"
+          onClick={onCallFlor}
+          aria-label={content.flor.callAria}
+        >
+          {content.flor.callAria}
+        </button>
+      )}
 
       <p className="truco-dialog__score">
         {content.summary.score(view.scores.nosotros, view.scores.ellos)}

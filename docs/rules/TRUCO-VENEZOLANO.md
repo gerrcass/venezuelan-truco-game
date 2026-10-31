@@ -105,7 +105,7 @@ A **declined** envido is recorded but not paid immediately. It settles at the en
 
 ### Flor cancels envido
 
-If any player declares **flor** before the envido settles, the envido is cancelled. Because flor is declared on your own turn, a pending envido is answered first; the flor then cancels the accepted or declined settlement before it is paid. No envido points are paid. If both teams have flor, see §5.
+If any player declares **flor** before the envido settles, the envido is cancelled. A flor may be declared on your own turn or while you are answering an envido or truco; a pending envido is cancelled immediately, while a pending truco stays on the table for you to answer. No envido points are paid. If both teams have flor, see §5.
 
 ### Prive
 
@@ -123,7 +123,7 @@ A hand has **flor** when:
 
 ### Flor por derecho
 
-This mesa plays **flor por derecho**. You must declare flor **before playing your first card** of the reparto. If you play a card first, the flor is lost. The declaration can be made on your turn, and it cancels envido immediately.
+This mesa plays **flor por derecho**. You must declare flor **before playing your first card** of the reparto. If you play a card first, the flor is lost. The declaration can be made on your turn, or while you are answering an envido or truco, and it cancels envido immediately (a pending envido is dismissed; a pending truco still needs an answer).
 
 If both teams declare flor, the best flor of each team is compared; a team only scores its flor once. **Flor reservada** beats every numeric flor; otherwise the higher numeric wins; a numeric tie goes to the mano's team. The winner's team takes 3 (or 5 for reservada), the loser takes nothing. **This mesa does not play the optional flor-envido betting subgame**; the comparison is automatic. If only one team declares, it simply takes its flor points, and the other team's undeclared flor is forfeited.
 
@@ -201,6 +201,7 @@ These are flavor in this game, not mechanics:
 | Flor declaration | optional or flor por derecho | **flor por derecho**, before your first card |
 | Flor settlement | immediate at the declaration | **when the first baza closes** (or at hand end if earlier), so both teams can declare |
 | Envido as a response to truco | allowed at some tables | **only on your own turn before the first card** |
+| Flor declaration | optional or flor por derecho | **flor por derecho**, before your first card; also while answering a canto |
 | Declined envido | paid at once or at hand end | **settled at hand end**; a flor before then cancels it |
 | Envido la falta | varies | **fixed at acceptance**: the leader's distance to 24 then |
 | Prive | some tables, either team | **the team at 23 calls**, the other team's tanto answers; 1 piedra; replaces envido |

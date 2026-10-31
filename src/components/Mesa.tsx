@@ -338,11 +338,21 @@ export function Mesa() {
       )}
 
       {mustRespondTruco && pendingTruco && (
-        <TrucoDialog view={view} pending={pendingTruco} onRespond={respondTruco} />
+        <TrucoDialog
+          view={view}
+          pending={pendingTruco}
+          onRespond={respondTruco}
+          onCallFlor={callFlor}
+        />
       )}
 
       {mustRespondEnvido && pendingEnvido && (
-        <EnvidoDialog view={view} pending={pendingEnvido} onRespond={respondEnvido} />
+        <EnvidoDialog
+          view={view}
+          pending={pendingEnvido}
+          onRespond={respondEnvido}
+          onCallFlor={callFlor}
+        />
       )}
 
       <HandSummary

@@ -675,6 +675,23 @@ describe('the flor and prive calls', () => {
     expect(screen.getByRole('img', { name: '21 de 24 piedras' })).toBeVisible();
     expect(screen.getByRole('region', { name: 'Tu mano' })).toBeVisible();
   });
+
+  it('offers flor while answering an envido and cancels the envido', async () => {
+    const user = userEvent.setup();
+    const base = rigLanceGame(FLOR_HANDS, { turn: 1, lead: 1 });
+    const called = reduce(base, { type: 'callEnvido', seat: 1 });
+
+    renderTableState(called);
+
+    const dialog = screen.getByRole('dialog', { name: 'El Catire cantó Envido' });
+    const flor = within(dialog).getByRole('button', { name: 'Cantar flor' });
+
+    await user.click(flor);
+
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    expect(screen.getByText('Cantaste flor.')).toBeVisible();
+    expect(screen.getByText('Flor +3 al cerrar la primera baza')).toBeVisible();
+  });
 });
 
 describe('quemar in the interface', () => {

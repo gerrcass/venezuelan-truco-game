@@ -611,6 +611,12 @@
   background: rgba(196, 85, 59, 0.16);
 }
 
+.truco-dialog__flor {
+  width: 100%;
+  margin-top: 10px;
+  border-style: dashed;
+}
+
 .truco-dialog__score {
   margin-top: 16px;
   padding-top: 12px;

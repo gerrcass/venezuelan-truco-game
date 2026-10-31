@@ -833,6 +833,42 @@ describe('the flor', () => {
     expect(afterFirst.result?.bazas).toHaveLength(1);
     expect(row(afterFirst, 'truco')).toBeUndefined();
   });
+
+  it('can be declared while answering an envido, cancelling the envido', () => {
+    const state = rigHands(FLOR_HANDS, { turn: 1, lead: 1 });
+    const called = reduce(state, { type: 'callEnvido', seat: 1 });
+
+    expect(called.pending).toMatchObject({ kind: 'envido', respondingTeam: 'nosotros' });
+    expect(getLegalActions(called, 0).canCallFlor).toBe(true);
+
+    const declared = reduce(called, { type: 'callFlor', seat: 0 });
+
+    expect(declared.pending).toBeNull();
+    expect(declared.envido.status).toBe('cancelled');
+    expect(declared.turn).toBe(1);
+    expect(declared.flor.declarations).toEqual([
+      { seat: 0, team: 'nosotros', kind: 'flor', value: 38 },
+    ]);
+  });
+
+  it('can be declared while answering a truco, which stays pending', () => {
+    const hands = {
+      ...FLOR_HANDS,
+      1: [card(7, 'oro'), card(6, 'oro'), card(5, 'oro')] as const,
+    };
+    const state = rigHands(hands, { turn: 0, lead: 0 });
+    const called = reduce(state, { type: 'callTruco', seat: 0 });
+
+    expect(called.pending).toMatchObject({ kind: 'truco', respondingTeam: 'ellos' });
+    expect(getLegalActions(called, 1).canCallFlor).toBe(true);
+
+    const declared = reduce(called, { type: 'callFlor', seat: 1 });
+
+    expect(declared.pending).toMatchObject({ kind: 'truco', level: 1 });
+    expect(declared.flor.declarations).toEqual([
+      { seat: 1, team: 'ellos', kind: 'flor', value: 38 },
+    ]);
+  });
 });
 
 function TEAM_OF(seat: Seat): Team {

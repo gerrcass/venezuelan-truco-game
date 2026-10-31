@@ -8,9 +8,10 @@ interface EnvidoDialogProps {
   readonly view: GameView;
   readonly pending: PendingEnvidoCall;
   readonly onRespond: (response: 'accept' | 'decline' | 'raise') => void;
+  readonly onCallFlor: () => void;
 }
 
-export function EnvidoDialog({ view, pending, onRespond }: EnvidoDialogProps) {
+export function EnvidoDialog({ view, pending, onRespond, onCallFlor }: EnvidoDialogProps) {
   const { content } = useLocale();
   const envido = content.envido;
   const call = envido.names[pending.level];
@@ -65,6 +66,17 @@ export function EnvidoDialog({ view, pending, onRespond }: EnvidoDialogProps) {
           </button>
         )}
       </div>
+
+      {view.legal.canCallFlor && (
+        <button
+          type="button"
+          className="button button--quiet truco-dialog__flor"
+          onClick={onCallFlor}
+          aria-label={content.flor.callAria}
+        >
+          {content.flor.callAria}
+        </button>
+      )}
 
       <p className="truco-dialog__score">
         {content.summary.score(view.scores.nosotros, view.scores.ellos)}
