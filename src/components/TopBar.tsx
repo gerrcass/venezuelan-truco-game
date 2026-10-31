@@ -1,14 +1,15 @@
 import { useLocale } from '../content/locale-context';
 import { BrandMark } from './BrandMark';
-import { RulesIcon, SoundOffIcon, SoundOnIcon } from './icons';
+import { RulesIcon, SettingsIcon, SoundOffIcon, SoundOnIcon } from './icons';
 
 interface TopBarProps {
   readonly soundOn: boolean;
   readonly onToggleSound: () => void;
   readonly onOpenRules: () => void;
+  readonly onOpenSettings: () => void;
 }
 
-export function TopBar({ soundOn, onToggleSound, onOpenRules }: TopBarProps) {
+export function TopBar({ soundOn, onToggleSound, onOpenRules, onOpenSettings }: TopBarProps) {
   const { content, locale, setLocale } = useLocale();
   const topbar = content.topbar;
 
@@ -31,6 +32,16 @@ export function TopBar({ soundOn, onToggleSound, onOpenRules }: TopBarProps) {
         >
           <RulesIcon className="control__icon" />
           <span className="control__label">{topbar.rules}</span>
+        </button>
+
+        <button
+          type="button"
+          className="control control--icon"
+          onClick={onOpenSettings}
+          aria-label={topbar.settingsAria}
+          title={topbar.settings}
+        >
+          <SettingsIcon className="control__icon" />
         </button>
 
         <button

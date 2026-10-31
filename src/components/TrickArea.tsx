@@ -30,7 +30,7 @@ export function TrickArea({ view }: TrickAreaProps) {
     : content.trick.aria(view.trickIndex);
 
   return (
-    <div className="trick" role="group" aria-label={label}>
+    <div className={`trick${showingLast ? ' trick--settled' : ''}`} role="group" aria-label={label}>
       {SEATS.map((seat) => {
         const played = plays.find((entry) => entry.seat === seat);
         const person = content.personas[PERSONA_BY_SEAT[seat]];

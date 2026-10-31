@@ -198,10 +198,9 @@ These are flavor in this game, not mechanics:
 | Match target | 12 or 24 | **24** |
 | Flor reservada | 5 (Wikipedia) or 3 (some tables) | **5** |
 | Both teams have flor | optional flor-envido bets | **automatic comparison** of each team's best flor; higher takes 3/5; numeric tie to mano |
-| Flor declaration | optional or flor por derecho | **flor por derecho**, before your first card |
+| Flor declaration | optional or flor por derecho | **flor por derecho**, before your first card; also while answering a canto |
 | Flor settlement | immediate at the declaration | **when the first baza closes** (or at hand end if earlier), so both teams can declare |
 | Envido as a response to truco | allowed at some tables | **only on your own turn before the first card** |
-| Flor declaration | optional or flor por derecho | **flor por derecho**, before your first card; also while answering a canto |
 | Declined envido | paid at once or at hand end | **settled at hand end**; a flor before then cancels it |
 | Envido la falta | varies | **fixed at acceptance**: the leader's distance to 24 then |
 | Prive | some tables, either team | **the team at 23 calls**, the other team's tanto answers; 1 piedra; replaces envido |

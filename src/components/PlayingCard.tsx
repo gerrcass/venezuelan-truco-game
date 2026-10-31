@@ -5,7 +5,7 @@ import { describeCard } from '../content/types';
 import { isCourtRank, type Card, type CourtRank, type Piece } from '../domain/cards';
 import { SuitIcon } from './icons';
 
-export type CardSize = 'hand' | 'trick' | 'vira' | 'mini';
+export type CardSize = 'hand' | 'trick' | 'vira' | 'mini' | 'welcome';
 
 interface PlayingCardProps {
   readonly card: Card;

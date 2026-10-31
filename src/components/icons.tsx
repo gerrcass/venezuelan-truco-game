@@ -149,6 +149,25 @@ export function RulesIcon({ className }: IconProps) {
   );
 }
 
+export function SettingsIcon({ className }: IconProps) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.7"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <circle cx="12" cy="12" r="3.1" />
+      <path d="M19.4 13.6a7.7 7.7 0 0 0 0-3.2l2-1.5-2-3.4-2.4 1a7.8 7.8 0 0 0-2.8-1.6L13.8 2h-3.6l-.4 2.9A7.8 7.8 0 0 0 7 6.5l-2.4-1-2 3.4 2 1.5a7.7 7.7 0 0 0 0 3.2l-2 1.5 2 3.4 2.4-1a7.8 7.8 0 0 0 2.8 1.6l.4 2.9h3.6l.4-2.9a7.8 7.8 0 0 0 2.8-1.6l2.4 1 2-3.4-2-1.5Z" />
+    </svg>
+  );
+}
+
 export function SoundOnIcon({ className }: IconProps) {
   return (
     <svg

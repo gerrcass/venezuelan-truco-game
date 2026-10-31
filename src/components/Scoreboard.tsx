@@ -61,7 +61,11 @@ export function Scoreboard({ view }: ScoreboardProps) {
               )}
             </span>
           </div>
-          <div className="table-meta__stat">
+          <div
+            className="table-meta__stat"
+            role="group"
+            aria-label={`${scoreboard.dealWord}: ${view.handNumber}`}
+          >
             <span className="table-meta__label">{scoreboard.dealWord}</span>
             <span className="table-meta__value table-meta__value--plain">{view.handNumber}</span>
           </div>

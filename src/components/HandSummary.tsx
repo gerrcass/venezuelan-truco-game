@@ -6,6 +6,7 @@ import { cardKey } from '../domain/cards';
 import { PERSONA_BY_SEAT, SEATS, TEAM_BY_SEAT, type Seat } from '../domain/seats';
 import { pieceOf } from '../engine/cards';
 import type { GameView } from '../engine/types';
+import type { CareerStats } from '../game/career';
 import { deriveTableBeat, tauntPersonaForSeat } from '../game/table-talk';
 import { Avatar } from './Avatar';
 import { Modal } from './Modal';
@@ -13,6 +14,7 @@ import { StoneIcon } from './icons';
 
 interface HandSummaryProps {
   readonly view: GameView;
+  readonly stats: CareerStats;
   readonly onNextHand: () => void;
   readonly onRematch: () => void;
 }
@@ -35,7 +37,7 @@ function burnedCardsBySeat(view: GameView): Map<Seat, Set<string>> {
   return burned;
 }
 
-export function HandSummary({ view, onNextHand, onRematch }: HandSummaryProps) {
+export function HandSummary({ view, stats, onNextHand, onRematch }: HandSummaryProps) {
   const { content } = useLocale();
   const result = view.result;
 
@@ -53,6 +55,10 @@ export function HandSummary({ view, onNextHand, onRematch }: HandSummaryProps) {
     result.trucoLevel === 0
       ? summary.noTruco
       : summary.trucoAccepted(content.truco.names[result.trucoLevel]);
+  const tablePoints = result.settlements.reduce(
+    (total, settlement) => total + settlement.points,
+    0,
+  );
   const talkBeat = deriveTableBeat(view);
   const talkPersona = talkBeat?.kind === 'taunt' ? tauntPersonaForSeat(talkBeat.seat) : null;
   const talkLine =
@@ -69,19 +75,26 @@ export function HandSummary({ view, onNextHand, onRematch }: HandSummaryProps) {
       panelClassName="summary"
       dismissible={false}
     >
-      <header className="summary__head">
+      <header className={`summary__head${matchOver ? ' summary__head--match' : ''}`}>
         <p className="eyebrow">{summary.eyebrow}</p>
         {matchOver && <span className="summary__badge">{summary.matchBadge}</span>}
         <h2 className="summary__title" id="hand-summary-title">
           {matchOver ? summary.matchTitle(winner) : summary.title(winner)}
         </h2>
-        <p className="summary__points">
-          <StoneIcon className="summary__stone" />
-          {result.points === 'match' ? summary.points('match') : summary.points(result.totalPoints)}
-        </p>
         <p className={`summary__score${matchOver ? ' summary__score--final' : ''}`}>
           {summary.score(view.scores.nosotros, view.scores.ellos)}
         </p>
+        <p className="summary__points">
+          <StoneIcon className="summary__stone" />
+          {matchOver ? summary.points('match') : summary.points(result.totalPoints)}
+        </p>
+        {tablePoints > 0 && <p className="summary__pot">{summary.potLabel(tablePoints)}</p>}
+
+        <div className="summary__meta">
+          <span className="summary__meta-label">{summary.reasonLabel}</span>
+          <span className="summary__meta-value">{summary.reasons[result.reason]}</span>
+          {result.trucoLevel > 0 && <span className="summary__meta-truco">{acceptedCall}</span>}
+        </div>
       </header>
 
       {talkPersona !== null && talkLine !== null && (
@@ -96,33 +109,8 @@ export function HandSummary({ view, onNextHand, onRematch }: HandSummaryProps) {
         </p>
       )}
 
-      <div className="summary__section summary__account">
-        <h3 className="summary__section-title">{summary.accountLabel}</h3>
-        <dl className="summary__ledger">
-          <div className="summary__row">
-            <dt>{summary.reasonLabel}</dt>
-            <dd>{summary.reasons[result.reason]}</dd>
-          </div>
-          <div className="summary__row">
-            <dt>{summary.trucoLabel}</dt>
-            <dd>{acceptedCall}</dd>
-          </div>
-          {result.points !== 0 && (
-            <div className="summary__row">
-              <dt>{scoreboard.stakeLabel}</dt>
-              <dd>{scoreboard.stakeSpoken(view.stake)}</dd>
-            </div>
-          )}
-          {result.points !== 0 && (
-            <div className="summary__row summary__row--payout">
-              <dt>{summary.payoutLabel}</dt>
-              <dd>{summary.points(result.points)}</dd>
-            </div>
-          )}
-        </dl>
-      </div>
-
-      <div className="summary__section">
+      <div className={`summary__section${matchOver ? ' summary__section--match' : ''}`}>
+        {matchOver && <p className="summary__last-hand">{summary.lastHand}</p>}
         <h3 className="summary__section-title">{summary.ledgerTitle}</h3>
         <table className="summary__statement">
           <thead>
@@ -167,6 +155,12 @@ export function HandSummary({ view, onNextHand, onRematch }: HandSummaryProps) {
           </tfoot>
         </table>
       </div>
+
+      {matchOver && (
+        <p className="summary__career">
+          {summary.careerLine(stats.matches, stats.wins, stats.hands)}
+        </p>
+      )}
 
       {result.bazas.length > 0 && (
         <div className="summary__section">

@@ -1019,3 +1019,225 @@
     flex-basis: 32px;
   }
 }
+
+/* ------------------------------------------------- ticket 7: 360 px pass */
+
+@media (max-width: 760px) {
+  .rules-dialog {
+    max-height: calc(100dvh - 24px);
+    padding: 25px 16px 14px;
+  }
+
+  .rules-dialog__head {
+    padding-right: 26px;
+  }
+
+  .rules-dialog__title {
+    font-size: 27px;
+  }
+
+  .rules-dialog__lead {
+    font-size: 11px;
+  }
+
+  .rules-dialog__tabs {
+    flex-wrap: wrap;
+    overflow: visible;
+    border-radius: 12px;
+    margin-top: 10px;
+  }
+
+  .rules-tab {
+    padding: 6px 9px;
+    font-size: 8.5px;
+  }
+
+  .rules-panel {
+    padding: 10px 1px 6px;
+  }
+
+  .rules-panel__title {
+    font-size: 21px;
+  }
+
+  .rules-panel__lead {
+    font-size: 11.5px;
+  }
+
+  .rules-block__paragraph,
+  .rules-list li {
+    font-size: 11px;
+  }
+
+  .rules-table th,
+  .rules-table td {
+    padding: 4px 4px;
+    font-size: 9.5px;
+  }
+
+  .rules-table thead th {
+    font-size: 6.5px;
+  }
+
+  .rules-examples__list {
+    gap: 6px;
+    grid-template-columns: 1fr;
+  }
+
+  .rules-example {
+    display: grid;
+    align-items: start;
+    column-gap: 8px;
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .rules-example__cards {
+    margin-top: 0;
+    grid-row: 1 / 4;
+    grid-column: 1;
+  }
+
+  .rules-example__title,
+  .rules-example__result,
+  .rules-example__note {
+    grid-column: 2;
+  }
+
+  .rules-example__result {
+    margin-top: 4px;
+  }
+
+  .rules-dialog__footer {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .rules-dialog__howto {
+    max-width: none;
+  }
+
+  .rules-dialog__footer .button--primary {
+    width: 100%;
+  }
+
+  .welcome {
+    padding: 22px 16px 18px;
+  }
+
+  .welcome__title {
+    font-size: 30px;
+  }
+
+  .welcome__lead {
+    font-size: 11.5px;
+  }
+
+  .welcome__art {
+    height: 86px;
+  }
+
+  .welcome__art-ring {
+    width: 112px;
+    height: 112px;
+  }
+
+  .card--welcome {
+    --card-w: 50px;
+  }
+
+  .welcome__step {
+    padding: 7px 8px;
+  }
+
+  .welcome__step-title {
+    font-size: 13.5px;
+  }
+
+  .welcome__step-text {
+    font-size: 10px;
+  }
+
+  .settings {
+    padding: 26px 16px 18px;
+  }
+
+  .settings__head {
+    padding-right: 24px;
+  }
+
+  .settings__title {
+    font-size: 28px;
+  }
+
+  .settings__section-title {
+    font-size: 15px;
+  }
+
+  .settings__speeds {
+    grid-template-columns: 1fr;
+  }
+
+  .settings__speed {
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .settings__stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .summary__head--match .summary__title {
+    font-size: 32px;
+  }
+
+  .summary__score--final {
+    font-size: 18px;
+  }
+
+  .summary__hands {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .shortcut--close {
+    display: none;
+  }
+}
+
+@media (max-width: 400px) {
+  .rules-dialog,
+  .welcome,
+  .settings {
+    padding-right: 13px;
+    padding-left: 13px;
+  }
+
+  .welcome__actions {
+    flex-direction: column;
+  }
+
+  .welcome__actions .button {
+    width: 100%;
+    flex-basis: auto;
+  }
+
+  .welcome__title {
+    font-size: 27px;
+  }
+
+  .rules-card {
+    width: 30px;
+    height: 42px;
+    flex-basis: 30px;
+  }
+
+  .settings__confirm-actions {
+    flex-direction: column;
+  }
+
+  .summary__meta-truco {
+    margin-left: 0;
+  }
+}

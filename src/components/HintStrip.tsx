@@ -29,6 +29,10 @@ export function HintStrip({ onOpenRules, onOpenLog, logOpen }: HintStripProps) {
           <kbd>R</kbd>
           <span>{hints.rules}</span>
         </span>
+        <span className="shortcut shortcut--close">
+          <kbd>Esc</kbd>
+          <span>{hints.close}</span>
+        </span>
       </div>
 
       <div className="hintbar__actions">

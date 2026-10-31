@@ -1,12 +1,26 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
+import { cueForEvent, TableAudio } from '../audio/table-audio';
 import { useLocale } from '../content/locale-context';
 import { cardKey } from '../domain/cards';
 import { PERSONA_BY_SEAT, SEATS, TEAM_BY_SEAT } from '../domain/seats';
 import { BAZAS_PER_HAND } from '../engine/game';
+import {
+  clearCareerStats,
+  readCareerStats,
+  recordMatchInCareer,
+  type CareerStats,
+} from '../game/career';
 import { useGame } from '../game/game-context';
+import {
+  markWelcomeSeen,
+  setSoundPreference,
+  shouldShowWelcome,
+  usePreferences,
+} from '../game/preferences';
 import { useTableTalk } from '../game/useTableTalk';
 import { ActionBar } from './ActionBar';
+import { Announcer } from './Announcer';
 import { EnvidoDialog } from './EnvidoDialog';
 import { HandDock } from './HandDock';
 import { HandSummary } from './HandSummary';
@@ -18,35 +32,55 @@ import { RulesDialog } from './RulesDialog';
 import { Scoreboard } from './Scoreboard';
 import { Seat } from './Seat';
 import { SenaPanel } from './SenaPanel';
+import { SettingsDialog } from './SettingsDialog';
 import { SpeechBubble } from './SpeechBubble';
 import { TopBar } from './TopBar';
 import { TrickArea } from './TrickArea';
 import { TrucoDialog } from './TrucoDialog';
-
-const SOUND_KEY = 'truco.sound';
-
-function readSoundPreference(): boolean {
-  try {
-    return window.localStorage.getItem(SOUND_KEY) !== 'off';
-  } catch {
-    return true;
-  }
-}
+import { WelcomeDialog } from './WelcomeDialog';
 
 export function Mesa() {
   const { content } = useLocale();
   const { view, dispatch } = useGame();
   const talk = useTableTalk(view, content);
+  const preferences = usePreferences();
   const [rulesOpen, setRulesOpen] = useState(false);
   const [logOpen, setLogOpen] = useState(false);
-  const [soundOn, setSoundOn] = useState(readSoundPreference);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [welcomeOpen, setWelcomeOpen] = useState(shouldShowWelcome);
   const [burnArmed, setBurnArmed] = useState(false);
+  const [career, setCareer] = useState<CareerStats>(readCareerStats);
+  const [audio] = useState(() => new TableAudio());
+  const recordedSeed = useRef<number | null>(null);
 
-  const openRules = useCallback(() => setRulesOpen(true), []);
+  const openRules = useCallback(() => {
+    setWelcomeOpen(false);
+    setSettingsOpen(false);
+    setRulesOpen(true);
+  }, []);
   const closeRules = useCallback(() => setRulesOpen(false), []);
+  const openWelcome = useCallback(() => {
+    setRulesOpen(false);
+    setSettingsOpen(false);
+    setWelcomeOpen(true);
+  }, []);
+  const closeWelcome = useCallback(() => {
+    markWelcomeSeen();
+    setWelcomeOpen(false);
+  }, []);
+  const openSettings = useCallback(() => {
+    setRulesOpen(false);
+    setWelcomeOpen(false);
+    setSettingsOpen(true);
+  }, []);
+  const closeSettings = useCallback(() => setSettingsOpen(false), []);
   const openLog = useCallback(() => setLogOpen(true), []);
   const closeLog = useCallback(() => setLogOpen(false), []);
-  const toggleSound = useCallback(() => setSoundOn((current) => !current), []);
+  const toggleSound = useCallback(
+    () => setSoundPreference(!preferences.sound),
+    [preferences.sound],
+  );
+  const clearStats = useCallback(() => setCareer(clearCareerStats()), []);
   const toggleBurn = useCallback(() => setBurnArmed((current) => !current), []);
   const playCard = useCallback(
     (key: string) => {
@@ -91,12 +125,41 @@ export function Mesa() {
   }, [view.phase, view.turn, view.trickIndex, view.pending]);
 
   useEffect(() => {
-    try {
-      window.localStorage.setItem(SOUND_KEY, soundOn ? 'on' : 'off');
-    } catch {
-      // Sound is optional; the preference simply is not remembered.
+    if (welcomeOpen) {
+      markWelcomeSeen();
     }
-  }, [soundOn]);
+  }, [welcomeOpen]);
+
+  useEffect(() => {
+    audio.setEnabled(preferences.sound);
+  }, [audio, preferences.sound]);
+
+  useEffect(() => {
+    audio.arm();
+
+    return () => audio.disarm();
+  }, [audio]);
+
+  useEffect(() => {
+    const cue = cueForEvent(view.event);
+
+    if (cue !== null) {
+      audio.play(cue);
+    }
+  }, [audio, view.event]);
+
+  useEffect(() => {
+    if (view.phase !== 'matchOver' || view.matchWinner === null) {
+      return;
+    }
+
+    if (recordedSeed.current === view.seed) {
+      return;
+    }
+
+    recordedSeed.current = view.seed;
+    setCareer(recordMatchInCareer(view, readCareerStats()));
+  }, [view]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -104,7 +167,14 @@ export function Mesa() {
         return;
       }
 
-      if (rulesOpen || logOpen || view.phase !== 'playing' || view.pending !== null) {
+      if (
+        rulesOpen ||
+        logOpen ||
+        settingsOpen ||
+        welcomeOpen ||
+        view.phase !== 'playing' ||
+        view.pending !== null
+      ) {
         return;
       }
 
@@ -163,12 +233,13 @@ export function Mesa() {
     window.addEventListener('keydown', handleKeyDown);
 
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [burnArmed, dispatch, logOpen, rulesOpen, view]);
+  }, [burnArmed, dispatch, logOpen, rulesOpen, settingsOpen, view, welcomeOpen]);
 
   useEffect(() => {
     if (view.phase !== 'playing') {
       setRulesOpen(false);
       setLogOpen(false);
+      setSettingsOpen(false);
     }
   }, [view.phase]);
 
@@ -184,10 +255,25 @@ export function Mesa() {
     pendingEnvido !== null &&
     pendingEnvido.respondingTeam === TEAM_BY_SEAT[view.seat];
 
+  useEffect(() => {
+    if (mustRespondTruco || mustRespondEnvido) {
+      setRulesOpen(false);
+      setSettingsOpen(false);
+      setWelcomeOpen(false);
+      setLogOpen(false);
+    }
+  }, [mustRespondEnvido, mustRespondTruco]);
+
   return (
     <div className="app">
+      <Announcer view={view} />
       <div className="mesa">
-        <TopBar soundOn={soundOn} onToggleSound={toggleSound} onOpenRules={openRules} />
+        <TopBar
+          soundOn={preferences.sound}
+          onToggleSound={toggleSound}
+          onOpenRules={openRules}
+          onOpenSettings={openSettings}
+        />
 
         <main className="shell">
           <div className="stage">
@@ -255,7 +341,25 @@ export function Mesa() {
         <HintStrip onOpenRules={openRules} onOpenLog={openLog} logOpen={logOpen} />
       </div>
 
-      <RulesDialog open={rulesOpen && view.phase === 'playing'} onClose={closeRules} />
+      <RulesDialog
+        open={rulesOpen && view.phase === 'playing'}
+        onClose={closeRules}
+        onOpenWelcome={openWelcome}
+      />
+
+      <WelcomeDialog
+        open={welcomeOpen && view.phase === 'playing'}
+        onClose={closeWelcome}
+        onOpenRules={openRules}
+      />
+
+      <SettingsDialog
+        open={settingsOpen && view.phase === 'playing'}
+        onClose={closeSettings}
+        onOpenWelcome={openWelcome}
+        stats={career}
+        onClearStats={clearStats}
+      />
 
       {logOpen && view.phase === 'playing' && (
         <Modal
@@ -290,6 +394,7 @@ export function Mesa() {
 
       <HandSummary
         view={view}
+        stats={career}
         onNextHand={() => dispatch({ type: 'nextHand' })}
         onRematch={() => dispatch({ type: 'rematch' })}
       />

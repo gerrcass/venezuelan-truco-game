@@ -1,4 +1,5 @@
 import type { Card, CourtRank, Piece, Rank, Suit } from '../domain/cards';
+import type { BotSpeed } from '../domain/preferences';
 import type { PersonaKey, Team } from '../domain/seats';
 import type {
   EnvidoLevel,
@@ -53,6 +54,100 @@ export interface CardCopy {
   readonly burned: string;
 }
 
+export type RulesSectionId =
+  'mesa' | 'vira' | 'envido' | 'flor' | 'truco' | 'prive' | 'senas' | 'fuentes';
+
+/** A three-card worked example with its answer. Cards are real deck values. */
+export interface RuleExampleCopy {
+  readonly title: string;
+  readonly cards: readonly Card[];
+  readonly result: string;
+  readonly note: string;
+}
+
+export interface RuleSourceCopy {
+  readonly label: string;
+  readonly href: string;
+  readonly note: string;
+}
+
+/** The small, typed blocks the rules school is assembled from. */
+export type RuleBlock =
+  | { readonly kind: 'paragraph'; readonly text: string }
+  | { readonly kind: 'list'; readonly title?: string; readonly items: readonly string[] }
+  | {
+      readonly kind: 'table';
+      readonly title?: string;
+      readonly headers: readonly string[];
+      readonly rows: readonly (readonly string[])[];
+    }
+  | {
+      readonly kind: 'examples';
+      readonly title?: string;
+      readonly items: readonly RuleExampleCopy[];
+    }
+  | { readonly kind: 'callout'; readonly title?: string; readonly text: string }
+  | { readonly kind: 'sources'; readonly items: readonly RuleSourceCopy[] };
+
+export interface RulesSectionCopy {
+  readonly id: RulesSectionId;
+  readonly tab: string;
+  readonly title: string;
+  readonly lead: string;
+  readonly blocks: readonly RuleBlock[];
+}
+
+export interface WelcomeStepCopy {
+  readonly title: string;
+  readonly body: string;
+}
+
+export interface WelcomeCopy {
+  readonly eyebrow: string;
+  readonly title: string;
+  readonly lead: string;
+  readonly steps: readonly WelcomeStepCopy[];
+  readonly goal: string;
+  readonly play: string;
+  readonly rules: string;
+  readonly close: string;
+}
+
+export interface SettingsCopy {
+  readonly eyebrow: string;
+  readonly title: string;
+  readonly lead: string;
+  readonly close: string;
+  readonly openAria: string;
+  readonly languageTitle: string;
+  readonly languageHint: string;
+  readonly soundTitle: string;
+  readonly soundOn: string;
+  readonly soundOff: string;
+  readonly soundHint: string;
+  readonly speedTitle: string;
+  readonly speedHint: string;
+  readonly speeds: Record<BotSpeed, { readonly label: string; readonly note: string }>;
+  readonly careerTitle: string;
+  readonly careerHint: string;
+  readonly careerEmpty: string;
+  readonly stats: {
+    readonly matches: string;
+    readonly wins: string;
+    readonly losses: string;
+    readonly hands: string;
+    readonly envidos: string;
+    readonly flores: string;
+  };
+  readonly clear: string;
+  readonly clearConfirm: string;
+  readonly clearYes: string;
+  readonly clearNo: string;
+  readonly cleared: string;
+  readonly howToPlay: string;
+  readonly howToPlayHint: string;
+}
+
 export interface ShellContent {
   readonly meta: {
     readonly title: string;
@@ -66,6 +161,8 @@ export interface ShellContent {
     readonly navigationLabel: string;
     readonly rules: string;
     readonly rulesAria: string;
+    readonly settings: string;
+    readonly settingsAria: string;
     readonly soundOn: string;
     readonly soundOff: string;
     readonly languageLabel: string;
@@ -261,13 +358,14 @@ export interface ShellContent {
     readonly matchBadge: string;
     readonly points: (points: number | 'match') => string;
     readonly score: (nosotros: number, ellos: number) => string;
-    readonly accountLabel: string;
     readonly reasonLabel: string;
     readonly reasons: Record<HandReason, string>;
     readonly trucoLabel: string;
     readonly noTruco: string;
     readonly trucoAccepted: (call: string) => string;
-    readonly payoutLabel: string;
+    readonly potLabel: (points: number) => string;
+    readonly lastHand: string;
+    readonly careerLine: (matches: number, wins: number, hands: number) => string;
     readonly ledgerTitle: string;
     readonly ledgerSource: string;
     readonly ledgerTeam: string;
@@ -291,6 +389,7 @@ export interface ShellContent {
     readonly cards: string;
     readonly burn: string;
     readonly rules: string;
+    readonly close: string;
     readonly rulesLink: string;
     readonly logOpen: string;
     readonly logOpenAria: string;
@@ -298,10 +397,19 @@ export interface ShellContent {
   readonly rulesDialog: {
     readonly eyebrow: string;
     readonly title: string;
-    readonly body: string;
-    readonly topics: readonly string[];
+    readonly lead: string;
     readonly close: string;
     readonly back: string;
+    readonly tabsLabel: string;
+    readonly howToPlay: string;
+    readonly howToPlayHint: string;
+    readonly sourcesLabel: string;
+    readonly sections: readonly RulesSectionCopy[];
+  };
+  readonly welcome: WelcomeCopy;
+  readonly settings: SettingsCopy;
+  readonly a11y: {
+    readonly announcerLabel: string;
   };
   readonly cards: CardCopy;
 }

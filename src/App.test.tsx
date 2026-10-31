@@ -67,7 +67,7 @@ describe('the mesa shell', () => {
     expect(window.localStorage.getItem('truco.sound')).toBe('off');
   });
 
-  it('opens the rules placeholder, traps focus and returns it to the trigger', async () => {
+  it('opens the rules school, switches tabs with the keyboard and returns focus', async () => {
     const user = userEvent.setup();
     renderApp();
 
@@ -75,15 +75,27 @@ describe('the mesa shell', () => {
     await user.click(trigger);
 
     const dialog = await screen.findByRole('dialog', { name: 'La escuela de reglas' });
-    const close = within(dialog).getByRole('button', { name: 'Cerrar' });
-    expect(close).toHaveFocus();
+    const tabs = within(dialog).getByRole('tablist', { name: 'Secciones de las reglas' });
+    const mesaTab = within(tabs).getByRole('tab', { name: 'La mesa' });
 
-    await user.tab();
-    const back = within(dialog).getByRole('button', { name: 'Volver a la mesa' });
-    expect(back).toHaveFocus();
+    expect(mesaTab).toHaveAttribute('aria-selected', 'true');
+    expect(mesaTab).toHaveFocus();
+    expect(within(dialog).getByRole('tabpanel')).toHaveTextContent('Lo esencial');
 
-    await user.tab();
-    expect(close).toHaveFocus();
+    await user.keyboard('{ArrowRight}');
+
+    const viraTab = within(tabs).getByRole('tab', { name: 'La vira' });
+    expect(viraTab).toHaveAttribute('aria-selected', 'true');
+    expect(viraTab).toHaveFocus();
+    expect(within(dialog).getByRole('tabpanel')).toHaveTextContent(
+      'De la más brava a la más floja',
+    );
+
+    await user.keyboard('{End}');
+    expect(within(tabs).getByRole('tab', { name: 'Fuentes' })).toHaveAttribute(
+      'aria-selected',
+      'true',
+    );
 
     await user.keyboard('{Escape}');
 

@@ -13,7 +13,9 @@ export function StonePips({ score, team, label }: StonePipsProps) {
       {Array.from({ length: PIEDRAS_TO_WIN }, (_, index) => (
         <span
           key={index}
-          className={`pip${index < score ? ' pip--won' : ''}`}
+          className={`pip${index < score ? ' pip--won' : ''}${
+            index === score - 1 ? ' pip--fresh' : ''
+          }`}
           data-stone=""
           aria-hidden="true"
         />

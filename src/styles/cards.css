@@ -597,3 +597,37 @@
   text-transform: uppercase;
   transform: translateX(-50%);
 }
+
+/* The deal and the slap: transform and opacity only, never layout. */
+.card--hand {
+  animation: card-deal 260ms var(--ease-out) both;
+  animation-delay: calc(var(--deal-index, 0) * 45ms);
+}
+
+.card--trick {
+  animation: card-slap 190ms var(--ease-out) both;
+}
+
+@keyframes card-deal {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) rotate(-2deg) scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes card-slap {
+  from {
+    opacity: 0;
+    transform: translateY(-7px) scale(0.94);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

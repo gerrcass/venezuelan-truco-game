@@ -14,6 +14,8 @@ export const en: ShellContent = {
     navigationLabel: 'Table',
     rules: 'Rules',
     rulesAria: 'Open the rules school',
+    settings: 'Settings',
+    settingsAria: 'Open the table settings',
     soundOn: 'Mute sound',
     soundOff: 'Turn sound on',
     languageLabel: 'Language',
@@ -48,7 +50,7 @@ export const en: ShellContent = {
   },
   sena: {
     label: "El Pana's seña",
-    invite: 'El Pana is looking at you',
+    invite: 'El Pana gives you a look',
     hide: 'Hide the seña',
     gestureLabel: 'The gesture',
     gestures: {
@@ -73,7 +75,7 @@ export const en: ShellContent = {
       sieteOro: 'He has the seven of coins. Not the highest, but it scares.',
       none: 'He has nothing to signal. He still plays with faith.',
     },
-    card: (name) => `He’s pointing at ${name}.`,
+    card: (name) => `El Pana points to ${name}.`,
   },
   taunts: {
     pana: {
@@ -503,7 +505,6 @@ export const en: ShellContent = {
     points: (points) =>
       points === 'match' ? 'The match' : `${points} ${points === 1 ? 'stone' : 'stones'}`,
     score: (nosotros, ellos) => `Us ${nosotros} · Them ${ellos}`,
-    accountLabel: 'The account',
     reasonLabel: 'Reason',
     reasons: {
       bazas: 'Tricks won',
@@ -516,7 +517,12 @@ export const en: ShellContent = {
     trucoLabel: 'Truco',
     noTruco: 'No truco',
     trucoAccepted: (call) => `${call} accepted`,
-    payoutLabel: 'Pays',
+    potLabel: (points) => `${points} ${points === 1 ? 'stone' : 'stones'} on the table`,
+    lastHand: 'The last hand',
+    careerLine: (matches, wins, hands) =>
+      `Your career: ${matches} ${matches === 1 ? 'match' : 'matches'} · ${wins} ${
+        wins === 1 ? 'win' : 'wins'
+      } · ${hands} ${hands === 1 ? 'hand' : 'hands'}`,
     ledgerTitle: 'Every stone, itemized',
     ledgerSource: 'Source',
     ledgerTeam: 'Team',
@@ -553,6 +559,7 @@ export const en: ShellContent = {
     cards: 'cards',
     burn: 'burn',
     rules: 'rules',
+    close: 'close',
     rulesLink: 'Game rules',
     logOpen: 'The table says',
     logOpenAria: 'Open The table says',
@@ -560,17 +567,556 @@ export const en: ShellContent = {
   rulesDialog: {
     eyebrow: 'The school',
     title: 'The rules school',
-    body: 'The table plays to 24 stones: first to 24 wins. Each deal has three tricks. Envido and flor are called before the first card, prive when a team is one stone away, and truco raises the stake of the deal. The hand summary itemizes every stone.',
-    topics: [
-      'The vira, perico and perica',
-      'Envido and its four calls',
-      'Flor, the reservada and the envido it cancels',
-      'Truco, retruco and vale nueve',
-      'Prive at 23, and burning a card',
-      'El Pana and the señas',
-    ],
+    lead: 'Eight stops to learn Venezuelan truco without leaving the table. Every odd rule gets an explanation, and every stone that gets paid is in here.',
     close: 'Close',
     back: 'Back to the table',
+    tabsLabel: 'Rules sections',
+    howToPlay: 'How do you play in 30 seconds?',
+    howToPlayHint: 'Opens the welcome tutorial.',
+    sourcesLabel: 'Sources',
+    sections: [
+      {
+        id: 'mesa',
+        tab: 'The table',
+        title: 'The table',
+        lead: 'Four at the table, two fixed pairs and one goal: reach 24 stones. You play with El Pana against La Comadre and El Catire.',
+        blocks: [
+          {
+            kind: 'table',
+            title: 'The essentials',
+            headers: ['Topic', 'This table'],
+            rows: [
+              ['Players', 'Four, in pairs. El Pana is your partner.'],
+              ['Target', '24 stones. The first team there takes the match.'],
+              ['Deal', 'Three cards each and a vira. Up to three tricks.'],
+              ['Hand winner', 'The pair that wins two of the three tricks.'],
+              ['Order', 'Counterclockwise. Mano leads; pie deals and plays last.'],
+              ['Ties', 'Parda: the first trick won settles it; with no winner, mano takes it.'],
+            ],
+          },
+          {
+            kind: 'list',
+            title: 'Parda and the tie-break',
+            items: [
+              'If the first trick is parda, the second decides; if that is also parda, the third decides.',
+              'If each pair has won one trick and the third is parda, the first-trick winner takes the hand.',
+              'If all three tricks are parda, mano’s pair wins.',
+              'Whoever led a parda trick leads the next one.',
+            ],
+          },
+          {
+            kind: 'callout',
+            title: 'No win by two',
+            text: 'At 24 the match is over. No extra hand, no two-stone cushion.',
+          },
+          {
+            kind: 'table',
+            title: 'Table shortcuts',
+            headers: ['Key', 'What it does'],
+            rows: [
+              ['1 · 2 · 3', 'Plays that card from your hand.'],
+              ['B', 'Arms or disarms burning.'],
+              ['R', 'Opens this rules school.'],
+              ['Esc', 'Closes the dialog you have open.'],
+            ],
+          },
+          {
+            kind: 'paragraph',
+            text: 'The table log calls every play, every canto and every stone. If you lose the thread, look there: the account is always in sight.',
+          },
+        ],
+      },
+      {
+        id: 'vira',
+        tab: 'The vira',
+        title: 'The vira, perico and perica',
+        lead: 'The vira is the card turned face up under the deck. Its suit decides the perico and the perica: the two strongest cards of the deal.',
+        blocks: [
+          {
+            kind: 'list',
+            title: 'How they are named',
+            items: [
+              'Perico: the knight (11) of the vira’s suit.',
+              'Perica: the knave (10) of the vira’s suit.',
+              'If the vira is a knight, the perico is the king of that suit.',
+              'If the vira is a knave, the perica is the king of that suit.',
+              'If the vira is 1–7 or a king, perico = 11 and perica = 10 of its suit.',
+              'The vira is nobody’s hand card.',
+            ],
+          },
+          {
+            kind: 'examples',
+            title: 'Three viras, three pairs of pieces',
+            items: [
+              {
+                title: 'Vira: 11 of clubs',
+                cards: [
+                  { rank: 11, suit: 'basto' },
+                  { rank: 12, suit: 'basto' },
+                  { rank: 10, suit: 'basto' },
+                ],
+                result: 'Perico: 12 of clubs · Perica: 10 of clubs',
+                note: 'The vira is a knight: the king takes the perico’s place.',
+              },
+              {
+                title: 'Vira: 10 of cups',
+                cards: [
+                  { rank: 10, suit: 'copa' },
+                  { rank: 12, suit: 'copa' },
+                  { rank: 11, suit: 'copa' },
+                ],
+                result: 'Perica: 12 of cups · Perico: 11 of cups',
+                note: 'The vira is a knave: the king becomes the perica.',
+              },
+              {
+                title: 'Vira: 7 of coins',
+                cards: [
+                  { rank: 7, suit: 'oro' },
+                  { rank: 11, suit: 'oro' },
+                  { rank: 10, suit: 'oro' },
+                ],
+                result: 'Perico: 11 of coins · Perica: 10 of coins',
+                note: 'A number vira leaves the pieces where they belong.',
+              },
+            ],
+          },
+          {
+            kind: 'table',
+            title: 'Strongest to weakest',
+            headers: ['Rank', 'Cards'],
+            rows: [
+              ['1', 'Perico'],
+              ['2', 'Perica'],
+              ['3', 'Ace of swords (espadilla)'],
+              ['4', 'Ace of clubs (bastillo)'],
+              ['5', '7 of swords'],
+              ['6', '7 of coins'],
+              ['7', '3 (any suit)'],
+              ['8', '2 (any suit)'],
+              ['9', 'Ace of coins and ace of cups (false aces)'],
+              ['10', '12 (kings), unless it is a piece'],
+              ['11', '11 (knights), unless it is the perico'],
+              ['12', '10 (knaves), unless it is the perica'],
+              ['13', '7 of cups and 7 of clubs (false sevens)'],
+              ['14', '6 (any suit)'],
+              ['15', '5 (any suit)'],
+              ['16', '4 (any suit)'],
+            ],
+          },
+          {
+            kind: 'callout',
+            title: 'Cards on the same row tie',
+            text: 'That tie is parda. A sword does not beat another suit by being a sword: the table row decides.',
+          },
+          {
+            kind: 'callout',
+            title: 'Burning still plays',
+            text: 'You may play a card face down. It has no rank: any face-up card beats it and it ties only another burned card. It still counts as your card for the trick.',
+          },
+        ],
+      },
+      {
+        id: 'envido',
+        tab: 'Envido',
+        title: 'Envido',
+        lead: 'Envido is a bet on whose tanto is best with the cards of the deal. It is called before the first card.',
+        blocks: [
+          {
+            kind: 'list',
+            title: 'How the tanto is counted',
+            items: [
+              'Only the three cards in your hand count.',
+              '1 to 7 are worth their number; 10, 11 and 12 are worth 0.',
+              'Two cards of one suit: 20 + their two values.',
+              'Three of one suit: count the two highest.',
+              'Perico: 30 + the highest value of the other two.',
+              'Perica: 29 + the highest value of the other two.',
+              'Three different suits with no piece: the highest card wins.',
+            ],
+          },
+          {
+            kind: 'examples',
+            title: 'Three tantos by example (vira of swords)',
+            items: [
+              {
+                title: 'Perico and a five',
+                cards: [
+                  { rank: 11, suit: 'espada' },
+                  { rank: 5, suit: 'oro' },
+                  { rank: 4, suit: 'copa' },
+                ],
+                result: '35',
+                note: '30 + 5. The piece adds the highest of the other two.',
+              },
+              {
+                title: 'Perica with two clubs',
+                cards: [
+                  { rank: 10, suit: 'espada' },
+                  { rank: 7, suit: 'basto' },
+                  { rank: 6, suit: 'basto' },
+                ],
+                result: '36',
+                note: '29 + 7. It does not add the 6: the piece takes only the highest.',
+              },
+              {
+                title: 'Two coins',
+                cards: [
+                  { rank: 7, suit: 'oro' },
+                  { rank: 6, suit: 'oro' },
+                  { rank: 4, suit: 'copa' },
+                ],
+                result: '33',
+                note: '20 + 7 + 6. A third card of another suit does not add.',
+              },
+            ],
+          },
+          {
+            kind: 'paragraph',
+            text: 'Each pair puts up its best tanto. The higher one wins; a tie goes to mano’s pair. The maximum is 37: perico plus a 7.',
+          },
+          {
+            kind: 'table',
+            title: 'The envido ladder',
+            headers: ['Call', 'Accepted', 'Declined'],
+            rows: [
+              ['Envido', '2 stones', '1 to the caller'],
+              ['Quiero y envido', '4 stones', '2 to the caller'],
+              ['Quiero y 5 piedras más', '7 stones', '4 to the caller'],
+              ['Envido la falta', 'the leader’s distance to 24', '7 to the caller'],
+            ],
+          },
+          {
+            kind: 'paragraph',
+            text: 'The team that accepts may raise; the caller answers. La falta is fixed when it is accepted: the leader’s distance to 24 at that moment, never less than one stone. Later points do not change it.',
+          },
+          {
+            kind: 'callout',
+            title: 'Flor rules',
+            text: 'If anyone declares flor before the envido settles, the envido is cancelled. Nothing is paid for it. The flor is still paid.',
+          },
+          {
+            kind: 'paragraph',
+            text: 'Envido is compared when the deal closes, after the last trick or after a fold. A declined envido is also paid at the close, unless a flor cancels it first.',
+          },
+        ],
+      },
+      {
+        id: 'flor',
+        tab: 'Flor',
+        title: 'Flor and the reservada',
+        lead: 'Flor is the prettiest hand of the deal: three cards of one suit, or a piece with two of one suit. Declare it before you play your first card.',
+        blocks: [
+          {
+            kind: 'list',
+            title: 'When you have flor',
+            items: [
+              'Three cards of one suit.',
+              'Perico or perica plus two cards of one suit.',
+              'Perico and perica together: flor reservada.',
+            ],
+          },
+          {
+            kind: 'table',
+            title: 'What it pays',
+            headers: ['Flor', 'Stones'],
+            rows: [
+              ['Three of one suit', '3'],
+              ['Perico or perica plus two of one suit', '3'],
+              ['Flor reservada (perico + perica)', '5, automatic'],
+              ['A flor that reaches 24', 'ends the match right there'],
+            ],
+          },
+          {
+            kind: 'examples',
+            title: 'Two flors by example',
+            items: [
+              {
+                title: 'Vira: 7 of clubs',
+                cards: [
+                  { rank: 11, suit: 'basto' },
+                  { rank: 4, suit: 'oro' },
+                  { rank: 5, suit: 'oro' },
+                ],
+                result: 'Flor of 39',
+                note: 'The perico of clubs joins two coins: 30 + 4 + 5.',
+              },
+              {
+                title: 'Three cups',
+                cards: [
+                  { rank: 7, suit: 'copa' },
+                  { rank: 6, suit: 'copa' },
+                  { rank: 5, suit: 'copa' },
+                ],
+                result: 'Flor of 38',
+                note: '20 + 7 + 6 + 5.',
+              },
+            ],
+          },
+          {
+            kind: 'paragraph',
+            text: 'The reservada beats every numeric flor. If both pairs declare, the best flor of each is compared; a numeric tie goes to mano. Each pair scores its flor once; an undeclared flor is forfeited.',
+          },
+          {
+            kind: 'callout',
+            title: 'Flor por derecho',
+            text: 'You must declare it before playing your first card. If you play first, the flor is lost. You can declare on your turn or while answering an envido or truco.',
+          },
+          {
+            kind: 'callout',
+            title: 'When it settles (this table’s ruling)',
+            text: 'The flor is announced at once and shows as pending on the table, but it settles when the first trick closes. If the deal ends earlier, it settles in the final account. That gives both pairs the whole first trick to declare, so play order never decides the comparison.',
+          },
+          {
+            kind: 'paragraph',
+            text: 'If the flor reaches 24, the match ends there and the truco is not paid. A flor cancels the envido but not a pending truco: that truco still needs an answer.',
+          },
+        ],
+      },
+      {
+        id: 'truco',
+        tab: 'Truco',
+        title: 'Truco and its raises',
+        lead: 'Truco is the bet on the whole deal. It can be called on your turn, before playing, in any trick.',
+        blocks: [
+          {
+            kind: 'table',
+            title: 'The ladder',
+            headers: ['Call', 'Accepted', 'Declined'],
+            rows: [
+              ['Truco', '3 stones', '1 to the caller'],
+              ['Retruco', '6 stones', '3 to the caller'],
+              ['Vale nueve', '9 stones', '6 to the caller'],
+              ['Vale juego', 'the deal decides the match', '9 to the caller'],
+            ],
+          },
+          {
+            kind: 'paragraph',
+            text: 'If nobody calls truco, a won deal pays 1 stone. Truco does not change who wins the deal: only what it pays.',
+          },
+          {
+            kind: 'list',
+            title: 'How to answer',
+            items: [
+              'Quiero: accept the bet and keep playing.',
+              'No quiero: the caller takes what the previous call was worth.',
+              'Quiero and raise: accept and climb one step; the other pair answers.',
+              'The team that accepts may raise; the caller answers.',
+            ],
+          },
+          {
+            kind: 'callout',
+            title: 'Vale juego',
+            text: 'If accepted, whoever wins this deal takes the match, no matter the score. If declined, the caller takes 9 stones.',
+          },
+          {
+            kind: 'paragraph',
+            text: 'Irse al mazo concedes the deal and whatever stake is on the table (1 if no truco). An accepted envido is still compared: folding does not erase it.',
+          },
+          {
+            kind: 'paragraph',
+            text: 'A declined truco ends the deal right there; if there was an accepted envido, it is compared first and then the truco is paid.',
+          },
+        ],
+      },
+      {
+        id: 'prive',
+        tab: 'Prive & burning',
+        title: 'Prive and burning',
+        lead: 'Prive is the call of the team one stone from glory. Burning is the face-down card that hides everything.',
+        blocks: [
+          {
+            kind: 'list',
+            title: 'Prive',
+            items: [
+              'Called by the pair sitting at 23, before the first card.',
+              'Only if nobody called envido or flor in that deal.',
+              'Both pairs’ tantos are compared; the best takes 1 stone.',
+              'A tie goes to mano. It replaces envido for that deal.',
+              'It pays immediately and can end the match. If it reaches 24, the truco is not paid.',
+            ],
+          },
+          {
+            kind: 'callout',
+            title: 'Prive is not a truco',
+            text: 'Prive uses the cards you already have and does not raise the deal’s stake. It is a one-stone comparison of tantos, with your heart in your hand.',
+          },
+          {
+            kind: 'list',
+            title: 'Burning',
+            items: [
+              'Instead of playing a card face up, play it face down.',
+              'It has no rank: any face-up card beats it.',
+              'It ties only another burned card.',
+              'It counts as your card for the trick and closes your flor and envido window.',
+              'You may burn on your turn. Bots burn at most once per deal.',
+            ],
+          },
+          {
+            kind: 'paragraph',
+            text: 'A burned card is revealed in the hand summary. Until then, neither the rivals nor you see its face on the table.',
+          },
+        ],
+      },
+      {
+        id: 'senas',
+        tab: 'Señas',
+        title: 'El Pana’s señas',
+        lead: 'El Pana sends you one seña per deal. It is a gesture, not a rule: it tells you what he holds, and you decide what to do with it.',
+        blocks: [
+          {
+            kind: 'table',
+            headers: ['Seña', 'What it means'],
+            rows: [
+              ['Right-eye wink', 'Perico'],
+              ['Left-eye wink', 'Perica'],
+              ['Tongue to the right', 'Espadilla'],
+              ['Tongue to the left', 'Bastillo'],
+              ['Tongue tip to the right', '7 of swords'],
+              ['Tongue tip to the left', '7 of coins'],
+              ['Puff the cheeks', 'Flor'],
+              ['Left wink, then right', 'Flor reservada'],
+            ],
+          },
+          {
+            kind: 'paragraph',
+            text: 'If he has nothing to signal, he shrugs. The seña never changes the cards or the score: it is a friend’s advantage, not a trick.',
+          },
+          {
+            kind: 'callout',
+            title: 'One per deal',
+            text: 'Open the seña panel whenever you like. On the next deal it closes and El Pana looks at you again.',
+          },
+        ],
+      },
+      {
+        id: 'fuentes',
+        tab: 'Sources',
+        title: 'Sources and table rulings',
+        lead: 'This table follows Wikipedia and Ludoteka for Venezuelan truco, and El Truco Venezolano for the vocabulary. Where tables disagree, we write the agreement down.',
+        blocks: [
+          {
+            kind: 'sources',
+            items: [
+              {
+                label: 'Wikipedia: Truco venezolano',
+                href: 'https://es.wikipedia.org/wiki/Truco_venezolano',
+                note: 'The base game, the vira and the card hierarchy.',
+              },
+              {
+                label: 'Ludoteka: Venezuelan Truco rules',
+                href: 'https://www.ludoteka.com/juegos/truco-venezolano/reglas',
+                note: 'The calls, envido, flor and prive.',
+              },
+              {
+                label: 'El Truco Venezolano: Vocabulary',
+                href: 'https://eltrucovenezolano.com/vocabulario/',
+                note: 'The table words: perico, perica, matas, señas.',
+              },
+            ],
+          },
+          {
+            kind: 'table',
+            title: 'This table’s rulings',
+            headers: ['Topic', 'This table'],
+            rows: [
+              ['Target', '24 stones, no win by two.'],
+              ['Flor reservada', '5 stones and beats every numeric flor.'],
+              ['Two flors', 'Compared automatically; no flor-envido auction.'],
+              ['Flor declaration', 'Flor por derecho: before your first card.'],
+              [
+                'Flor settlement',
+                'When the first trick closes, or at the deal’s end if it ends earlier.',
+              ],
+              ['Envido', 'Only on your turn, before the first card.'],
+              ['Declined envido', 'Settled at the deal’s end; a flor before that cancels it.'],
+              ['Envido la falta', 'Fixed at acceptance: the leader’s distance to 24.'],
+              ['Prive', 'Called by the team at 23; 1 stone; replaces envido.'],
+              ['Burning', 'Implemented; bots burn at most once per deal.'],
+              ['Parda', 'Whoever led the parda trick leads the next one.'],
+              ['Tantos', 'Shown at envido resolution, for learning.'],
+            ],
+          },
+          {
+            kind: 'list',
+            title: 'Table words',
+            items: [
+              'A ley: there may or may not be flor. Pure table talk.',
+              'Barajo: the cry for a bad deal. There are no bad deals here.',
+              'Son buenas: conceding an envido without showing the tanto. This table shows both tantos for learning.',
+              '¿Llevas? / Ven a mí / Quédate: questions and requests between panas. Here they are flavor, not rules.',
+            ],
+          },
+          {
+            kind: 'paragraph',
+            text: 'The full rules live in docs/rules/TRUCO-VENEZOLANO.md. If this school and that document disagree, the document wins.',
+          },
+        ],
+      },
+    ],
+  },
+  welcome: {
+    eyebrow: 'Welcome to the table',
+    title: 'Three cards, one table, 24 stones',
+    lead: 'This is Venezuelan truco. You learn it by playing, but these three things put you at the table.',
+    steps: [
+      {
+        title: 'You get three cards',
+        body: 'Every deal gives you three cards and a vira that names the perico and the perica.',
+      },
+      {
+        title: 'Win two of the three tricks',
+        body: 'You and El Pana play against La Comadre and El Catire. The pair that wins two tricks takes the deal.',
+      },
+      {
+        title: 'Call envido, flor and truco to raise the stake',
+        body: 'Before you play, you can call envido or flor. Truco raises what the deal pays. And the first team to 24 takes the match.',
+      },
+    ],
+    goal: 'The first team to 24 stones wins. No win by two, no extra hand.',
+    play: 'Play',
+    rules: 'See the rules',
+    close: 'Close the tutorial',
+  },
+  settings: {
+    eyebrow: 'Your table',
+    title: 'Settings',
+    lead: 'The table fits you: language, sound, tempo and your career.',
+    close: 'Close settings',
+    openAria: 'Open the table settings',
+    languageTitle: 'Language',
+    languageHint: 'The table speaks Caracas Spanish or English.',
+    soundTitle: 'Sound',
+    soundOn: 'Sound on',
+    soundOff: 'Sound off',
+    soundHint: 'Synthesized cues: cards, stones, calls and the ending. No files.',
+    speedTitle: 'Bot tempo',
+    speedHint: 'How long they think before playing. It does not change their cards.',
+    speeds: {
+      slow: { label: 'Relaxed', note: 'The table takes its time.' },
+      normal: { label: 'Normal', note: 'The pace of a kitchen table.' },
+      fast: { label: 'Fast', note: 'For when there is somewhere to be.' },
+    },
+    careerTitle: 'Your career',
+    careerHint: 'Kept only in this browser. No accounts, no personal data.',
+    careerEmpty: 'You have not finished a match yet. The first stone is waiting.',
+    stats: {
+      matches: 'Matches',
+      wins: 'Won',
+      losses: 'Lost',
+      hands: 'Hands',
+      envidos: 'Envidos',
+      flores: 'Flors',
+    },
+    clear: 'Clear stats',
+    clearConfirm: 'Are you sure? This erases your career in this browser and cannot be undone.',
+    clearYes: 'Yes, clear',
+    clearNo: 'Cancel',
+    cleared: 'Career cleared. Clean table.',
+    howToPlay: 'How do you play?',
+    howToPlayHint: 'Reopens the welcome tutorial.',
+  },
+  a11y: {
+    announcerLabel: 'Table announcements',
   },
   cards: {
     of: 'of',

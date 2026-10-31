@@ -1,3 +1,5 @@
+import type { CSSProperties } from 'react';
+
 import { useLocale } from '../content/locale-context';
 import { describeCard } from '../content/types';
 import { cardKey } from '../domain/cards';
@@ -57,7 +59,11 @@ export function HandDock({ view, burnArmed, onToggleBurn, onPlay }: HandDockProp
             }`;
 
             return (
-              <li className="hand__slot" key={key}>
+              <li
+                className="hand__slot"
+                key={key}
+                style={{ '--deal-index': index } as CSSProperties}
+              >
                 <span className="hand__key" aria-hidden="true">
                   {index + 1}
                 </span>

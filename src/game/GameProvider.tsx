@@ -1,13 +1,14 @@
 import { useCallback, useEffect, useMemo, useState, type PropsWithChildren } from 'react';
 
 import { chooseBotAction } from '../ai/policy';
+import { BOT_DELAYS } from '../domain/preferences';
 import { PERSONA_BY_SEAT, TEAM_BY_SEAT } from '../domain/seats';
 import { actingSeat, createGame, reduce, viewFor } from '../engine/game';
 import type { GameAction, GameState } from '../engine/types';
 import { GameContext } from './game-context';
+import { usePreferences } from './preferences';
 
 const HUMAN_SEAT = 0;
-const DEFAULT_BOT_DELAY = 800;
 const FAST_BOT_DELAY = 60;
 
 function seedFromUrl(): string | number | null {
@@ -50,6 +51,7 @@ export function GameProvider({
   initialState,
   botDelayMs,
 }: PropsWithChildren<GameProviderProps>) {
+  const preferences = usePreferences();
   const [state, setState] = useState<GameState>(
     () => initialState ?? createGame({ seed: seed ?? seedFromUrl() ?? randomSeed() }),
   );
@@ -58,7 +60,7 @@ export function GameProvider({
     setState((current) => reduce(current, action));
   }, []);
 
-  const delay = botDelayMs ?? (fastFromUrl() ? FAST_BOT_DELAY : DEFAULT_BOT_DELAY);
+  const delay = botDelayMs ?? (fastFromUrl() ? FAST_BOT_DELAY : BOT_DELAYS[preferences.speed]);
   const view = useMemo(() => viewFor(state, HUMAN_SEAT), [state]);
   const value = useMemo(() => ({ view, dispatch, botDelayMs: delay }), [delay, dispatch, view]);
 

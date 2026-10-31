@@ -8,8 +8,10 @@ import { LocaleProvider } from '../content/LocaleProvider';
 import type { TauntPersona } from '../content/taunts';
 import { cardKey, type Card, type Rank, type Suit } from '../domain/cards';
 import { actingSeat, createGame, reduce, viewFor } from '../engine/game';
-import type { GameState } from '../engine/types';
+import type { GameState, GameView } from '../engine/types';
+import { EMPTY_CAREER } from '../game/career';
 import { GameProvider } from '../game/GameProvider';
+import { HandSummary } from './HandSummary';
 import { Mesa } from './Mesa';
 
 const SLOW_BOT = 100_000;
@@ -388,17 +390,17 @@ describe('the live table', () => {
 
     renderTableState(rigGame({ hands, dealtHands: hands }));
 
-    const trigger = screen.getByRole('button', { name: /Seña de El Pana/ });
+    const trigger = screen.getByRole('button', { name: /La seña del Pana/ });
 
     expect(trigger).toHaveAttribute('aria-expanded', 'false');
-    expect(screen.queryByRole('region', { name: 'Seña de El Pana' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('region', { name: 'La seña del Pana' })).not.toBeInTheDocument();
 
     await user.click(trigger);
 
-    const panel = screen.getByRole('region', { name: 'Seña de El Pana' });
+    const panel = screen.getByRole('region', { name: 'La seña del Pana' });
 
     expect(panel).toHaveTextContent('Guiño del ojo derecho');
-    expect(panel).toHaveTextContent('Te señala 11 de basto.');
+    expect(panel).toHaveTextContent('El Pana te señala 11 de basto.');
   });
 
   it('fills the deal with persona table talk', async () => {
@@ -858,6 +860,84 @@ describe('the itemized summary', () => {
     expect(within(dialog).getByText('Las bazas')).toBeVisible();
   });
 
+  it('renders exactly one ledger row per settlement and no duplicate account block', () => {
+    const finished = florAndTrucoHand();
+
+    renderTableState(finished);
+
+    const dialog = screen.getByRole('dialog');
+    const ledgerRows = dialog.querySelectorAll('.summary__statement tbody tr');
+
+    expect(ledgerRows).toHaveLength(finished.result?.settlements.length ?? 0);
+    expect(ledgerRows.length).toBeGreaterThan(0);
+    expect(within(dialog).queryByText('La cuenta')).not.toBeInTheDocument();
+    expect(within(dialog).getByText(/piedras en la mesa/)).toBeVisible();
+    expect(within(dialog).getByText('Flor')).toBeVisible();
+  });
+
+  it('names both teams when a settlement splits the points', () => {
+    const finished = florAndTrucoHand();
+    const view = viewFor(finished, 0);
+    const result = view.result;
+
+    expect(result).not.toBeNull();
+
+    if (!result) {
+      throw new Error('The hand should have a result.');
+    }
+
+    const splitView: GameView = {
+      ...view,
+      result: {
+        ...result,
+        winnerTeam: 'ellos',
+        settlements: [
+          {
+            kind: 'flor',
+            team: 'nosotros',
+            points: 3,
+            tantos: { nosotros: 38, ellos: 0 },
+          },
+          { kind: 'truco', team: 'ellos', points: 3, detail: 'bazas' },
+        ],
+        totalPoints: 6,
+      },
+    };
+
+    render(
+      <LocaleProvider>
+        <HandSummary
+          view={splitView}
+          stats={EMPTY_CAREER}
+          onNextHand={vi.fn()}
+          onRematch={vi.fn()}
+        />
+      </LocaleProvider>,
+    );
+
+    const dialog = screen.getByRole('dialog', { name: 'Ganó Ellos' });
+    const rows = dialog.querySelectorAll('.summary__statement tbody tr');
+
+    expect(within(dialog).getByText('6 piedras en la mesa')).toBeVisible();
+    expect(rows).toHaveLength(2);
+    expect(rows[0]).toHaveTextContent('Nosotros');
+    expect(rows[1]).toHaveTextContent('Ellos');
+  });
+
+  it('shows the career line when a partida ends', async () => {
+    const finished = matchPoint();
+
+    expect(finished.phase).toBe('matchOver');
+
+    renderTableState(finished);
+
+    const dialog = screen.getByRole('dialog', { name: 'Ganó la partida Nosotros' });
+
+    expect(
+      await within(dialog).findByText(/Tu carrera: 1 partida · 1 ganada · \d+ mano(?:s)?/),
+    ).toBeVisible();
+  });
+
   it('lists envido and truco with the tantos in English', () => {
     const finished = envidoAndTrucoHand();
 
@@ -887,6 +967,8 @@ describe('the itemized summary', () => {
 
     expect(within(dialog).getByText('Partida cerrada')).toBeVisible();
     expect(within(dialog).getByText('La flor')).toBeVisible();
+    expect(within(dialog).getByText('Nosotros 24 · Ellos 10')).toBeVisible();
+    expect(within(dialog).getByText('La última mano')).toBeVisible();
     expect(within(dialog).getAllByText('+3').length).toBeGreaterThan(0);
     expect(within(dialog).getByRole('button', { name: 'Otra partida' })).toBeVisible();
   });

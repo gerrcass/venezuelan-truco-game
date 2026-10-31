@@ -14,6 +14,8 @@ export const es: ShellContent = {
     navigationLabel: 'Mesa',
     rules: 'Reglas',
     rulesAria: 'Abrir la escuela de reglas',
+    settings: 'Ajustes',
+    settingsAria: 'Abrir los ajustes de la mesa',
     soundOn: 'Silenciar sonido',
     soundOff: 'Activar sonido',
     languageLabel: 'Idioma',
@@ -47,8 +49,8 @@ export const es: ShellContent = {
     catire: { name: 'El Catire', persona: 'Canta truco antes de mirar', marker: 'EC' },
   },
   sena: {
-    label: 'Seña de El Pana',
-    invite: 'El Pana te mira',
+    label: 'La seña del Pana',
+    invite: 'El Pana te hace una seña',
     hide: 'Ocultar la seña',
     gestureLabel: 'El gesto',
     gestures: {
@@ -73,7 +75,7 @@ export const es: ShellContent = {
       sieteOro: 'Tiene el siete de oro. No es el más alto, pero asusta.',
       none: 'No tiene nada que señalarte. Igual juega con fe.',
     },
-    card: (name) => `Te señala ${name}.`,
+    card: (name) => `El Pana te señala ${name}.`,
   },
   taunts: {
     pana: {
@@ -503,7 +505,6 @@ export const es: ShellContent = {
     points: (points) =>
       points === 'match' ? 'La partida' : `${points} ${points === 1 ? 'piedra' : 'piedras'}`,
     score: (nosotros, ellos) => `Nosotros ${nosotros} · Ellos ${ellos}`,
-    accountLabel: 'La cuenta',
     reasonLabel: 'Motivo',
     reasons: {
       bazas: 'Bazas ganadas',
@@ -516,7 +517,12 @@ export const es: ShellContent = {
     trucoLabel: 'Truco',
     noTruco: 'Sin truco',
     trucoAccepted: (call) => `${call} querido`,
-    payoutLabel: 'Pagan',
+    potLabel: (points) => `${points} ${points === 1 ? 'piedra' : 'piedras'} en la mesa`,
+    lastHand: 'La última mano',
+    careerLine: (matches, wins, hands) =>
+      `Tu carrera: ${matches} ${matches === 1 ? 'partida' : 'partidas'} · ${wins} ${
+        wins === 1 ? 'ganada' : 'ganadas'
+      } · ${hands} ${hands === 1 ? 'mano' : 'manos'}`,
     ledgerTitle: 'Cada piedra, con su cuenta',
     ledgerSource: 'Fuente',
     ledgerTeam: 'Equipo',
@@ -553,6 +559,7 @@ export const es: ShellContent = {
     cards: 'cartas',
     burn: 'quemar',
     rules: 'reglas',
+    close: 'cerrar',
     rulesLink: 'Reglas del juego',
     logOpen: 'La mesa dice',
     logOpenAria: 'Abrir La mesa dice',
@@ -560,17 +567,559 @@ export const es: ShellContent = {
   rulesDialog: {
     eyebrow: 'La escuela',
     title: 'La escuela de reglas',
-    body: 'La mesa juega a 24 piedras: gana quien llegue primero. Cada reparto tiene tres bazas. El envido y la flor se cantan antes de la primera carta, el prive cuando un equipo está a una piedra, y el truco sube la apuesta del reparto. El resumen itemiza cada piedra.',
-    topics: [
-      'La vira, el perico y la perica',
-      'El envido y sus cuatro cantos',
-      'La flor, la reservada y el envido que cancela',
-      'El truco, retruco y vale nueve',
-      'El prive a 23 y el quemar',
-      'Las señas de El Pana',
-    ],
+    lead: 'Ocho paradas para aprender el truco venezolano sin soltar las cartas. Todo lo raro tiene su explicación, y todo lo que se cobra está aquí.',
     close: 'Cerrar',
     back: 'Volver a la mesa',
+    tabsLabel: 'Secciones de las reglas',
+    howToPlay: '¿Cómo se juega en 30 segundos?',
+    howToPlayHint: 'Abre el tutorial de bienvenida.',
+    sourcesLabel: 'Fuentes',
+    sections: [
+      {
+        id: 'mesa',
+        tab: 'La mesa',
+        title: 'La mesa',
+        lead: 'Cuatro en la mesa, dos parejas fijas y una sola meta: llegar a 24 piedras. Tú juegas con El Pana contra La Comadre y El Catire.',
+        blocks: [
+          {
+            kind: 'table',
+            title: 'Lo esencial',
+            headers: ['Tema', 'Esta mesa'],
+            rows: [
+              ['Jugadores', '4, en parejas. El Pana es tu compañero.'],
+              ['Meta', '24 piedras. El primero que llega se lleva la partida.'],
+              ['Reparto', '3 cartas por cabeza y una vira. Se juegan hasta 3 bazas.'],
+              ['Gana el reparto', 'La pareja que gana 2 de las 3 bazas.'],
+              ['Orden', 'Antihorario. La mano juega primero; el pie reparte y juega de último.'],
+              [
+                'Empates',
+                'Parda: la resuelve la primera baza ganada; si no hay ninguna, gana la mano.',
+              ],
+            ],
+          },
+          {
+            kind: 'list',
+            title: 'Parda y desempate',
+            items: [
+              'Si la primera baza es parda, manda la segunda; si también es parda, manda la tercera.',
+              'Si cada pareja ganó una baza y la tercera es parda, gana quien ganó la primera.',
+              'Si las tres son parda, gana la pareja de la mano.',
+              'El que lideró una baza parda lidera la siguiente.',
+            ],
+          },
+          {
+            kind: 'callout',
+            title: 'Sin ganar por dos',
+            text: 'Al llegar a 24 se acaba. No hay que sacar ventaja de dos piedras ni jugar una mano extra.',
+          },
+          {
+            kind: 'table',
+            title: 'Atajos de la mesa',
+            headers: ['Tecla', 'Qué hace'],
+            rows: [
+              ['1 · 2 · 3', 'Juega esa carta de tu mano.'],
+              ['B', 'Arma o desarma el quemar.'],
+              ['R', 'Abre esta escuela de reglas.'],
+              ['Esc', 'Cierra el diálogo que tengas abierto.'],
+            ],
+          },
+          {
+            kind: 'paragraph',
+            text: 'El registro de la mesa canta cada jugada, cada canto y cada piedra. Si te pierdes, mira ahí: la cuenta siempre está a la vista.',
+          },
+        ],
+      },
+      {
+        id: 'vira',
+        tab: 'La vira',
+        title: 'La vira, el perico y la perica',
+        lead: 'La vira es la carta que se voltea debajo del mazo. Su palo decide quiénes son el perico y la perica: las dos cartas más bravas del reparto.',
+        blocks: [
+          {
+            kind: 'list',
+            title: 'Cómo se nombran',
+            items: [
+              'Perico: el caballo (11) del palo de la vira.',
+              'Perica: la sota (10) del palo de la vira.',
+              'Si la vira es caballo, el perico es el rey de ese palo.',
+              'Si la vira es sota, la perica es el rey de ese palo.',
+              'Si la vira es 1–7 o rey, perico = 11 y perica = 10 de su palo.',
+              'La vira no está en la mano de nadie.',
+            ],
+          },
+          {
+            kind: 'examples',
+            title: 'Tres viras, tres parejas de piezas',
+            items: [
+              {
+                title: 'Vira: 11 de basto',
+                cards: [
+                  { rank: 11, suit: 'basto' },
+                  { rank: 12, suit: 'basto' },
+                  { rank: 10, suit: 'basto' },
+                ],
+                result: 'Perico: 12 de basto · Perica: 10 de basto',
+                note: 'La vira es caballo: el rey toma el lugar del perico.',
+              },
+              {
+                title: 'Vira: 10 de copa',
+                cards: [
+                  { rank: 10, suit: 'copa' },
+                  { rank: 12, suit: 'copa' },
+                  { rank: 11, suit: 'copa' },
+                ],
+                result: 'Perica: 12 de copa · Perico: 11 de copa',
+                note: 'La vira es sota: el rey se vuelve perica.',
+              },
+              {
+                title: 'Vira: 7 de oro',
+                cards: [
+                  { rank: 7, suit: 'oro' },
+                  { rank: 11, suit: 'oro' },
+                  { rank: 10, suit: 'oro' },
+                ],
+                result: 'Perico: 11 de oro · Perica: 10 de oro',
+                note: 'Una vira numérica deja las piezas en su sitio.',
+              },
+            ],
+          },
+          {
+            kind: 'table',
+            title: 'De la más brava a la más floja',
+            headers: ['Puesto', 'Cartas'],
+            rows: [
+              ['1', 'Perico'],
+              ['2', 'Perica'],
+              ['3', '1 de espada (espadilla)'],
+              ['4', '1 de basto (bastillo)'],
+              ['5', '7 de espada'],
+              ['6', '7 de oro'],
+              ['7', '3 (cualquier palo)'],
+              ['8', '2 (cualquier palo)'],
+              ['9', '1 de oro y 1 de copa (ases falsos)'],
+              ['10', '12 (reyes), salvo que sea pieza'],
+              ['11', '11 (caballos), salvo el perico'],
+              ['12', '10 (sotas), salvo la perica'],
+              ['13', '7 de copa y 7 de basto (sietes falsos)'],
+              ['14', '6 (cualquier palo)'],
+              ['15', '5 (cualquier palo)'],
+              ['16', '4 (cualquier palo)'],
+            ],
+          },
+          {
+            kind: 'callout',
+            title: 'Las cartas del mismo puesto empatan',
+            text: 'Ese empate es parda. No hay una espada que valga más que otra por ser espada: manda el puesto de la tabla.',
+          },
+          {
+            kind: 'callout',
+            title: 'Quemar también juega',
+            text: 'Puedes jugar una carta boca abajo. No tiene rango: cualquier carta boca arriba le gana y solo empata con otra quemada. Cuenta como tu carta de la baza.',
+          },
+        ],
+      },
+      {
+        id: 'envido',
+        tab: 'Envido',
+        title: 'El envido',
+        lead: 'El envido es una apuesta a quién tiene el mejor tanto con las cartas del reparto. Se canta antes de tirar la primera carta.',
+        blocks: [
+          {
+            kind: 'list',
+            title: 'Cómo se cuenta el tanto',
+            items: [
+              'Solo cuentan las tres cartas de tu mano.',
+              '1 a 7 valen su número; 10, 11 y 12 valen 0.',
+              'Dos cartas del mismo palo: 20 + sus dos valores.',
+              'Tres del mismo palo: cuenta las dos más altas.',
+              'Perico: 30 + el valor más alto de las otras dos.',
+              'Perica: 29 + el valor más alto de las otras dos.',
+              'Tres palos distintos y sin pieza: manda la carta más alta.',
+            ],
+          },
+          {
+            kind: 'examples',
+            title: 'Tres tantos de ejemplo (vira de espada)',
+            items: [
+              {
+                title: 'Perico y un cinco',
+                cards: [
+                  { rank: 11, suit: 'espada' },
+                  { rank: 5, suit: 'oro' },
+                  { rank: 4, suit: 'copa' },
+                ],
+                result: '35',
+                note: '30 + 5. La pieza suma con la más alta de las otras dos.',
+              },
+              {
+                title: 'Perica con dos bastos',
+                cards: [
+                  { rank: 10, suit: 'espada' },
+                  { rank: 7, suit: 'basto' },
+                  { rank: 6, suit: 'basto' },
+                ],
+                result: '36',
+                note: '29 + 7. No suma el 6: la pieza solo toma la más alta.',
+              },
+              {
+                title: 'Dos oros',
+                cards: [
+                  { rank: 7, suit: 'oro' },
+                  { rank: 6, suit: 'oro' },
+                  { rank: 4, suit: 'copa' },
+                ],
+                result: '33',
+                note: '20 + 7 + 6. La tercera carta, si es de otro palo, no suma.',
+              },
+            ],
+          },
+          {
+            kind: 'paragraph',
+            text: 'Cada pareja presenta su mejor tanto. El mayor gana; si empatan, gana la pareja de la mano. El máximo posible es 37: perico más un 7.',
+          },
+          {
+            kind: 'table',
+            title: 'La escalera del envido',
+            headers: ['Canto', 'Querido', 'No querido'],
+            rows: [
+              ['Envido', '2 piedras', '1 para quien cantó'],
+              ['Quiero y envido', '4 piedras', '2 para quien cantó'],
+              ['Quiero y 5 piedras más', '7 piedras', '4 para quien cantó'],
+              ['Envido la falta', 'la distancia del líder a 24', '7 para quien cantó'],
+            ],
+          },
+          {
+            kind: 'paragraph',
+            text: 'El que acepta puede subir; el que cantó responde. La falta se fija al aceptarla: la distancia del líder a 24 en ese momento, nunca menos de una piedra. Los puntos que vengan después no la cambian.',
+          },
+          {
+            kind: 'callout',
+            title: 'Flor manda',
+            text: 'Si alguien canta flor antes de que el envido se cobre, el envido se cancela. No se paga nada por él. La flor sí se cobra.',
+          },
+          {
+            kind: 'paragraph',
+            text: 'El envido se compara al cerrar el reparto, después de la última baza o de un mazo. Un envido no querido también se paga al cerrar, salvo que una flor lo cancele.',
+          },
+        ],
+      },
+      {
+        id: 'flor',
+        tab: 'Flor',
+        title: 'La flor y la reservada',
+        lead: 'La flor es la mano más linda del reparto: tres cartas del mismo palo, o una pieza con dos del mismo palo. Se canta antes de tirar tu primera carta.',
+        blocks: [
+          {
+            kind: 'list',
+            title: 'Cuándo tienes flor',
+            items: [
+              'Tres cartas del mismo palo.',
+              'Perico o perica más dos cartas del mismo palo.',
+              'Perico y perica juntos: flor reservada.',
+            ],
+          },
+          {
+            kind: 'table',
+            title: 'Lo que paga',
+            headers: ['Flor', 'Piedras'],
+            rows: [
+              ['Flor de tres del mismo palo', '3'],
+              ['Flor con perico o perica y dos del mismo palo', '3'],
+              ['Flor reservada (perico + perica)', '5, automática'],
+              ['Una flor que llega a 24', 'cierra la partida en ese momento'],
+            ],
+          },
+          {
+            kind: 'examples',
+            title: 'Dos flores de ejemplo',
+            items: [
+              {
+                title: 'Vira: 7 de basto',
+                cards: [
+                  { rank: 11, suit: 'basto' },
+                  { rank: 4, suit: 'oro' },
+                  { rank: 5, suit: 'oro' },
+                ],
+                result: 'Flor de 39',
+                note: 'El perico de basto acompaña a dos oros: 30 + 4 + 5.',
+              },
+              {
+                title: 'Tres copas',
+                cards: [
+                  { rank: 7, suit: 'copa' },
+                  { rank: 6, suit: 'copa' },
+                  { rank: 5, suit: 'copa' },
+                ],
+                result: 'Flor de 38',
+                note: '20 + 7 + 6 + 5.',
+              },
+            ],
+          },
+          {
+            kind: 'paragraph',
+            text: 'La reservada le gana a cualquier flor numérica. Si las dos parejas cantan, se compara la mejor flor de cada una; el empate numérico va a la mano. Cada pareja cobra su flor una sola vez; la flor del que no cantó se pierde.',
+          },
+          {
+            kind: 'callout',
+            title: 'Flor por derecho',
+            text: 'Tienes que cantarla antes de jugar tu primera carta. Si tiras primero, la flor se pierde. Puedes cantarla en tu turno o mientras respondes un envido o un truco.',
+          },
+          {
+            kind: 'callout',
+            title: 'Cuándo se cobra (acuerdo de esta mesa)',
+            text: 'La flor se anuncia de una vez y queda pendiente en la mesa, pero se cobra cuando cierra la primera baza. Si el reparto termina antes, se cobra en la cuenta final. Así los dos equipos tienen toda la primera baza para cantar y el orden de juego no decide la comparación.',
+          },
+          {
+            kind: 'paragraph',
+            text: 'Si la flor llega a 24, la partida termina ahí y no se paga el truco. La flor cancela el envido, pero no un truco pendiente: ese truco todavía se responde.',
+          },
+        ],
+      },
+      {
+        id: 'truco',
+        tab: 'Truco',
+        title: 'El truco y sus subidas',
+        lead: 'El truco es la apuesta por el reparto completo. Se canta en tu turno, antes de tirar, en cualquier baza.',
+        blocks: [
+          {
+            kind: 'table',
+            title: 'La escalera',
+            headers: ['Canto', 'Si quieren', 'Si no quieren'],
+            rows: [
+              ['Truco', '3 piedras', '1 para quien cantó'],
+              ['Retruco', '6 piedras', '3 para quien cantó'],
+              ['Vale nueve', '9 piedras', '6 para quien cantó'],
+              ['Vale juego', 'el reparto decide la partida', '9 para quien cantó'],
+            ],
+          },
+          {
+            kind: 'paragraph',
+            text: 'Si nadie canta truco, el reparto ganado paga 1 piedra. El truco no cambia quién gana el reparto: solo lo que paga.',
+          },
+          {
+            kind: 'list',
+            title: 'Cómo se responde',
+            items: [
+              'Quiero: aceptas la apuesta y sigues jugando.',
+              'No quiero: el que cantó se lleva lo que valía el canto anterior.',
+              'Quiero y subo: aceptas y subes un escalón; ahora el otro equipo responde.',
+              'El que acepta puede subir; el que cantó contesta.',
+            ],
+          },
+          {
+            kind: 'callout',
+            title: 'Vale juego',
+            text: 'Si se acepta, el que gane este reparto se lleva la partida, sin importar el marcador. Si no se quiere, el que cantó se lleva 9 piedras.',
+          },
+          {
+            kind: 'paragraph',
+            text: 'Irse al mazo entrega el reparto y la apuesta que esté en juego (1 si no hubo truco). Un envido ya aceptado se compara igual: el mazo no lo borra.',
+          },
+          {
+            kind: 'paragraph',
+            text: 'Un truco no querido cierra el reparto en ese momento; si había un envido aceptado, primero se compara el envido y después se paga el truco.',
+          },
+        ],
+      },
+      {
+        id: 'prive',
+        tab: 'Prive y quemar',
+        title: 'Prive y quemar',
+        lead: 'El prive es el canto del que está a una piedra. El quemar es la carta boca abajo que esconde todo.',
+        blocks: [
+          {
+            kind: 'list',
+            title: 'Prive',
+            items: [
+              'Lo canta la pareja que está en 23, antes de la primera carta.',
+              'Solo si nadie cantó envido ni flor en ese reparto.',
+              'Se comparan los tantos de las dos parejas; el mejor se lleva 1 piedra.',
+              'Si empatan, gana la mano. Reemplaza al envido en ese reparto.',
+              'Se paga de inmediato y puede cerrar la partida. Si llega a 24, no se paga el truco.',
+            ],
+          },
+          {
+            kind: 'callout',
+            title: 'Prive no es un truco',
+            text: 'El prive se juega con las cartas que ya tienes y no sube la apuesta del reparto. Es una comparación de tantos a una sola piedra, con el corazón en la mano.',
+          },
+          {
+            kind: 'list',
+            title: 'Quemar',
+            items: [
+              'En vez de tirar una carta boca arriba, la tiras boca abajo.',
+              'No tiene rango: cualquier carta boca arriba le gana.',
+              'Solo empata con otra carta quemada.',
+              'Cuenta como tu carta de la baza y cierra tu ventana de flor y envido.',
+              'Puedes quemar en tu turno. Los bots queman como mucho una vez por reparto.',
+            ],
+          },
+          {
+            kind: 'paragraph',
+            text: 'Una carta quemada se revela en el resumen del reparto. Hasta entonces, ni los rivales ni tú ven su cara en la mesa.',
+          },
+        ],
+      },
+      {
+        id: 'senas',
+        tab: 'Señas',
+        title: 'Las señas de El Pana',
+        lead: 'El Pana te manda una seña por reparto. Es un gesto, no una regla: te dice lo que tiene, y tú decides qué hacer con eso.',
+        blocks: [
+          {
+            kind: 'table',
+            headers: ['Seña', 'Qué significa'],
+            rows: [
+              ['Guiño del ojo derecho', 'Perico'],
+              ['Guiño del ojo izquierdo', 'Perica'],
+              ['Lengua a la derecha', 'Espadilla'],
+              ['Lengua a la izquierda', 'Bastillo'],
+              ['Punta de lengua a la derecha', '7 de espada'],
+              ['Punta de lengua a la izquierda', '7 de oro'],
+              ['Inflar los cachetes', 'Flor'],
+              ['Guiño izquierdo y luego derecho', 'Flor reservada'],
+            ],
+          },
+          {
+            kind: 'paragraph',
+            text: 'Si no tiene nada que señalar, se encoge de hombros. La seña nunca cambia las cartas ni el marcador: es una ventaja de pana, no una trampa.',
+          },
+          {
+            kind: 'callout',
+            title: 'Una por reparto',
+            text: 'Abre el panel de la seña cuando quieras. Al repartir de nuevo, se cierra y El Pana vuelve a mirarte.',
+          },
+        ],
+      },
+      {
+        id: 'fuentes',
+        tab: 'Fuentes',
+        title: 'Fuentes y acuerdos de la mesa',
+        lead: 'Esta mesa sigue el truco venezolano de Wikipedia y Ludoteka, y el vocabulario de El Truco Venezolano. Donde las mesas no se ponen de acuerdo, dejamos el acuerdo por escrito.',
+        blocks: [
+          {
+            kind: 'sources',
+            items: [
+              {
+                label: 'Wikipedia: Truco venezolano',
+                href: 'https://es.wikipedia.org/wiki/Truco_venezolano',
+                note: 'La base del juego, la vira y la jerarquía de cartas.',
+              },
+              {
+                label: 'Ludoteka: Reglas del Truco Venezolano',
+                href: 'https://www.ludoteka.com/juegos/truco-venezolano/reglas',
+                note: 'Los cantos, el envido, la flor y el prive.',
+              },
+              {
+                label: 'El Truco Venezolano: Vocabulario',
+                href: 'https://eltrucovenezolano.com/vocabulario/',
+                note: 'Las palabras de la mesa: perico, perica, matas, señas.',
+              },
+            ],
+          },
+          {
+            kind: 'table',
+            title: 'Los acuerdos de esta mesa',
+            headers: ['Tema', 'Esta mesa'],
+            rows: [
+              ['Meta', '24 piedras, sin ganar por dos.'],
+              ['Flor reservada', '5 piedras y le gana a cualquier flor numérica.'],
+              ['Dos flores', 'Se comparan automáticamente; no hay subasta de flor-envido.'],
+              ['Declaración de flor', 'Flor por derecho: antes de tu primera carta.'],
+              [
+                'Cobro de la flor',
+                'Al cerrar la primera baza, o al cerrar el reparto si termina antes.',
+              ],
+              ['Envido', 'Solo en tu turno, antes de la primera carta.'],
+              ['Envido no querido', 'Se cobra al cerrar el reparto; una flor antes lo cancela.'],
+              ['Envido la falta', 'Se fija al aceptarlo: la distancia del líder a 24.'],
+              ['Prive', 'Lo canta el equipo en 23; 1 piedra; reemplaza al envido.'],
+              ['Quemar', 'Implementado; el bot quema como mucho una vez por reparto.'],
+              ['Parda', 'El que lideró la baza parda lidera la siguiente.'],
+              ['Tantos', 'Se muestran al resolver el envido, para aprender.'],
+            ],
+          },
+          {
+            kind: 'list',
+            title: 'Palabras de la mesa',
+            items: [
+              'A ley: puede haber flor o no. Puro cuento de mesa.',
+              'Barajo: el grito por un reparto malo. Aquí no hay repartos malos.',
+              'Son buenas: se concede un envido sin mostrar el tanto. En esta mesa mostramos los tantos para aprender.',
+              '¿Llevas? / Ven a mí / Quédate: preguntas y pedidos entre panas. Aquí son sabor, no reglas.',
+            ],
+          },
+          {
+            kind: 'paragraph',
+            text: 'Las reglas completas viven en docs/rules/TRUCO-VENEZOLANO.md. Si esta escuela y ese documento se contradicen, manda el documento.',
+          },
+        ],
+      },
+    ],
+  },
+  welcome: {
+    eyebrow: 'Bienvenido a la mesa',
+    title: 'Tres cartas, una mesa, 24 piedras',
+    lead: 'Esto es truco venezolano. Se aprende jugando, pero estas tres cosas te ponen en la mesa.',
+    steps: [
+      {
+        title: 'Tienes tres cartas',
+        body: 'Cada reparto te da tres cartas y una vira que decide el perico y la perica.',
+      },
+      {
+        title: 'Gana dos de tres bazas',
+        body: 'Tú y El Pana juegan contra La Comadre y El Catire. La pareja que gana dos bazas se lleva el reparto.',
+      },
+      {
+        title: 'Canta envido, flor y truco para subir la apuesta',
+        body: 'Antes de tirar puedes cantar envido o flor. El truco sube lo que paga el reparto. Y el primero en llegar a 24 se lleva la partida.',
+      },
+    ],
+    goal: 'El primero en llegar a 24 piedras gana. Sin ganar por dos, sin vueltas.',
+    play: 'Jugar',
+    rules: 'Ver las reglas',
+    close: 'Cerrar el tutorial',
+  },
+  settings: {
+    eyebrow: 'Tu mesa',
+    title: 'Ajustes',
+    lead: 'La mesa se acomoda a ti: idioma, sonido, ritmo y tu carrera.',
+    close: 'Cerrar los ajustes',
+    openAria: 'Abrir los ajustes de la mesa',
+    languageTitle: 'Idioma',
+    languageHint: 'La mesa habla español de Caracas o inglés.',
+    soundTitle: 'Sonido',
+    soundOn: 'Sonido encendido',
+    soundOff: 'Sonido apagado',
+    soundHint: 'Sonidos sintetizados: cartas, piedras, cantos y el final. Sin archivos.',
+    speedTitle: 'Ritmo de los bots',
+    speedHint: 'Cuánto piensan antes de jugar. No cambia sus cartas.',
+    speeds: {
+      slow: { label: 'Relajada', note: 'La mesa se toma su tiempo.' },
+      normal: { label: 'Normal', note: 'El ritmo de una mesa de cocina.' },
+      fast: { label: 'Rápida', note: 'Para cuando hay prisa.' },
+    },
+    careerTitle: 'Tu carrera',
+    careerHint: 'Se guarda solo en este navegador. Sin cuentas ni datos personales.',
+    careerEmpty: 'Todavía no has cerrado una partida. La primera piedra te espera.',
+    stats: {
+      matches: 'Partidas',
+      wins: 'Ganadas',
+      losses: 'Perdidas',
+      hands: 'Manos',
+      envidos: 'Envidos',
+      flores: 'Flores',
+    },
+    clear: 'Borrar estadísticas',
+    clearConfirm: '¿Seguro? Esto borra tu carrera de este navegador y no se puede deshacer.',
+    clearYes: 'Sí, borrar',
+    clearNo: 'Cancelar',
+    cleared: 'Carrera borrada. Mesa limpia.',
+    howToPlay: '¿Cómo se juega?',
+    howToPlayHint: 'Vuelve a abrir el tutorial de bienvenida.',
+  },
+  a11y: {
+    announcerLabel: 'Anuncios de la mesa',
   },
   cards: {
     of: 'de',

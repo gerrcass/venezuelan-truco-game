@@ -37,8 +37,10 @@ export function TeamPanel({ team, name, members, score, piedrasLabel, status }: 
       </div>
       <p className="team__members">{members}</p>
       <div className="team__body">
-        <p className="team__score">
-          <span className="team__score-value">{score}</span>
+        <p className="team__score" role="group" aria-label={`${name}: ${piedrasLabel}`}>
+          <span className="team__score-value" aria-hidden="true" key={score}>
+            {score}
+          </span>
           <span className="team__score-total" aria-hidden="true">
             /{PIEDRAS_TO_WIN}
           </span>

@@ -1,4 +1,4 @@
-import { useEffect, useRef, type PropsWithChildren } from 'react';
+import { useEffect, useRef, type MouseEvent, type PropsWithChildren } from 'react';
 import { createPortal } from 'react-dom';
 
 import { CloseIcon } from './icons';
@@ -14,6 +14,8 @@ interface ModalProps {
   readonly variant?: 'center' | 'drawer';
   readonly panelClassName?: string;
   readonly dismissible?: boolean;
+  /** Optional selector for the element that should receive focus when the dialog opens. */
+  readonly initialFocus?: string;
 }
 
 export function Modal({
@@ -24,6 +26,7 @@ export function Modal({
   variant = 'center',
   panelClassName,
   dismissible = true,
+  initialFocus,
   children,
 }: PropsWithChildren<ModalProps>) {
   const panelRef = useRef<HTMLDivElement>(null);
@@ -55,7 +58,9 @@ export function Modal({
         (element) => element.getAttribute('aria-hidden') !== 'true',
       );
 
-    (focusable()[0] ?? panel).focus();
+    const preferred = initialFocus ? panel.querySelector<HTMLElement>(initialFocus) : null;
+
+    (preferred ?? focusable()[0] ?? panel).focus();
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -105,14 +110,20 @@ export function Modal({
       document.body.style.overflow = previousOverflow;
       previousFocusRef.current?.focus();
     };
-  }, [dismissible, open]);
+  }, [dismissible, initialFocus, open]);
 
   if (!open) {
     return null;
   }
 
+  const closeFromBackdrop = (event: MouseEvent<HTMLDivElement>) => {
+    if (dismissible && event.target === event.currentTarget) {
+      onClose();
+    }
+  };
+
   return createPortal(
-    <div className={`modal modal--${variant}`}>
+    <div className={`modal modal--${variant}`} role="presentation" onMouseDown={closeFromBackdrop}>
       <div
         className={`modal__panel${panelClassName ? ` ${panelClassName}` : ''}`}
         role="dialog"
