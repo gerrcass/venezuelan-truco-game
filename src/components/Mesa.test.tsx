@@ -20,7 +20,7 @@ function renderMesa(seed = 'mano-viva') {
   );
 }
 
-function renderSummary(state: GameState) {
+function renderTableState(state: GameState) {
   return render(
     <LocaleProvider>
       <GameProvider initialState={state} botDelayMs={SLOW_BOT}>
@@ -53,6 +53,20 @@ function playToMatchOver(seed: string): GameState {
   }
 
   expect(state.phase).toBe('matchOver');
+  return state;
+}
+
+function playToFirstTrick(seed: string): GameState {
+  let state = createGame({ seed });
+  let guard = 0;
+
+  while (state.phase === 'playing' && state.tricks.length === 0 && guard < 10) {
+    guard += 1;
+    state = reduce(state, chooseSimpleAction(viewFor(state, state.turn)));
+  }
+
+  expect(state.lastTrick).not.toBeNull();
+  expect(state.currentTrick).toEqual([]);
   return state;
 }
 
@@ -94,6 +108,21 @@ describe('the live table', () => {
       expect(card).toBeDisabled();
     }
   });
+
+  it('keeps the resolved baza on the table with its four cards and verdict', () => {
+    const state = playToFirstTrick('primera-baza');
+    const last = state.lastTrick;
+    const winnerSeat = last?.winnerSeat ?? null;
+    const names = ['Tú', 'El Catire', 'El Pana', 'La Comadre'];
+    const verdict = last?.parda || winnerSeat === null ? 'Parda' : `Ganó ${names[winnerSeat]}`;
+
+    renderTableState(state);
+
+    const trick = screen.getByRole('group', { name: /^Baza 1: / });
+
+    expect(within(trick).getAllByRole('img')).toHaveLength(4);
+    expect(within(trick).getByText(verdict)).toBeVisible();
+  });
 });
 
 describe('the hand summary', () => {
@@ -103,7 +132,7 @@ describe('the hand summary', () => {
     const winner = finished.result?.winnerTeam ?? 'nosotros';
     const winnerName = winner === 'nosotros' ? 'Nosotros' : 'Ellos';
 
-    renderSummary(finished);
+    renderTableState(finished);
 
     const dialog = screen.getByRole('dialog', { name: `Ganó ${winnerName}` });
 
@@ -138,7 +167,7 @@ describe('the hand summary', () => {
     const winner = finished.matchWinner ?? 'nosotros';
     const winnerName = winner === 'nosotros' ? 'Nosotros' : 'Ellos';
 
-    renderSummary(finished);
+    renderTableState(finished);
 
     const dialog = screen.getByRole('dialog', { name: `Ganó la partida ${winnerName}` });
 
