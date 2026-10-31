@@ -1,5 +1,6 @@
 export { BURNED_POWER, cardPower, compareCards, envidoTanto, pieceOf } from './cards';
 export {
+  BAZAS_PER_HAND,
   createGame,
   getLegalActions,
   handWinner,

@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useLocale } from '../content/locale-context';
 import { cardKey } from '../domain/cards';
 import { PERSONA_BY_SEAT, SEATS } from '../domain/seats';
+import { BAZAS_PER_HAND } from '../engine/game';
 import { useGame } from '../game/game-context';
 import { ActionBar } from './ActionBar';
 import { HandDock } from './HandDock';
@@ -127,7 +128,7 @@ export function Mesa() {
             <Scoreboard view={view} />
 
             <p className="statusline">
-              <span>{content.status.baza(view.trickIndex, 3)}</span>
+              <span>{content.status.baza(view.trickIndex, BAZAS_PER_HAND)}</span>
               <span className="statusline__dot" aria-hidden="true">
                 {content.status.separator}
               </span>
